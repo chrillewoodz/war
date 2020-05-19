@@ -1,0 +1,29 @@
+.game-stats-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background-color: darken(brown, 10%);
+  color: gold;
+}
+
+.game-stat {
+  margin-bottom: 10px;
+}
+
+.army-types {
+  display: flex;
+  justify-content: center;
+}
+
+.army-type {
+  padding: 0 10px;
+}
+
+.army-type-img {
+  width: 40px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+}

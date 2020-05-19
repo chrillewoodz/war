@@ -1,0 +1,5 @@
+<div class="action-points-container">
+  <ul class="action-points">
+    <li class="action-point" *ngFor="let point of points" [ngClass]="{available: point?.available, cost: point?.cost}"></li>
+  </ul>
+</div>

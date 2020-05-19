@@ -1,0 +1,116 @@
+@import './screen-fight.utils';
+
+.scf {
+  @include hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('assets/SVG/war-scene1.svg');
+  background-size: cover;
+  background-position: 50% 50%;
+  color: darkred;
+  animation: init 2000ms ease;
+  animation-fill-mode: forwards;
+
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 100px;
+  }
+
+  h4 {
+    margin: 40px 0;
+    font-size: 50px;
+  }
+}
+
+.scf-players {
+  text-align: center;
+}
+
+.scf-attacker {
+  @include hidden;
+  animation: attacker 4000ms ease;
+  // animation-delay: 2000ms;
+  animation-fill-mode: forwards;
+}
+
+.scf-vs {
+  @include hidden;
+  animation: vs 4000ms ease;
+  // animation-delay: 2000ms;
+  animation-fill-mode: forwards;
+}
+
+.scf-defender {
+  @include hidden;
+  animation: defender 4000ms ease;
+  // animation-delay: 2000ms;
+  animation-fill-mode: forwards;
+}
+
+.scf-info {
+  @include hidden;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  z-index: -1;
+  animation: info 4000ms ease;
+  // animation-delay: 5000ms;
+  animation-fill-mode: forwards;
+}
+
+.scf-info-attacker {
+  flex: 0 0 50%;
+  text-align: center;
+}
+
+.scf-info-defender {
+  flex: 0 0 50%;
+  text-align: center;
+}
+
+.scf-army-types {
+
+  .scf-army-type {
+    margin: 15px auto;
+  }
+}
+
+.scf-army-type {
+  width: 130px;
+  margin: 0 auto;
+
+  img {
+    border-radius: 20px;
+  }
+}
+
+.scf-info-tactic {
+  @include hidden;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  animation: tactics 4000ms ease;
+  animation-delay: 5000ms; // info + 1s
+  animation-fill-mode: forwards;
+}
+
+.scf-tactic-choice {
+  width: 100px;
+}

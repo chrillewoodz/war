@@ -1,0 +1,48 @@
+<div class="screen-container scf" [ngSwitch]="currentView">
+  <div class="scf-players" *ngSwitchCase="1">
+    <h1 class="scf-attacker">{{info?.attacker?.name}}</h1>
+    <h4 class="scf-vs">VS</h4>
+    <h1 class="scf-defender">{{info?.defender?.name}}</h1>
+  </div>
+  <div class="scf-info" *ngSwitchCase="2">
+    <div class="scf-info-attacker">
+      <ul class="scf-army-types">
+        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.soldiers">
+          <img src="assets/SVG/soldier.svg">
+        </li>
+        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.horses">
+          <img src="assets/SVG/horse.svg">
+        </li>
+        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.gatlinGuns">
+          <img src="assets/SVG/gatling-gun.svg">
+        </li>
+      </ul>
+    </div>
+    <div class="scf-info-defender">
+      <ul class="scf-army-types">
+        <li class="scf-army-type" *ngIf="info?.defender?.troops?.soldiers">
+          <img src="assets/SVG/soldier.svg">
+        </li>
+        <li class="scf-army-type" *ngIf="info?.defender?.troops?.horses">
+          <img src="assets/SVG/horse.svg">
+        </li>
+        <li class="scf-army-type" *ngIf="info?.defender?.troops?.gatlinGuns">
+          <img src="assets/SVG/gatling-gun.svg">
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="scf-info-tactic" *ngSwitchCase="2">
+    <ul class="scf-tactic-choices">
+      <li class="scf-tactic-choice" (click)="chooseTactic('aggressive')">
+        <img src="assets/1x/aggressive.png">
+      </li>
+      <li class="scf-tactic-choice" (click)="chooseTactic('balanced')">
+        <img src="assets/1x/balanced.png">
+      </li>
+      <li class="scf-tactic-choice" (click)="chooseTactic('defensive')">
+        <img src="assets/SVG/defensive.svg">
+      </li>
+    </ul>
+  </div>
+</div>

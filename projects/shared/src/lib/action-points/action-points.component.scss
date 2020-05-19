@@ -1,0 +1,22 @@
+.action-points {
+
+  .action-point {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px darkgray;
+    background-color: lightgray;
+
+    &.available {
+      background-color: green;
+      box-shadow: 1px 2px darkgreen;
+    }
+
+    &.cost {
+      background-color: red;
+      box-shadow: 1px 2px darkred;
+    }
+  }
+}
