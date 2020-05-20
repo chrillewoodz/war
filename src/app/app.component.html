@@ -1,7 +1,11 @@
 <timer [total]="timePerRound" [timer$]="timer$" (ranOut)="endTurn()"></timer>
 
 <div class="screens">
-  <screen-fight [info]="currentFight"></screen-fight>
+  <br>
+  <br>
+  <br>
+  <button (click)="initFight()">fight</button>
+  <screen-fight *ngIf="isFightActive" [info]="currentFight" (completed)="fightCompleted($event)"></screen-fight>
 </div>
 
 <footer class="bottom-bar">

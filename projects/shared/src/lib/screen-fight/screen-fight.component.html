@@ -4,54 +4,62 @@
     <h4 class="scf-vs">VS</h4>
     <h1 class="scf-defender">{{info?.defender?.name}}</h1>
   </div>
-  <div class="scf-info" *ngSwitchCase="2">
+  <div class="scf-info" *ngSwitchCase="2" [ngClass]="{'battle-active': isBattleActive}">
     <div class="scf-info-attacker">
       <ul class="scf-army-types">
         <li class="scf-army-type soldiers" *ngIf="info?.attacker?.troops?.soldiers">
           <img src="assets/SVG/soldier.svg">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.attacker.soldier" (completed)="bulletsDone()"></bullets>
         </li>
         <li class="scf-army-type horses" *ngIf="info?.attacker?.troops?.horses">
           <img src="assets/SVG/horse.svg">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.attacker.horse" (completed)="bulletsDone()"></bullets>
         </li>
         <li class="scf-army-type gatling-guns" *ngIf="info?.attacker?.troops?.gatlinGuns">
           <img src="assets/SVG/gatling-gun.svg">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.attacker.gatlingGun" (completed)="bulletsDone()"></bullets>
         </li>
       </ul>
     </div>
     <div class="scf-info-defender">
       <ul class="scf-army-types">
         <li class="scf-army-type soldiers" *ngIf="info?.defender?.troops?.soldiers">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.defender.soldier" (completed)="bulletsDone()"></bullets>
           <img src="assets/SVG/soldier.svg">
         </li>
         <li class="scf-army-type horses" *ngIf="info?.defender?.troops?.horses">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.defender.horse" (completed)="bulletsDone()"></bullets>
           <img src="assets/SVG/horse.svg">
         </li>
         <li class="scf-army-type gatling-guns" *ngIf="info?.defender?.troops?.gatlinGuns">
+          <bullets *ngIf="isBattleActive" [config]="bulletConfigs.defender.gatlingGun" (completed)="bulletsDone()"></bullets>
           <img src="assets/SVG/gatling-gun.svg">
         </li>
       </ul>
     </div>
   </div>
-  <div class="scf-info-tactic" *ngSwitchCase="2">
-    <div>
-      <h1 class="scf-info-tactic-title">How will you attack?</h1>
-      <ul class="scf-tactic-choices">
-        <li class="scf-tactic-choice" (click)="chooseTactic('aggressive')">
-          <img src="assets/SVG/aggressive.svg">
-          <h5>Aggressive</h5>
-          <p class="scf-tactic-choice-desc">Unleash hell upon the enemy but be prepared to lose more men..</p>
-        </li>
-        <li class="scf-tactic-choice" (click)="chooseTactic('balanced')">
-          <img src="assets/SVG/balanced-alternative.svg">
-          <h5>Balanced</h5>
-          <p class="scf-tactic-choice-desc">Trust your men and fight in a controlled manner to avoid foolish mistakes..</p>
-        </li>
-        <li class="scf-tactic-choice" (click)="chooseTactic('tactical')">
-          <img src="assets/SVG/tactical.svg">
-          <h5>Tactical</h5>
-          <p class="scf-tactic-choice-desc">Use traps and cunning to outsmart the enemy..</p>
-        </li>
-      </ul>
+  <ng-container *ngSwitchCase="2">
+    <div class="scf-info-tactic" *ngIf="!isAttackStyleChosen">
+      <div>
+        <h1 class="scf-info-tactic-title">How will you attack?</h1>
+        <ul class="scf-tactic-choices">
+          <li class="scf-tactic-choice" (click)="chooseTactic('aggressive')">
+            <img src="assets/SVG/aggressive.svg">
+            <h5>Aggressive</h5>
+            <p class="scf-tactic-choice-desc">Unleash hell upon the enemy but be prepared to lose more men..</p>
+          </li>
+          <li class="scf-tactic-choice" (click)="chooseTactic('balanced')">
+            <img src="assets/SVG/balanced-alternative.svg">
+            <h5>Balanced</h5>
+            <p class="scf-tactic-choice-desc">Trust your men and fight in a controlled manner to avoid foolish mistakes..</p>
+          </li>
+          <li class="scf-tactic-choice" (click)="chooseTactic('tactical')">
+            <img src="assets/SVG/tactical.svg">
+            <h5>Tactical</h5>
+            <p class="scf-tactic-choice-desc">Use traps and cunning to outsmart the enemy..</p>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </ng-container>
 </div>

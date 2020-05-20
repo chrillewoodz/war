@@ -9,6 +9,8 @@ import { takeUntil, map, startWith, take } from 'rxjs/operators';
 })
 export class AppComponent {
 
+  public isFightActive = false;
+
   public config = {
     total: 20,
     actionsLeft: 12,
@@ -74,5 +76,14 @@ export class AppComponent {
 
   endTurn() {
     console.log('turn ended');
+  }
+
+  initFight() {
+    this.isFightActive = true;
+  }
+
+  fightCompleted(e) {
+    this.isFightActive = false;
+    console.log('fight completed');
   }
 }

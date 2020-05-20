@@ -42,34 +42,45 @@
 .scf-attacker {
   @include hidden;
   animation: attacker 4000ms ease;
-  // animation-delay: 2000ms;
   animation-fill-mode: forwards;
 }
 
 .scf-vs {
   @include hidden;
   animation: vs 4000ms ease;
-  // animation-delay: 2000ms;
   animation-fill-mode: forwards;
 }
 
 .scf-defender {
   @include hidden;
   animation: defender 4000ms ease;
-  // animation-delay: 2000ms;
   animation-fill-mode: forwards;
 }
 
 .scf-info {
-  // @include hidden;
-  // position: absolute;
   display: flex;
   align-items: center;
   width: 100%;
   z-index: -1;
-  // animation: info 2000ms ease;
-  // animation-delay: 5000ms;
-  // animation-fill-mode: forwards;
+
+  &.battle-active {
+
+    .scf-info-attacker {
+
+      .scf-army-type {
+        animation: attack-move-attacker 1000ms ease;
+        animation-fill-mode: forwards;
+      }
+    }
+
+    .scf-info-defender {
+
+      .scf-army-type {
+        animation: attack-move-defender 1000ms ease;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
 }
 
 .scf-info-attacker {
@@ -132,11 +143,15 @@
 }
 
 .scf-army-type {
+  position: relative;
   width: 130px;
+  display: flex;
+  align-items: center;
   margin: 0 auto;
   animation-delay: 2000ms;
 
   img {
+    width: 100%;
     border-radius: 20px;
   }
 }
@@ -154,7 +169,7 @@
   height: 100%;
   color: gold;
   animation: tactics 2000ms ease;
-  animation-delay: 5000ms; // info + 1s
+  animation-delay: 3000ms;
   animation-fill-mode: forwards;
 }
 
@@ -174,10 +189,16 @@
   flex: 0 0 15%;
   padding: 0 50px;
   text-align: center;
+  cursor: pointer;
+  transition: transform 150ms ease;
 
   img {
     margin-bottom: 20px;
     border-radius: 20px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
   }
 }
 

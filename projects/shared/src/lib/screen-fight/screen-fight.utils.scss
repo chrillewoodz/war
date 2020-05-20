@@ -94,3 +94,15 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
+@keyframes attack-move-attacker {
+  100% {
+    transform: translate3d(30%, 0, 0);
+  }
+}
+
+@keyframes attack-move-defender {
+  100% {
+    transform: translate3d(-30%, 0, 0);
+  }
+}

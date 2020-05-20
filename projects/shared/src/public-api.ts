@@ -1,5 +1,7 @@
 export * from './lib/action-points/action-points.component';
 export * from './lib/action-points/action-points.module';
+export * from './lib/bullets/bullets.component';
+export * from './lib/bullets/bullets.module';
 export * from './lib/game-cards/game-cards.component';
 export * from './lib/game-cards/game-cards.module';
 export * from './lib/game-stats/game-stats.component';
