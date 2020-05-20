@@ -7,42 +7,51 @@
   <div class="scf-info" *ngSwitchCase="2">
     <div class="scf-info-attacker">
       <ul class="scf-army-types">
-        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.soldiers">
+        <li class="scf-army-type soldiers" *ngIf="info?.attacker?.troops?.soldiers">
           <img src="assets/SVG/soldier.svg">
         </li>
-        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.horses">
+        <li class="scf-army-type horses" *ngIf="info?.attacker?.troops?.horses">
           <img src="assets/SVG/horse.svg">
         </li>
-        <li class="scf-army-type" *ngIf="info?.attacker?.troops?.gatlinGuns">
+        <li class="scf-army-type gatling-guns" *ngIf="info?.attacker?.troops?.gatlinGuns">
           <img src="assets/SVG/gatling-gun.svg">
         </li>
       </ul>
     </div>
     <div class="scf-info-defender">
       <ul class="scf-army-types">
-        <li class="scf-army-type" *ngIf="info?.defender?.troops?.soldiers">
+        <li class="scf-army-type soldiers" *ngIf="info?.defender?.troops?.soldiers">
           <img src="assets/SVG/soldier.svg">
         </li>
-        <li class="scf-army-type" *ngIf="info?.defender?.troops?.horses">
+        <li class="scf-army-type horses" *ngIf="info?.defender?.troops?.horses">
           <img src="assets/SVG/horse.svg">
         </li>
-        <li class="scf-army-type" *ngIf="info?.defender?.troops?.gatlinGuns">
+        <li class="scf-army-type gatling-guns" *ngIf="info?.defender?.troops?.gatlinGuns">
           <img src="assets/SVG/gatling-gun.svg">
         </li>
       </ul>
     </div>
   </div>
   <div class="scf-info-tactic" *ngSwitchCase="2">
-    <ul class="scf-tactic-choices">
-      <li class="scf-tactic-choice" (click)="chooseTactic('aggressive')">
-        <img src="assets/1x/aggressive.png">
-      </li>
-      <li class="scf-tactic-choice" (click)="chooseTactic('balanced')">
-        <img src="assets/1x/balanced.png">
-      </li>
-      <li class="scf-tactic-choice" (click)="chooseTactic('defensive')">
-        <img src="assets/SVG/defensive.svg">
-      </li>
-    </ul>
+    <div>
+      <h1 class="scf-info-tactic-title">How will you attack?</h1>
+      <ul class="scf-tactic-choices">
+        <li class="scf-tactic-choice" (click)="chooseTactic('aggressive')">
+          <img src="assets/SVG/aggressive.svg">
+          <h5>Aggressive</h5>
+          <p class="scf-tactic-choice-desc">Unleash hell upon the enemy but be prepared to lose more men..</p>
+        </li>
+        <li class="scf-tactic-choice" (click)="chooseTactic('balanced')">
+          <img src="assets/SVG/balanced-alternative.svg">
+          <h5>Balanced</h5>
+          <p class="scf-tactic-choice-desc">Trust your men and fight in a controlled manner to avoid foolish mistakes..</p>
+        </li>
+        <li class="scf-tactic-choice" (click)="chooseTactic('tactical')">
+          <img src="assets/SVG/tactical.svg">
+          <h5>Tactical</h5>
+          <p class="scf-tactic-choice-desc">Use traps and cunning to outsmart the enemy..</p>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

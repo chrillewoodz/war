@@ -14,29 +14,24 @@
   }
 }
 
-@keyframes info {
-  100% {
-    @include visible;
-  }
-}
-
 @keyframes tactics {
   100% {
     @include visible;
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 
 @keyframes attacker {
   0% {
-    transform: translateY(-200%);
+    transform: translate3d(0, -200%, 0);
   }
   50%, 80% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
     visibility: visible;
   }
   100% {
-    transform: translateY(-200%);
+    transform: translate3d(0, -200%, 0);
     opacity: 0;
     visibility: hidden;
   }
@@ -61,15 +56,15 @@
 
 @keyframes defender {
   0% {
-    transform: translateY(200%);
+    transform: translate3d(0, 200%, 0);
   }
   50%, 80% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
     visibility: visible;
   }
   100% {
-    transform: translateY(200%);
+    transform: translate3d(0, 200%, 0);
     opacity: 0;
     visibility: hidden;
   }
@@ -79,5 +74,23 @@
   100% {
     @include visible;
     position: static;
+  }
+}
+
+@keyframes army-type-attacker {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes army-type-defender {
+  0% {
+    transform: translate3d(50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }

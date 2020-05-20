@@ -61,15 +61,15 @@
 }
 
 .scf-info {
-  @include hidden;
-  position: absolute;
+  // @include hidden;
+  // position: absolute;
   display: flex;
   align-items: center;
   width: 100%;
   z-index: -1;
-  animation: info 4000ms ease;
+  // animation: info 2000ms ease;
   // animation-delay: 5000ms;
-  animation-fill-mode: forwards;
+  // animation-fill-mode: forwards;
 }
 
 .scf-info-attacker {
@@ -89,9 +89,52 @@
   }
 }
 
+.scf-info-attacker {
+
+  .scf-army-type {
+
+    &.soldiers {
+      animation: army-type-attacker 2500ms ease;
+      animation-fill-mode: forwards;
+    }
+
+    &.horses {
+      animation: army-type-attacker 1500ms ease;
+      animation-fill-mode: forwards;
+    }
+
+    &.gatling-guns {
+      animation: army-type-attacker 4000ms ease;
+      animation-fill-mode: forwards;
+    }
+  }
+}
+
+.scf-info-defender {
+
+  .scf-army-type {
+
+    &.soldiers {
+      animation: army-type-defender 2500ms ease;
+      animation-fill-mode: forwards;
+    }
+
+    &.horses {
+      animation: army-type-defender 1500ms ease;
+      animation-fill-mode: forwards;
+    }
+
+    &.gatling-guns {
+      animation: army-type-defender 4000ms ease;
+      animation-fill-mode: forwards;
+    }
+  }
+}
+
 .scf-army-type {
   width: 130px;
   margin: 0 auto;
+  animation-delay: 2000ms;
 
   img {
     border-radius: 20px;
@@ -104,13 +147,40 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  animation: tactics 4000ms ease;
+  color: gold;
+  animation: tactics 2000ms ease;
   animation-delay: 5000ms; // info + 1s
   animation-fill-mode: forwards;
 }
 
+.scf-info-tactic-title {
+  margin-bottom: 60px !important;
+  text-align: center;
+}
+
+.scf-tactic-choices {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
 .scf-tactic-choice {
-  width: 100px;
+  flex: 0 0 15%;
+  padding: 0 50px;
+  text-align: center;
+
+  img {
+    margin-bottom: 20px;
+    border-radius: 20px;
+  }
+}
+
+.scf-tactic-choice-desc {
+  font-weight: bold;
 }

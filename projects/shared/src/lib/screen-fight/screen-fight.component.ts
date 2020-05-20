@@ -33,7 +33,7 @@ export class ScreenFightComponent implements AfterViewInit {
 
   }
 
-  chooseTactic(tactic: 'aggressive' | 'balanced' | 'defensive') {
+  chooseTactic(tactic: 'aggressive' | 'balanced' | 'tactical') {
     console.log(tactic + ' chosen')
   }
 }
