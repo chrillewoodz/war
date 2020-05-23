@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { interval, timer } from 'rxjs';
 import { takeUntil, map, startWith, take } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ export class AppComponent {
   public isFightActive = false;
 
   public config = {
-    total: 20,
+    total: 25,
     actionsLeft: 12,
     actionCost: 3
   }
@@ -65,6 +65,8 @@ export class AppComponent {
     }
   }
 
+  public map = 'europe';
+  public areas;
   public timePerRound = 90000;
   public totalTerritories = 32;
 
@@ -73,6 +75,8 @@ export class AppComponent {
       map((t) => (1 + t) * 1000),
       take(this.timePerRound / 1000)
     );
+
+  constructor(private cd: ChangeDetectorRef) {}
 
   endTurn() {
     console.log('turn ended');
@@ -85,5 +89,10 @@ export class AppComponent {
   fightCompleted(e) {
     this.isFightActive = false;
     console.log('fight completed');
+  }
+
+  onMapReady(e) {
+    this.areas = e.areas;
+    this.cd.detectChanges();
   }
 }

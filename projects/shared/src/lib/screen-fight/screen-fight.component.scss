@@ -1,16 +1,15 @@
 @import './screen-fight.utils';
 
 .scf {
-  @include hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('assets/SVG/war-scene1.svg');
+  background-image: url('assets/1x/screen-fight.png');
   background-size: cover;
   background-position: 50% 50%;
   color: darkred;
-  animation: init 2000ms ease;
+  animation: init 1000ms ease;
   animation-fill-mode: forwards;
 
   &:before {
@@ -32,6 +31,11 @@
   h4 {
     margin: 40px 0;
     font-size: 50px;
+  }
+
+  &.battle-active {
+    animation: shake 0.82s cubic-bezier(.36, .07, .19, .97);
+    animation-iteration-count: infinite;
   }
 }
 
@@ -62,25 +66,6 @@
   align-items: center;
   width: 100%;
   z-index: -1;
-
-  &.battle-active {
-
-    .scf-info-attacker {
-
-      .scf-army-type {
-        animation: attack-move-attacker 1000ms ease;
-        animation-fill-mode: forwards;
-      }
-    }
-
-    .scf-info-defender {
-
-      .scf-army-type {
-        animation: attack-move-defender 1000ms ease;
-        animation-fill-mode: forwards;
-      }
-    }
-  }
 }
 
 .scf-info-attacker {

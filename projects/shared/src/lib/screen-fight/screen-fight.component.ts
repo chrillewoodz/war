@@ -77,6 +77,7 @@ export class ScreenFightComponent implements AfterViewInit {
   // TODO: Change name
   bulletsDone() {
     console.log('scf bullets done');
+    this.isBattleActive = false;
     this.completed.emit();
   }
 }

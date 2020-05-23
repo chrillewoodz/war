@@ -1,0 +1,43 @@
+/* NOTE: Tried to put the positioning as a global but they were never applied for some reason, so until that is resolved I'm putting them here  */
+.ai-container {
+  position: fixed;
+  top: 35px;
+  left: 20px;
+  width: 260px;
+  padding: 20px;
+  border-radius: 10px;
+  display: none;
+  background-color: rgb(152, 133, 89);
+  transition: opacity 150ms ease;
+
+  &.visible {
+    display: block;
+  }
+}
+
+.ai-section {
+  margin-bottom: 10px;
+}
+
+.ai-menu {
+  display: flex;
+}
+
+.ai-menu-item {
+  padding: 0 10px;
+  text-align: center;
+
+  &:first-of-type {
+    padding-left: 0;
+  }
+
+  &:last-of-type {
+    padding-right: 0;
+  }
+}
+
+.ai-menu-item-img {
+  width: 40px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+}
