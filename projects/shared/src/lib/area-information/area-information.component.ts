@@ -11,18 +11,7 @@ export class AreaInformationComponent implements OnDestroy {
   @Input() areas: any[];
 
   public isOpen = false;
-  public information = {
-    occupiedBy: {
-      name: 'USA',
-      color: 'rgb(40, 110, 53)'
-    },
-    troops: {
-      soldiers: 12,
-      horses: 7,
-      gatlinGuns: 2,
-      spies: 3
-    }
-  }
+  public information = null;
 
   private sub: Subscription;
 

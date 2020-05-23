@@ -1,10 +1,11 @@
 <div class="ai-container" [ngClass]="{visible: isOpen}" (clickOutside)="close()" [exceptions]="areas">
   <div class="ai-section">
-    <h3>Occupied by</h3>
+    <h3>{{information?.country}}</h3>
+    <h5>Occupied by:</h5>
     <p [ngStyle]="{color: information?.occupiedBy?.color}">{{information?.occupiedBy?.name}}</p>
   </div>
   <div class="ai-section">
-    <h3>Armies</h3>
+    <h5>Armies:</h5>
     <ul class="ai-menu">
       <li class="ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/soldier.svg">

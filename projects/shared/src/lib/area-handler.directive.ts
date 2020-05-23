@@ -1,4 +1,5 @@
 import { Directive, HostListener, Renderer2 } from '@angular/core';
+import { MapEuropeConnections } from './map-europe/map-europe.connections';
 import { AreaStatsService } from './area-information/area-stats.service';
 
 @Directive({
@@ -12,13 +13,16 @@ export class AreaHandlerDirective {
   @HostListener('document:click', ['$event'])
   onDocumentClick(e: MouseEvent) {
 
-    if ((e.target as any).dataset.areaId) {
+    const areaId = (e.target as any).dataset.areaId;
+
+    if (areaId) {
       this.previouslyClickedElement?.classList.remove('selected');
       this.previouslyClickedElement = (e.target as any);
       this.renderer.addClass(e.target, 'selected');
-
+      console.log((e.target as any).dataset.areaId);
       // TODO: Fetch real info
       this.ass.show({
+        country: MapEuropeConnections[areaId].name,
         occupiedBy: {
           name: 'USA',
           color: 'rgb(40, 110, 53)'
