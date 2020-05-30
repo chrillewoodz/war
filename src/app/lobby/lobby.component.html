@@ -1,0 +1,14 @@
+<div class="lobby-container">
+  <div class="container lobby-content">
+    <div class="row">
+      <div class="col">
+        <h1>Find game by session id</h1>
+        <h6 class="lobby-subtitle">This can be found in the game session settings</h6>
+        <input class="lobby-input" [formControl]="idCtrl" placeholder="Session id">
+        <button class="btn-primary" [disabled]="idCtrl.invalid" (click)="find()">Join</button>
+        <p class="lobby-separator">or</p>
+        <button class="btn-primary" (click)="quickmatch()">Quickmatch</button>
+      </div>
+    </div>
+  </div>
+</div>

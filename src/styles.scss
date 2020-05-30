@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Chau+Philomene+One&display=swap');
+@import '_bootstrap-grid';
 
 * {
   box-sizing: border-box;
@@ -6,12 +7,6 @@
 
 html, body {
   height: 100%;
-}
-
-body {
-  background-color: #346a9a;
-  background-image: url('assets/SVG/water.svg');
-  background-size: cover;
 }
 
 html, body, div, span, applet, object, iframe,
@@ -26,7 +21,7 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+time, mark, audio, video, button {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -110,4 +105,35 @@ h6 {
   padding: 15px;
   border-radius: 10px;
   background: rgba(155, 132, 89);
+}
+
+button {
+  vertical-align: middle;
+  line-height: initial;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+  text-align: center;
+  padding: 10px 20px;
+  outline: 0;
+  cursor: pointer;
+
+  &.btn-primary {
+    background-color: brown;
+    color: white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+input {
+  height: 42px;
+  padding: 0 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: 0;
 }
