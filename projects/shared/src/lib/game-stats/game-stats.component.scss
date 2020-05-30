@@ -1,32 +1,41 @@
-.game-stats-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background-image: url('assets/SVG/parchment.svg');
-}
+// .game-stats-container {}
 
 .game-stat {
-  margin-bottom: 10px;
+  text-align: center;
 
-  &.gold {
-    color: gold;
+  h4 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 0;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
   }
 }
 
 .army-types {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0;
+
+  &.no-padding {
+    padding-bottom: 0;
+  }
 }
 
 .army-type {
-  padding: 0 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  text-align: center;
+
+  &:last-of-type {
+    margin-bottom: 10px;
+  }
 }
 
 .army-type-img {
-  width: 34px;
-  margin-bottom: 5px;
+  width: 50px;
   border-radius: 10px;
 }

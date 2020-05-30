@@ -11,6 +11,7 @@ import {
   GameLoggerModule,
   GameStatsModule,
   MapEuropeModule,
+  PlayersModule,
   ScreenFightModule,
   TimerModule
 } from 'shared';
@@ -33,6 +34,7 @@ import { AppComponent } from './app.component';
     GameLoggerModule,
     GameStatsModule,
     MapEuropeModule,
+    PlayersModule,
     ScreenFightModule,
     TimerModule
   ],

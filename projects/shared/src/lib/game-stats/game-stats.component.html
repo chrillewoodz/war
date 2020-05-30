@@ -1,25 +1,49 @@
-<div class="game-stats-container">
-  <ul class="text-center">
+<div class="common-container game-stats-container">
+  <ul>
+    <li class="game-stat">
+      <h4>Deployed</h4>
+      <ul class="army-types">
+        <li class="army-type">
+          <img class="army-type-img" src="assets/SVG/soldier.svg">
+          <number-bubble number="1"></number-bubble>
+          <number-bubble [number]="stats?.ownedArmies?.soldiers" type="amount" position="bottom-right"></number-bubble>
+        </li>
+        <li class="army-type">
+          <img class="army-type-img" src="assets/SVG/horse.svg">
+          <number-bubble number="3"></number-bubble>
+          <number-bubble [number]="stats?.ownedArmies?.horses" type="amount" position="bottom-right"></number-bubble>
+        </li>
+        <li class="army-type">
+          <img class="army-type-img" src="assets/SVG/gatling-gun.svg">
+          <number-bubble number="5"></number-bubble>
+          <number-bubble [number]="stats?.ownedArmies?.gatlinGuns" type="amount" position="bottom-right"></number-bubble>
+        </li>
+        <li class="army-type">
+          <img class="army-type-img" src="assets/SVG/spy.svg">
+          <number-bubble number="0"></number-bubble>
+          <number-bubble [number]="stats?.ownedArmies?.spies" type="amount" position="bottom-right"></number-bubble>
+        </li>
+      </ul>
+    </li>
+    <li class="game-stat">
+      <h4>Idle</h4>
+      <ul class="army-types no-padding">
+        <li class="army-type">
+          <img class="army-type-img" src="assets/SVG/idle-armies.svg">
+          <number-bubble [number]="stats?.ownedArmies?.idleArmies" type="amount" position="bottom-right"></number-bubble>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+  <!-- <ul class="text-center">
     <li class="game-stat gold">
       <h3>Territories</h3>
       <p>{{stats?.ownedTerritories}} / {{stats?.totalTerritories}}</p>
     </li>
     <li class="game-stat">
       <h3>Armies</h3>
-      <ul class="army-types">
-        <li class="army-type">
-          <img class="army-type-img" src="assets/SVG/soldier.svg"> <p>{{stats?.ownedArmies?.soldiers}}</p>
-        </li>
-        <li class="army-type">
-          <img class="army-type-img" src="assets/SVG/horse.svg"> <p>{{stats?.ownedArmies?.horses}}</p>
-        </li>
-        <li class="army-type">
-          <img class="army-type-img" src="assets/SVG/gatling-gun.svg"> <p>{{stats?.ownedArmies?.gatlinGuns}}</p>
-        </li>
-        <li class="army-type">
-          <img class="army-type-img" src="assets/SVG/soldier.svg"> <p>{{stats?.ownedArmies?.spies}}</p>
-        </li>
-      </ul>
+
     </li>
-  </ul>
+  </ul> -->
 </div>

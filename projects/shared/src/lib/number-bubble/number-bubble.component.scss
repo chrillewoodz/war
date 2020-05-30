@@ -1,0 +1,55 @@
+.nb-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  z-index: 0;
+
+  &:before {
+    position: absolute;
+    content: '';
+    width: 34px;
+    height: 34px;
+    z-index: -1;
+    border-radius: 50%;
+  }
+
+  &.nb-type-power {
+
+    &:before {
+      background-color: rgb(139, 0, 0, 0.7);
+      background-image: url('assets/SVG/rifles-crossed.svg');
+      background-size: 90% 90%;
+      background-position: 50% 50%;
+    }
+  }
+
+  &.nb-type-amount {
+
+    &:before {
+      // TODO: Insert some form of image here like power has
+      background-color: rgba(3, 83, 90, 0.7);
+    }
+  }
+
+  &.nb-pos-bottom-left {
+    bottom: -10px;
+    left: -10px;
+  }
+
+  &.nb-pos-bottom-right {
+    bottom: -10px;
+    right: -10px;
+  }
+}
+
+.nb-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  height: inherit;
+  color: white;
+}

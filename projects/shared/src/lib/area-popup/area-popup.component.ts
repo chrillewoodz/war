@@ -1,10 +1,13 @@
-import { ActionPointsApi } from './../action-points/action-points.service';
-import { Component, HostListener, Renderer2, Input } from '@angular/core';
-import { AreaStatsService } from '../area-information/area-stats.service';
+import { Component, HostListener, Input } from '@angular/core';
 
-enum Action {
-  Attack,
-  Spy
+import { ActionPointsApi } from '../action-points/action-points.service';
+import { Action } from '../enums';
+import { GameEngine } from '../game.engine';
+
+interface Option {
+  label: string;
+  cost: number;
+  action: void;
 }
 
 @Component({
@@ -15,28 +18,49 @@ enum Action {
 
 export class AreaPopupComponent {
   @Input() areas: any[];
+  @Input() activeAreas: any[];
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(e: MouseEvent) {
 
-    if ((e.target as any).dataset.areaId) {
-      this.previouslyClickedElement?.classList.remove('selected');
+    const target: HTMLElement = e.target as HTMLElement;
+
+    if (target.dataset.areaId && target.classList.contains('active')) {
+
+      this.options = [];
+
+      if (target.classList.contains('owned')) {
+        this.options = [
+          { label: 'Deploy troops', cost: 1, action: this.gameEngine.doAction(Action.Deploy) },
+          { label: 'Relocate troops', cost: 1, action: this.gameEngine.doAction(Action.Relocate) }
+        ];
+      }
+      else {
+        this.options = [
+          { label: 'Attack', cost: 3, action: this.gameEngine.doAction(Action.Attack) },
+          { label: 'Send spy', cost: 1, action: this.gameEngine.doAction(Action.Spy) }
+        ];
+      }
+
       this.x = e.clientX + 15;
       this.y = e.clientY + 15;
       this.isOpen = true;
-      this.renderer.addClass(e.target, 'selected');
-      this.previouslyClickedElement = (e.target as any);
+    }
+    else {
+      this.isOpen = false;
     }
   }
 
+  public options: Option[] = [];
   public x: number;
   public y: number;
   public actions = Action;
   public isOpen = false;
 
-  private previouslyClickedElement: HTMLElement;
-
-  constructor(private renderer: Renderer2, private apApi: ActionPointsApi) {}
+  constructor(
+    private apApi: ActionPointsApi,
+    private gameEngine: GameEngine
+  ) {}
 
   showCost(cost: number) {
     this.apApi.showCost(cost);
@@ -46,24 +70,7 @@ export class AreaPopupComponent {
     this.apApi.hideCost();
   }
 
-  action(action: Action) {
-
-    switch (action) {
-      case Action.Attack: this.attack(); break;
-      case Action.Spy: this.spy(); break;
-    }
-  }
-
-  attack() {
-    // TODO: Emit attack event
-  }
-
-  spy() {
-    // TODO: Emit spy event
-  }
-
   close() {
     this.isOpen = false;
-    this.previouslyClickedElement?.classList.remove('selected');
   }
 }

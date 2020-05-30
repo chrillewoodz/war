@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnInit, Renderer2, ElementRef, EventEmitter, Output } from '@angular/core';
+import { MapEngine } from './../map.engine';
+import { AfterViewInit, Component, EventEmitter, Output, Input, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'map-europe',
@@ -6,23 +7,12 @@ import { AfterViewInit, Component, OnInit, Renderer2, ElementRef, EventEmitter, 
   styleUrls: ['./map-europe.component.scss']
 })
 
-export class MapEuropeComponent implements AfterViewInit, OnInit {
+export class MapEuropeComponent implements AfterViewInit {
   @Output() mapReady = new EventEmitter();
 
-  constructor(private renderer: Renderer2, private host: ElementRef){}
-
-  ngOnInit() {}
+  constructor(private host: ElementRef, private mapEngine: MapEngine) {}
 
   ngAfterViewInit() {
-
-    const areas = Array.from(this.host.nativeElement.querySelectorAll('.cls-1'));
-
-    areas.forEach((el, i) => {
-      this.renderer.setAttribute(el, 'data-area-id', String(i));
-    });
-
-    this.mapReady.emit({
-      areas
-    });
+    this.mapEngine.mapReady(this.host);
   }
 }

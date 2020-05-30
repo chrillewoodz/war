@@ -1,7 +1,10 @@
-<div class="gl-container">
+<div class="common-container gl-container">
   <ul #listRef class="gl-messages">
-    <li #messageRef class="gl-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of messages">{{msg.message}}</li>
+    <li #messageRef class="gl-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of messages">
+      <p class="gl-message-from">{{msg.from}}</p>
+      <p class="gl-message-text">{{msg.message}}</p>
+    </li>
   </ul>
-  <input class="gl-input" [formControl]="message" placeholder="Write something" (keydown.enter)="submit($event)">
+  <input class="gl-input" [ngStyle]="{color: player?.colorRGB}" [formControl]="message" placeholder="Write something" (keydown.enter)="submit($event)">
   <p class="gl-input-error" *ngIf="message.invalid">The message is too long</p>
 </div>

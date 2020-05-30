@@ -1,0 +1,1 @@
+export function exhaust(p: never) {};

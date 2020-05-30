@@ -1,8 +1,8 @@
-<div class="ai-container" [ngClass]="{visible: isOpen}" (clickOutside)="close()" [exceptions]="areas">
+<div class="common-container ai-container" [ngClass]="{visible: isOpen}" (clickOutside)="close()" [exceptions]="activeAreas">
   <div class="ai-section">
     <h3>{{information?.country}}</h3>
     <h5>Occupied by:</h5>
-    <p [ngStyle]="{color: information?.occupiedBy?.color}">{{information?.occupiedBy?.name}}</p>
+    <p [ngStyle]="{color: information?.occupiedBy?.colorRGB}">{{information?.occupiedBy?.name}}</p>
   </div>
   <div class="ai-section">
     <h5>Armies:</h5>
@@ -20,7 +20,7 @@
         <p>{{information?.troops?.gatlinGuns}}</p>
       </li>
       <li class="ai-menu-item">
-        <img class="ai-menu-item-img" src="assets/SVG/soldier.svg">
+        <img class="ai-menu-item-img" src="assets/SVG/spy.svg">
         <p>{{information?.troops?.spies}}</p>
       </li>
     </ul>

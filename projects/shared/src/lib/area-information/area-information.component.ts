@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 })
 export class AreaInformationComponent implements OnDestroy {
   @Input() areas: any[];
+  @Input() activeAreas: any[];
 
   public isOpen = false;
   public information = null;
@@ -20,7 +21,6 @@ export class AreaInformationComponent implements OnDestroy {
     this.sub = this.as.emitter$.subscribe((event: any) => {
       this.isOpen = event.shouldOpen;
       this.information = event.stats;
-      console.log(this.information)
     });
   }
 

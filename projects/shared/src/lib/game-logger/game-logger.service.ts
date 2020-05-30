@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 interface Message {
   color: string;
   message: string;
+  from: string;
 }
 
 @Injectable({

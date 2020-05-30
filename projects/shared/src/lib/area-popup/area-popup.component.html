@@ -1,6 +1,5 @@
-<div class="ap-container" [ngClass]="{visible: isOpen}" [ngStyle]="{left: x + 'px', top: y + 'px'}" (clickOutside)="close()" [exceptions]="areas">
+<div class="ap-container" [ngClass]="{visible: isOpen}" [ngStyle]="{left: x + 'px', top: y + 'px'}" (clickOutside)="close()" [exceptions]="activeAreas">
   <ul class="ap-menu">
-    <li class="ap-menu-item" (mouseover)="showCost(3)" (mouseout)="hideCost()" (click)="action(actions.Attack)">Attack</li>
-    <li class="ap-menu-item" (mouseover)="showCost(1)" (mouseout)="hideCost()" (click)="action(actions.Spy)">Send spy</li>
+    <li class="ap-menu-item" *ngFor="let option of options" (mouseover)="showCost(option.cost)" (mouseout)="hideCost()" (click)="option.action()">{{option.label}}</li>
   </ul>
 </div>

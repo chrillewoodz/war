@@ -1,3 +1,9 @@
+players {
+  position: fixed;
+  bottom: 380px;
+  left: 20px;
+}
+
 game-logger {
   position: fixed;
   bottom: 20px;
@@ -13,7 +19,7 @@ game-logger {
   height: 100px;
 
   action-points {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 320px;
   }
@@ -27,6 +33,6 @@ game-logger {
   game-stats {
     position: fixed;
     top: 35px;
-    left: 20px;
+    right: 20px;
   }
 }

@@ -1,7 +1,8 @@
 import { GameLoggerService } from './game-logger.service';
-import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
+import { Player } from '../players/players.types';
 
 @Component({
   selector: 'game-logger',
@@ -10,6 +11,7 @@ import { FormControl, Validators } from '@angular/forms';
 })
 
 export class GameLoggerComponent implements AfterViewInit, OnDestroy {
+  @Input() player: Player;
   @ViewChild('listRef') listRef: ElementRef;
   @ViewChildren('messageRef') messagesRef: QueryList<HTMLLIElement>;
 
@@ -29,8 +31,9 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
         const i = Math.floor(Math.random() * 4) + 1;
 
         this.gls.log({
-          color: this.colors[i],
-          message: `Player ${i} attacked!`
+          color: '#000',
+          message: `Player ${i} attacked!`,
+          from: '[game]'
         });
       });
 
@@ -56,11 +59,10 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
 
     if (this.message.valid) {
 
-      const i = Math.floor(Math.random() * 4) + 1;
-
       this.gls.log({
-        color: this.colors[i],
-        message: this.message.value
+        color: this.player.colorRGB,
+        message: this.message.value,
+        from: this.player.name
       });
 
       this.message.setValue('');

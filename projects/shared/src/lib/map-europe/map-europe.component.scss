@@ -11,25 +11,17 @@
 
 .cls-1 {
   cursor: pointer;
+  stroke-width: 0.75px;
+  opacity: 0.6;
+  cursor: default;
 
-  &:nth-of-type(2n) {
-    fill: rgb(73, 59, 50);
-  }
+  &.active {
+    opacity: 1;
+    cursor: pointer;
 
-  &:nth-of-type(3n) {
-    fill: rgb(40, 110, 53);
-  }
-
-  &:nth-of-type(4n) {
-    fill: rgb(219, 132, 10);
-  }
-
-  &:nth-of-type(5n) {
-    fill: rgb(33, 63, 156);
-  }
-
-  &:hover,
-  &.selected {
-    fill: darkred;
+    &:hover,
+    &.selected {
+      fill: darkred;
+    }
   }
 }

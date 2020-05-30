@@ -2,12 +2,9 @@
 .ai-container {
   position: fixed;
   top: 35px;
-  right: 20px;
+  left: 20px;
   width: 260px;
-  padding: 20px;
-  border-radius: 10px;
   display: none;
-  background-color: rgb(152, 133, 89);
   transition: opacity 150ms ease;
 
   &.visible {
