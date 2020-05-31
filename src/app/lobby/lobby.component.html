@@ -6,8 +6,10 @@
         <h6 class="lobby-subtitle">This can be found in the game session settings</h6>
         <input class="lobby-input" [formControl]="idCtrl" placeholder="Session id">
         <button class="btn-primary" [disabled]="idCtrl.invalid" (click)="find()">Join</button>
+        <p class="error error-msg">{{sessionIdError$ | async}}</p>
         <p class="lobby-separator">or</p>
         <button class="btn-primary" (click)="quickmatch()">Quickmatch</button>
+        <p class="error error-msg">{{quickmatchError$ | async}}</p>
       </div>
     </div>
   </div>

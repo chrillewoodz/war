@@ -53,7 +53,7 @@ export class GameEngine {
     const roll = Math.floor(Math.random() * 5);
 
     switch (roll) {
-      case 0: return -10;
+      case 0: return config.negativeFightModifier;
       default: return 0;
     }
   }
@@ -75,11 +75,11 @@ export class GameEngine {
 
       // If attacker has more or equal amount of troops, gain 1.5% chance to win
       if (diff >= 0) {
-        return b + 1.5;
+        return b + config.fightModifier;
       }
 
       // If less, give the 1.5% modifier to the defender instead
-      return b + -1.5;
+      return b + -config.fightModifier;
     })();
 
     const diffAsPercentage = (() => {

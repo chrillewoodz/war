@@ -1,0 +1,14 @@
+<div class="common-container gs-container" [ngClass]="{open: isOpen}" (clickOutside)="close()" [exceptions]="[gsToggle]">
+  <h1 class="gs-title gs-separator">Settings</h1>
+  <ul class="gs-menu">
+    <li class="gs-separator gs-item">Resign</li>
+    <li class="gs-separator gs-item">Quit</li>
+  </ul>
+  <h6>Session id:</h6>
+  <p>{{sessionId}}</p>
+</div>
+<button #gsToggle class="common-container gs-toggle" (click)="toggle()">
+  <span class="gs-pin"></span>
+  <span class="gs-pin"></span>
+  <span class="gs-pin"></span>
+</button>
