@@ -1,11 +1,12 @@
 const createSession = require('../fns/create-session');
+const findSession = require('../fns/find-sessions');
 const setSessions = require('../helpers/set-sessions');
 const getResponseObject = require('../helpers/get-response-object');
 
 /**
  *
  * @param {SocketIO.Socket} socket
- * @param {{userId: String}} ev
+ * @param {{clientId: String}} ev
  * @param {Function} onSessionsShouldUpdate
  */
 const fn = async function(socket, ev, sessions) {
@@ -13,7 +14,16 @@ const fn = async function(socket, ev, sessions) {
   const _sessions = {...sessions};
 
   try {
-    const session = createSession(ev.userId, ev.settings);
+
+    const cachedSessionId = ev.cachedSessionId;
+    let session;
+
+    if (cachedSessionId) {
+      session = findSession(_sessions, cachedSessionId);
+    }
+    else {
+      session = createSession(ev.clientId, ev.settings);
+    }
 
     if (session) {
       _sessions[session.sessionId] = session;

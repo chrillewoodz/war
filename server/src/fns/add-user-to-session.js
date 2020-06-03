@@ -3,13 +3,13 @@ const initialUserState = require('./initial-user-state');
 /**
  *
  * @param {*} session
- * @param {String} userId
+ * @param {String} clientId
  */
-const fn = function(session, userId) {
+const fn = function(session, clientId) {
 
   const _session = session;
 
-  _session.state.players[userId] = initialUserState(userId);
+  _session.state.players[clientId] = initialUserState(clientId);
 
   return _session;
 }

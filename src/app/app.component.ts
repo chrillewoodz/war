@@ -14,12 +14,16 @@ export class AppComponent {
 
     const interval = setInterval(() => {
 
-      const clientId = this.socket.ioSocket.id;
+      const cachedId = this.cache.clientId;
+      const clientId = cachedId || this.socket.ioSocket.id;
 
-      if (this.socket.ioSocket.id) {
+      if (!cachedId) {
+        this.cache.setClientId(clientId);
+      }
+
+      if (clientId) {
         console.log(`%c ClientID: ${clientId}`, 'color: green');
         clearInterval(interval);
-        this.cache.setClientId(clientId);
       }
     }, 100);
   }

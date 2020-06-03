@@ -32,9 +32,9 @@
     });
 
     socket.on('get', async ev => onGet(socket, ev, await getSessions()));
-    socket.on('host', async ev => onHost(io, ev, await getSessions()));
-    socket.on('join', async ev => onJoin(socket, ev, await getSessions()));
-    socket.on('session_update', async ev => onSessionUpdate(socket, ev, await getSessions()));
+    socket.on('host', async ev => onHost(socket, ev, await getSessions()));
+    socket.on('join', async ev => onJoin(io, ev, await getSessions()));
+    socket.on('session_update', async ev => onSessionUpdate(io, ev, await getSessions()));
 
     socket.on('disconnect', socket => {
       active--;

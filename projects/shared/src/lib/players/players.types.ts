@@ -3,6 +3,7 @@ export interface Player {
   state: {
     connected: boolean;
     resigned: boolean;
+    quit: boolean;
   };
   faction: {
     name: string;

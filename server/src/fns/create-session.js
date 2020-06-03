@@ -3,12 +3,12 @@ const initialUserState = require('./initial-user-state');
 
 /**
  *
- * @param {String} userId
+ * @param {String} clientId
  * @param {{private: Boolean, maxPlayers: Number}} settings
  */
-const fn = function(userId, settings) {
+const fn = function(clientId, settings) {
 
-  if (!userId || !settings) {
+  if (!clientId || !settings) {
     throw new Error('[createSession] Insufficient parameters provided');
   }
 
@@ -19,8 +19,9 @@ const fn = function(userId, settings) {
     settings,
     state: {
       players: {
-        [userId]: initialUserState(userId)
-      }
+        [clientId]: initialUserState(clientId)
+      },
+      logs: []
     }
   };
 }

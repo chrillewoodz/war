@@ -7,34 +7,24 @@ import { ReplaySubject } from 'rxjs';
 
 export class GameCache {
 
-  private _sessionState: any; // TODO: Type the state
-
   private emitter = new ReplaySubject(1);
   public emitter$ = this.emitter.asObservable();
 
   constructor() {}
 
   get clientId() {
-    return localStorage.getItem('clientId');
+    return sessionStorage.getItem('clientId');
   }
 
   get sessionId() {
-    return localStorage.getItem('sessionId');
-  }
-
-  get sessionState() {
-    return this._sessionState;
+    return sessionStorage.getItem('sessionId');
   }
 
   setClientId(id: string) {
-    localStorage.setItem('clientId', id);
+    sessionStorage.setItem('clientId', id);
   }
 
   setSessionId(id: string) {
-    localStorage.setItem('sessionId', id);
-  }
-
-  setSessionState(state: any) {
-    this._sessionState = state;
+    sessionStorage.setItem('sessionId', id);
   }
 }

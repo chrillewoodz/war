@@ -25,9 +25,6 @@ const fn = function(sessions, id) {
   }
 
   if (id) {
-    console.log(id);
-    console.log(Object.keys(sessions)
-    .map((sessionId) => sessions[sessionId]));
     return Object.keys(sessions)
       .map((sessionId) => sessions[sessionId])
       .filter(filterBy)

@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { interval, timer, Subscription, throwError } from 'rxjs';
+import { interval, timer, Subscription, throwError, combineLatest, merge } from 'rxjs';
 import { takeUntil, map, startWith, take, tap, switchMap, first, finalize } from 'rxjs/operators';
 
 import {
@@ -133,10 +133,13 @@ export class SessionComponent implements OnDestroy {
 
     this.socket.emit('get', { sessionId: this.cache.sessionId });
 
-    const sessionSub = this.socket.fromEvent<SocketEvent>('get_success')
+    const sessionSub =
+      merge(
+        this.socket.fromEvent<SocketEvent>('get_success'),
+        this.socket.fromEvent<SocketEvent>('join_success'),
+        this.socket.fromEvent<SocketEvent>('session_update')
+      )
       .pipe(
-        first(),
-        // switchMap(() => this.socket.fromEvent<SocketEvent>('session_update')),
         map((response) => {
           console.log(response);
           switch (response.status) {

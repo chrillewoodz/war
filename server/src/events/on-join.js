@@ -6,7 +6,7 @@ const getResponseObject = require('../helpers/get-response-object');
 /**
  *
  * @param {SocketIO.Socket} socket
- * @param {{userId: String}} ev
+ * @param {{clientId: String}} ev
  * @param {Array} sessions
  */
 const fn = function(socket, ev, sessions) {
@@ -18,7 +18,7 @@ const fn = function(socket, ev, sessions) {
     let session = findSession(sessions, ev.sessionId);
 
     if (session) {
-      session = addUserToSession(session, ev.userId);
+      session = addUserToSession(session, ev.clientId);
       setSessions(_sessions);
       socket.emit('join_success', getResponseObject(200, session));
     }

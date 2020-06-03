@@ -1,18 +1,19 @@
 /**
  *
- * @param {String} userId
+ * @param {String} clientId
  */
-const fn = function(userId) {
+const fn = function(clientId) {
 
-  if (!userId) {
-    throw new Error('Must provide userId');
+  if (!clientId) {
+    throw new Error('Must provide clientId');
   }
 
   return {
-    id: userId,
+    id: clientId,
     state: {
       connected: true,
-      resigned: false
+      resigned: false,
+      quit: false
     }
   }
 }

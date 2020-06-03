@@ -30,12 +30,23 @@ export class MatchMaker {
   }
 
   join(id?: string) {
-    this.socket.emit('join', { sessionId: id, userId: this.socket.ioSocket.id });
+
+    this.socket.emit('join', {
+      sessionId: id || this.cache.sessionId, // Re-join existing game if you left it
+      clientId: this.cache.clientId
+    });
+
     return this.onSocketResponse('join_success');
   }
 
   host(settings) {
-    this.socket.emit('host', { userId: this.socket.ioSocket.id, settings });
+
+    this.socket.emit('host', {
+      cachedSessionId: this.cache.sessionId, // Re-join existing game if you left it
+      clientId: this.cache.clientId,
+      settings
+    });
+
     return this.onSocketResponse('host_success');
   }
 }

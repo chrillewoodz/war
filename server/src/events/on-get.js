@@ -4,7 +4,7 @@ const getResponseObject = require('../helpers/get-response-object');
 /**
  *
  * @param {SocketIO.Socket} socket
- * @param {{userId: String}} ev
+ * @param {{clientId: String}} ev
  * @param {Array} sessions
  */
 const fn = function(socket, ev, sessions) {
