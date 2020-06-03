@@ -1,6 +1,10 @@
-import { map } from 'rxjs/operators';
+import { SocketEvent } from './interfaces';
+import { GameCache } from './game.cache';
+import { map, first, switchMap, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { throwError, merge } from 'rxjs';
+import { Socket } from 'ngx-socket-io';
+import { checkSocketEventResponse } from './helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -8,18 +12,30 @@ import { Observable, throwError } from 'rxjs';
 
 export class MatchMaker {
 
-  constructor() {}
+  constructor(private cache: GameCache, private socket: Socket) {}
 
-  joinBySessionId(id: string) {
-    return throwError('No session with that id');
-    // TODO: Call socket
+  private onSocketResponse(event: string) {
+
+    return merge<SocketEvent>(
+      this.socket.fromEvent('internal_error'),
+      this.socket.fromEvent(event)
+    )
+    .pipe(
+      first(),
+      switchMap(checkSocketEventResponse),
+      tap((e) => {
+        this.cache.setSessionId(e.res.sessionId);
+      })
+    );
   }
 
-  quickmatch() {
-    return new Observable((observer) => {
-      observer.next();
-    });
-    // return throwError('There was a network error');
-    // TODO: Call socket
+  join(id?: string) {
+    this.socket.emit('join', { sessionId: id, userId: this.socket.ioSocket.id });
+    return this.onSocketResponse('join_success');
+  }
+
+  host(settings) {
+    this.socket.emit('host', { userId: this.socket.ioSocket.id, settings });
+    return this.onSocketResponse('host_success');
   }
 }

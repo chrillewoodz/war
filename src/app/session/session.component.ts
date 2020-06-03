@@ -1,13 +1,24 @@
 import { Component, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { interval, timer, Subscription } from 'rxjs';
-import { takeUntil, map, startWith, take } from 'rxjs/operators';
+import { interval, timer, Subscription, throwError } from 'rxjs';
+import { takeUntil, map, startWith, take, tap, switchMap, first, finalize } from 'rxjs/operators';
 
 import {
-  Players,
   MapEngine,
   MapEuropeComponent,
-  MapEuropeConnections
+  MapEuropeConnections,
+  Sweden,
+  China,
+  Somalia,
+  Germany,
+  SocketEvent,
+  GameCache,
+  factionsAsArray,
+  attachFactions,
+  getSelf
 } from 'shared';
+
+import { Socket } from 'ngx-socket-io';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-session',
@@ -38,18 +49,17 @@ export class SessionComponent implements OnDestroy {
     }
   }
 
-  // Allow 2-4 players
-  public players: Players = {
-    '1': { name: 'Gustav Vasa', colorRGB: 'rgb(242, 248, 81)', colorRGBA: 'rgba(242, 248, 81, 0.6)', faction: 'sweden' },
-    '2': { name: 'Fu Ling', colorRGB: 'rgb(40, 110, 53)', colorRGBA: 'rgba(40, 110, 53, 0.6)', faction: 'china' },
-    '3': { name: 'John Long Schlong', colorRGB: 'rgb(219, 132, 10)', colorRGBA: 'rgba(219, 132, 10, 0.6)', faction: 'pirates' },
-    '4': { name: 'Adolf Hamburger', colorRGB: 'rgb(226, 47, 142)', colorRGBA: 'rgba(226, 47, 142, 0.6)', faction: 'hamburg' }
-  };
+  // public players: Players = {
+  //   '1': Sweden,
+  //   '2': China,
+  //   '3': Somalia,
+  //   '4': Germany
+  // };
 
-  public playerState = {
-    areas: [36, 13],
-    colorRGB: this.players['1'].colorRGB
-  };
+  // public playerState = {
+  //   areas: [36, 13],
+  //   colorRGB: this.players['1'].colorRGB
+  // };
 
   public cards = [
     { img: 'soldier', title: 'An unexpected ally', action: () => {
@@ -100,9 +110,18 @@ export class SessionComponent implements OnDestroy {
       take(this.timePerRound / 1000)
     );
 
+  public session;
+  public self;
+
   private subscriptions = new Subscription();
 
-  constructor(private cd: ChangeDetectorRef, private mapEngine: MapEngine) {
+  constructor(
+    private cd: ChangeDetectorRef,
+    private cache: GameCache,
+    private mapEngine: MapEngine,
+    private router: Router,
+    private socket: Socket
+  ) {
 
     const areasSub = this.mapEngine.areas$.subscribe((areas) => {
       this.areas = areas;
@@ -112,8 +131,40 @@ export class SessionComponent implements OnDestroy {
       this.activeAreas = activeAreas;
     });
 
+    this.socket.emit('get', { sessionId: this.cache.sessionId });
+
+    const sessionSub = this.socket.fromEvent<SocketEvent>('get_success')
+      .pipe(
+        first(),
+        // switchMap(() => this.socket.fromEvent<SocketEvent>('session_update')),
+        map((response) => {
+          console.log(response);
+          switch (response.status) {
+            case 200: return response;
+            default: throwError(response.err).pipe(
+              first(),
+              finalize(() => {
+                this.router.navigateByUrl('');
+              })
+            );
+          }
+        }),
+        map((response) => attachFactions(response.res)),
+        map((session) => {
+          return { state: session, self: getSelf(session, this.cache.clientId) }
+        })
+      )
+      .subscribe((session) => {
+        this.session = session.state;
+        this.self = session.self;
+        console.log(this.session, this.self);
+      }, (err) => {
+        console.log(err);
+      });
+
     this.subscriptions.add(areasSub);
     this.subscriptions.add(activeAreasSub);
+    this.subscriptions.add(sessionSub);
   }
 
   ngOnDestroy() {
@@ -123,8 +174,8 @@ export class SessionComponent implements OnDestroy {
   ngAfterViewInit() {
 
     // TODO: Move to "dynamic" place
-    this.mapEngine.renderActiveAreas(MapEuropeConnections, this.playerState?.areas);
-    this.mapEngine.renderPlayerAreas(this.playerState?.areas, this.playerState?.colorRGB);
+    // this.mapEngine.renderActiveAreas(MapEuropeConnections, this.playerState?.areas);
+    // this.mapEngine.renderPlayerAreas(this.playerState?.areas, this.playerState?.colorRGB);
   }
 
   endTurn() {

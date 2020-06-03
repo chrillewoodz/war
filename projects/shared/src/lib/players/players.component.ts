@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Players, Player } from './players.types';
+import { Player } from './players.types';
 
 @Component({
   selector: 'players',
@@ -8,17 +8,20 @@ import { Players, Player } from './players.types';
 })
 
 export class PlayersComponent {
-  @Input() set players(players: Players) {
-    this.player1 = players['1'];
-    this.player2 = players['2'];
-    this.player3 = players['3'];
-    this.player4 = players['4'];
+  @Input() self;
+  @Input() set players(players: Player[]) {
+
+    if (players) {
+      this._players = Object.keys(players).map((player) => players[player]);
+      console.log(this._players);
+    }
   };
 
-  public player1: Player;
-  public player2: Player;
-  public player3: Player;
-  public player4: Player;
+  public _players: Player[] = [];
+
+  get players() {
+    return this._players;
+  }
 
   constructor() {}
 }

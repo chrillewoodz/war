@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, tap, delay } from 'rxjs/operators';
 
 import {
   GameCache,
-  MatchMaker
+  MatchMaker,
+  ModalApi
 } from 'shared';
+import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-lobby',
@@ -17,46 +19,77 @@ import {
 export class LobbyComponent implements OnInit {
 
   public idCtrl = new FormControl('', [Validators.required]);
-  public sessionIdError = new Subject();
-  public quickmatchError = new Subject();
-  public sessionIdError$ = this.sessionIdError.asObservable();
-  public quickmatchError$ = this.quickmatchError.asObservable();
+  public hostError = new Subject();
+  public joinError = new Subject();
+  public joinByIdError = new Subject();
+  public hostError$ = this.hostError.asObservable();
+  public joinError$ = this.joinError.asObservable();
+  public joinByIdError$ = this.joinByIdError.asObservable();
+
+  public settings = this.fb.group({
+    private: [false],
+    maxPlayers: [4, [Validators.required, Validators.min(2), Validators.max(4)]]
+  });
+
+  public stats$ = this.socket.fromEvent('stats');
 
   constructor(
     private cache: GameCache,
+    private fb: FormBuilder,
     private matchmaker: MatchMaker,
-    private router: Router
-  ) { }
-
-  ngOnInit(): void {
+    private modalApi: ModalApi,
+    private router: Router,
+    private socket: Socket
+  ) {
+    this.socket.emit('stats');
   }
 
-  find() {
+  ngOnInit(): void {
 
-    if (this.idCtrl.valid) {
+  }
 
-      this.matchmaker.joinBySessionId(this.idCtrl.value).pipe(
+  join(id?: string) {
+
+    if (id) {
+
+      if (this.idCtrl.invalid) {
+        return;
+      }
+    }
+
+    this.matchmaker.join(id).pipe(
+      first()
+    ).subscribe((e) => {
+      console.log('join', e);
+      this.router.navigateByUrl('session');
+    }, (e) => {
+
+      if (id) {
+        this.joinByIdError.next(e);
+      }
+      else {
+        this.joinError.next(e);
+      }
+    });
+  }
+
+  host() {
+
+    if (this.settings.valid) {
+
+      this.matchmaker.host(this.settings.value).pipe(
         first()
-      ).subscribe(() => {
-        this.cache.setSessionId('9a8sdasd9as8d9a8dasda2sads');
+      ).subscribe((e) => {
+        console.log(e);
+        this.modalApi.close('host-settings');
         this.router.navigateByUrl('session');
       }, (e) => {
-        this.sessionIdError.next(e);
+        this.hostError.next(e);
       });
     }
   }
 
-  quickmatch() {
-    // TODO: Join or host
-
-    this.matchmaker.quickmatch().pipe(
-      first()
-    ).subscribe(() => {
-      console.log('hello')
-      this.cache.setSessionId('aodaks0a98sdasd9asdasd8sda89');
-      this.router.navigateByUrl('session');
-    }, (e) => {
-      this.quickmatchError.next(e);
-    });
+  openHostSettings() {
+    this.modalApi.open('host-settings');
   }
 }

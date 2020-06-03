@@ -7,7 +7,6 @@ import { ReplaySubject } from 'rxjs';
 
 export class GameCache {
 
-  private _sessionId: string;
   private _sessionState: any; // TODO: Type the state
 
   private emitter = new ReplaySubject(1);
@@ -15,16 +14,24 @@ export class GameCache {
 
   constructor() {}
 
+  get clientId() {
+    return localStorage.getItem('clientId');
+  }
+
   get sessionId() {
-    return this._sessionId;
+    return localStorage.getItem('sessionId');
   }
 
   get sessionState() {
     return this._sessionState;
   }
 
+  setClientId(id: string) {
+    localStorage.setItem('clientId', id);
+  }
+
   setSessionId(id: string) {
-    this._sessionId = id;
+    localStorage.setItem('sessionId', id);
   }
 
   setSessionState(state: any) {

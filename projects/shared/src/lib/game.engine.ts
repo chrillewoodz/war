@@ -11,13 +11,13 @@ export class GameEngine {
 
   constructor() {
 
-    for (let i = 0; i < 26; i++) {
-      console.log('greater', `26 vs ${i}`, this.getWinPercentage(26, i));
-    }
+    // for (let i = 0; i < 26; i++) {
+    //   console.log('greater', `26 vs ${i}`, this.getWinPercentage(26, i));
+    // }
 
-    for (let i = 26; i > 0; i--) {
-      console.log('lesser', `${i} vs 26`, this.getWinPercentage(i, 26));
-    }
+    // for (let i = 26; i > 0; i--) {
+    //   console.log('lesser', `${i} vs 26`, this.getWinPercentage(i, 26));
+    // }
   }
 
   doAction(action: Action) {

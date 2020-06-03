@@ -131,7 +131,7 @@ button {
   }
 }
 
-input {
+input:not([type="checkbox"]) {
   height: 42px;
   padding: 0 20px;
   border: 1px solid #ccc;
@@ -141,4 +141,23 @@ input {
 
 .error {
   color: darkred;
+}
+
+.label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox {
+  display: inline-block;
+
+  + label {
+    margin-left: 5px;
+  }
 }

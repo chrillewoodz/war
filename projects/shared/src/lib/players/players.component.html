@@ -1,20 +1,19 @@
 <div class="common-container players-container">
   <ul>
-    <li *ngIf="player1" class="player" [ngStyle]="{color: player1.colorRGB}">
-      <img class="player-img" src="assets/SVG/{{player1.faction}}.svg" alt="Player faction">
-      <span>{{player1.name}}</span>
+    <ng-container *ngFor="let player of players">
+      <li class="player" [ngClass]="{self: player.id === self?.id}" [ngStyle]="{color: player.faction.colorRGB}">
+        <img class="player-img" src="assets/SVG/{{player.faction.faction}}.svg" alt="Player faction">
+        <span>{{player.faction.name}}</span>
+      </li>
+    </ng-container>
+    <li *ngIf="players.length < 2" class="player empty-player">
+      <span>Waiting for player...</span>
     </li>
-    <li *ngIf="player2" class="player" [ngStyle]="{color: player2.colorRGB}">
-      <img class="player-img" src="assets/SVG/{{player2.faction}}.svg" alt="Player faction">
-      <span>{{player2.name}}</span>
+    <li *ngIf="players.length < 3" class="player empty-player">
+      <span>Waiting for player...</span>
     </li>
-    <li *ngIf="player3" class="player" [ngStyle]="{color: player3.colorRGB}">
-      <img class="player-img" src="assets/SVG/{{player3.faction}}.svg" alt="Player faction">
-      <span>{{player3.name}}</span>
-    </li>
-    <li *ngIf="player4" class="player" [ngStyle]="{color: player4.colorRGB}">
-      <img class="player-img" src="assets/SVG/{{player4.faction}}.svg" alt="Player faction">
-      <span>{{player4.name}}</span>
+    <li *ngIf="players.length < 4" class="player empty-player">
+      <span>Waiting for player...</span>
     </li>
   </ul>
 </div>
