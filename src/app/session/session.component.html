@@ -5,7 +5,7 @@
   <div class="game-hud">
     <players [players]="session?.state?.players" [self]="self"></players>
     <area-information [areas]="areas" [activeAreas]="activeAreas"></area-information>
-    <game-logger [player]="self"></game-logger>
+    <game-logger [player]="self" [session]="session" (onNewLog)="update()"></game-logger>
   </div>
 
   <div class="map-container" [ngSwitch]="mapType" areaHandler>

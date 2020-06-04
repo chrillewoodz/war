@@ -12,9 +12,12 @@ import {
   Germany,
   SocketEvent,
   GameCache,
+  PipeResult,
   factionsAsArray,
   attachFactions,
-  getSelf
+  getSelf,
+  Session,
+  Player
 } from 'shared';
 
 import { Socket } from 'ngx-socket-io';
@@ -110,8 +113,8 @@ export class SessionComponent implements OnDestroy {
       take(this.timePerRound / 1000)
     );
 
-  public session;
-  public self;
+  public session: Session;
+  public self: Player;
 
   private subscriptions = new Subscription();
 
@@ -137,13 +140,16 @@ export class SessionComponent implements OnDestroy {
       merge(
         this.socket.fromEvent<SocketEvent>('get_success'),
         this.socket.fromEvent<SocketEvent>('join_success'),
-        this.socket.fromEvent<SocketEvent>('session_update')
+        this.socket.fromEvent<SocketEvent>('session_updated'),
+        this.socket.fromEvent<SocketEvent>('internal_error')
       )
       .pipe(
         map((response) => {
           console.log(response);
+
           switch (response.status) {
             case 200: return response;
+            // TODO: Validate that this is working
             default: throwError(response.err).pipe(
               first(),
               finalize(() => {
@@ -157,7 +163,7 @@ export class SessionComponent implements OnDestroy {
           return { state: session, self: getSelf(session, this.cache.clientId) }
         })
       )
-      .subscribe((session) => {
+      .subscribe((session: PipeResult) => {
         this.session = session.state;
         this.self = session.self;
         console.log(this.session, this.self);
@@ -197,5 +203,10 @@ export class SessionComponent implements OnDestroy {
   onMapReady(e) {
     this.areas = e.areas;
     this.cd.detectChanges();
+  }
+
+  update() {
+    this.socket.emit('session_update', { sessionId: this.session.sessionId, newState: this.session.state });
+    console.log('updating..')
   }
 }

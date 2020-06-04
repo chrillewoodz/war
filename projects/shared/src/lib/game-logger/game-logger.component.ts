@@ -1,8 +1,9 @@
 import { GameLoggerService } from './game-logger.service';
-import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
 import { Player } from '../players/players.types';
+import { Session } from '../interfaces';
 
 @Component({
   selector: 'game-logger',
@@ -11,12 +12,13 @@ import { Player } from '../players/players.types';
 })
 
 export class GameLoggerComponent implements AfterViewInit, OnDestroy {
+  @Input() session: Session;
   @Input() player: Player;
+  @Output() onNewLog = new EventEmitter();
   @ViewChild('listRef') listRef: ElementRef;
   @ViewChildren('messageRef') messagesRef: QueryList<HTMLLIElement>;
 
   public message = new FormControl('', [Validators.maxLength(60)]);
-  public messages = [];
   // tmp only
   public colors = ['rgb(73, 59, 50)', 'rgb(40, 110, 53)', 'gb(219, 132, 10)', 'rgb(33, 63, 156)'];
 
@@ -25,20 +27,21 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
   constructor(private gls: GameLoggerService) {
 
     // // tmp only
-    interval(4000)
-      .subscribe(() => {
+    // interval(4000)
+    //   .subscribe(() => {
 
-        const i = Math.floor(Math.random() * 4) + 1;
+    //     const i = Math.floor(Math.random() * 4) + 1;
 
-        this.gls.log({
-          color: '#000',
-          message: `Player ${i} attacked!`,
-          from: '[game]'
-        });
-      });
+    //     this.gls.log({
+    //       color: '#000',
+    //       message: `Player ${i} attacked!`,
+    //       from: '[game]'
+    //     });
+    //   });
 
     this.sub = this.gls.emitter$.subscribe((newMessage) => {
-      this.messages.push(newMessage);
+      this.session.state.logs.push(newMessage);
+      this.onNewLog.emit();
     });
   }
 
@@ -58,7 +61,7 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
     e.preventDefault();
 
     if (this.message.valid) {
-      console.log(this.player);
+
       this.gls.log({
         color: this.player.faction.colorRGB,
         message: this.message.value,

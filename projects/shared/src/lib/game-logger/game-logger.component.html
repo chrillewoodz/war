@@ -1,6 +1,6 @@
 <div class="common-container gl-container">
   <ul #listRef class="gl-messages">
-    <li #messageRef class="gl-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of messages">
+    <li #messageRef class="gl-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of session?.state.logs">
       <p class="gl-message-from">{{msg.from}}</p>
       <p class="gl-message-text">{{msg.message}}</p>
     </li>

@@ -21,7 +21,7 @@ const fn = function(socket, ev, sessions) {
     }
   }
   catch (err) {
-    socket.emit('internal_error', getResponseObject(500, null, err.message));
+    socket.emit('internal_error', getResponseObject(500, null, err.message, 'on-get'));
   }
 }
 

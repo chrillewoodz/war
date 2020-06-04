@@ -1,3 +1,4 @@
+@import './src/_variables';
 $color: darken(rgba(152, 133, 89), 25%);
 
 .gl-container {
@@ -38,8 +39,11 @@ $color: darken(rgba(152, 133, 89), 25%);
 }
 
 .gl-message {
-  padding: 5px 0;
-  font-size: 20px;
+  padding: 6px 15px;
+  font-size: 16px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background: darken($bgPrimaryRGB, 10%);
 }
 
 .gl-message-from {
@@ -51,6 +55,7 @@ $color: darken(rgba(152, 133, 89), 25%);
 .gl-input {
   width: 100%;
   line-height: 40px;
+  padding: 6px 0;
   border: 0;
   border-top: 2px solid $color;
   border-bottom: 2px solid $color;

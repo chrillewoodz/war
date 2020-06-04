@@ -21,7 +21,8 @@ const fn = async function(socket, ev, sessions) {
     if (cachedSessionId) {
       session = findSession(_sessions, cachedSessionId);
     }
-    else {
+
+    if (!session) {
       session = createSession(ev.clientId, ev.settings);
     }
 
@@ -35,7 +36,7 @@ const fn = async function(socket, ev, sessions) {
     }
   }
   catch (err) {
-    socket.emit('internal_error', getResponseObject(500, null, err.message));
+    socket.emit('internal_error', getResponseObject(500, null, err.message, 'on-host'));
   }
 }
 

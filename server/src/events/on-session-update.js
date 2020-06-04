@@ -1,9 +1,14 @@
 const storage = require('node-persist');
+const getResponseObject = require('../helpers/get-response-object');
 
 /**
  * Updates a session with new state and returns a new session object
  * @param {*} session
- * @param {*} newState
+ * @param {{
+ *   sessionId: String
+ *   newState: *
+ * }} ev
+ * @param {Array} sessions
  */
 const fn = function(socket, ev, sessions) {
 
@@ -27,11 +32,11 @@ const fn = function(socket, ev, sessions) {
       _sessions = { ..._sessions, [ev.sessionId]: _session };
 
       storage.setItem('sessions', _sessions);
-      socket.emit('session_updated', _sessions[ev.sessionId]);
+      socket.emit('session_updated', getResponseObject(200, _sessions[ev.sessionId]));
     }
   }
   catch(err) {
-    socket.emit('internal_error', getResponseObject(500, null, err.message));
+    socket.emit('internal_error', getResponseObject(500, null, err.message, 'on-session-update'));
   }
 }
 
