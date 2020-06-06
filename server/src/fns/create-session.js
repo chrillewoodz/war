@@ -14,14 +14,16 @@ const fn = function(clientId, settings) {
 
   return {
     sessionId: v4(),
-    started: false,
-    paused: false,
     settings,
     state: {
+      started: false,
+      paused: false,
       players: {
         [clientId]: initialUserState(clientId)
       },
-      logs: []
+      logs: [],
+      areas: null,
+      areasReady: false
     }
   };
 }

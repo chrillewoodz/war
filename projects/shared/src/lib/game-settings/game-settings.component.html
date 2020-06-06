@@ -1,8 +1,8 @@
 <div class="common-container gs-container" [ngClass]="{open: isOpen}" (clickOutside)="close()" [exceptions]="[gsToggle]">
   <h1 class="gs-title gs-separator">Settings</h1>
   <ul class="gs-menu">
-    <li class="gs-separator gs-item">Resign</li>
-    <li class="gs-separator gs-item">Quit</li>
+    <li class="gs-separator gs-item" (click)="resign()">Resign</li>
+    <li class="gs-separator gs-item" (click)="quit()">Quit</li>
   </ul>
   <h6>Session id:</h6>
   <p>{{sessionId}}</p>

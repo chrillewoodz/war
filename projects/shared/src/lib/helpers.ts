@@ -1,12 +1,11 @@
-import { factionsAsArray } from './factions';
-import { SocketEvent } from './interfaces';
-import { throwError, Observable } from 'rxjs';
+import { SocketResponse, Session, PipeResult } from './interfaces';
+import { throwError, Observable, ObservableInput } from 'rxjs';
 
 export function exhaust(p: never) {};
 
-export function checkSocketEventResponse(ev: SocketEvent) {
+export function checkSocketEventResponse(ev: SocketResponse) {
 
-  const evObservable = new Observable<SocketEvent>((observer) => observer.next(ev));
+  const evObservable = new Observable<SocketResponse>((observer) => observer.next(ev));
 
   switch (ev.status) {
     case 500: return throwError(ev.err);
@@ -14,26 +13,8 @@ export function checkSocketEventResponse(ev: SocketEvent) {
   }
 }
 
-export function attachFactions(session) {
-
-  const _session = session;
-  let i = 0;
-
-  for (const player in _session.state.players) {
-    const _player = { ..._session.state.players[player], faction: factionsAsArray[i] };
-    _session.state.players[player] = _player;
-    i++;
-  }
-
-  return _session;
-}
-
-export function getSelf(session, clientId: string) {
-
-  for (const player in session.state.players) {
-
-    if (player === clientId) {
-      return session.state.players[player];
-    }
-  }
+export function getLastPlayerWhoJoined(session: Session) {
+  return Object.keys(session.state.players)
+    .map((id) => session.state.players[id])
+    .pop();
 }

@@ -10,7 +10,7 @@ const getResponseObject = require('../helpers/get-response-object');
  * }} ev
  * @param {Array} sessions
  */
-const fn = function(socket, ev, sessions) {
+const fn = function(socket, ev, sessions, event) {
 
   try {
 
@@ -32,7 +32,7 @@ const fn = function(socket, ev, sessions) {
       _sessions = { ..._sessions, [ev.sessionId]: _session };
 
       storage.setItem('sessions', _sessions);
-      socket.emit('session_updated', getResponseObject(200, _sessions[ev.sessionId]));
+      socket.emit(event, getResponseObject(200, _sessions[ev.sessionId]));
     }
   }
   catch(err) {

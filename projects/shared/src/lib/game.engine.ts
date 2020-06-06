@@ -1,7 +1,16 @@
+
 import { Injectable } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
+import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
 import config from './game.config.json';
+import { SocketApi } from './socket.api';
+
+export enum GameEngineEvent {
+  Start,
+  Ready
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +18,12 @@ import config from './game.config.json';
 
 export class GameEngine {
 
-  constructor() {
+  private start = new ReplaySubject<boolean>(1);
+  private start$ = this.start.asObservable();
+  private ready = new ReplaySubject<boolean>(1);
+  private ready$ = this.ready.asObservable();
+
+  constructor(private cache: GameCache, private socketApi: SocketApi) {
 
     // for (let i = 0; i < 26; i++) {
     //   console.log('greater', `26 vs ${i}`, this.getWinPercentage(26, i));
@@ -18,6 +32,29 @@ export class GameEngine {
     // for (let i = 26; i > 0; i--) {
     //   console.log('lesser', `${i} vs 26`, this.getWinPercentage(i, 26));
     // }
+  }
+
+  listen(event: GameEngineEvent) {
+
+    switch(event) {
+      case GameEngineEvent.Start: return this.start$;
+      case GameEngineEvent.Ready: return this.ready$;
+      default: exhaust(event);
+    }
+  }
+
+  setReadyState(state: boolean) {
+    this.ready.next(state);
+  }
+
+  startGame() {
+
+    this.socketApi.preUpdate(true, {
+      started: true
+    })
+    .subscribe(() => {
+      this.start.next(true);
+    })
   }
 
   doAction(action: Action) {

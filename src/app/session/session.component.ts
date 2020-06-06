@@ -1,23 +1,19 @@
 import { Component, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { interval, timer, Subscription, throwError, combineLatest, merge } from 'rxjs';
-import { takeUntil, map, startWith, take, tap, switchMap, first, finalize } from 'rxjs/operators';
+import { timer, Subscription, merge, of } from 'rxjs';
+import { takeUntil, map, take, tap, switchMap, catchError } from 'rxjs/operators';
 
 import {
   MapEngine,
   MapEuropeComponent,
-  MapEuropeConnections,
-  Sweden,
-  China,
-  Somalia,
-  Germany,
-  SocketEvent,
+  SocketResponse,
   GameCache,
-  PipeResult,
-  factionsAsArray,
-  attachFactions,
-  getSelf,
   Session,
-  Player
+  Player,
+  Area,
+  GameEngine,
+  GameEngineEvent,
+  SocketApi,
+  PipeResult
 } from 'shared';
 
 import { Socket } from 'ngx-socket-io';
@@ -121,59 +117,88 @@ export class SessionComponent implements OnDestroy {
   constructor(
     private cd: ChangeDetectorRef,
     private cache: GameCache,
+    private gameEngine: GameEngine,
     private mapEngine: MapEngine,
-    private router: Router,
-    private socket: Socket
+    private socket: Socket,
+    private socketApi: SocketApi
   ) {
-
-    const areasSub = this.mapEngine.areas$.subscribe((areas) => {
-      this.areas = areas;
-    });
 
     const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
       this.activeAreas = activeAreas;
     });
 
-    this.socket.emit('get', { sessionId: this.cache.sessionId });
+    const sessionSub = merge(
+      this.socketApi.get(true),
+      this.socketApi.join(false),
+      this.socketApi.quit(false),
+      this.socketApi.preUpdate(false)
+    )
+    .pipe(
+      takeUntil(this.gameEngine.listen(GameEngineEvent.Start)),
+      switchMap((result) => {
 
-    const sessionSub =
-      merge(
-        this.socket.fromEvent<SocketEvent>('get_success'),
-        this.socket.fromEvent<SocketEvent>('join_success'),
-        this.socket.fromEvent<SocketEvent>('session_updated'),
-        this.socket.fromEvent<SocketEvent>('internal_error')
-      )
-      .pipe(
-        map((response) => {
-          console.log(response);
+        if (result.session.state.areasReady) {
+          return of(result);
+        }
 
-          switch (response.status) {
-            case 200: return response;
-            // TODO: Validate that this is working
-            default: throwError(response.err).pipe(
-              first(),
-              finalize(() => {
-                this.router.navigateByUrl('');
-              })
-            );
-          }
-        }),
-        map((response) => attachFactions(response.res)),
-        map((session) => {
-          return { state: session, self: getSelf(session, this.cache.clientId) }
-        })
-      )
-      .subscribe((session: PipeResult) => {
-        this.session = session.state;
-        this.self = session.self;
-        console.log(this.session, this.self);
-      }, (err) => {
-        console.log(err);
-      });
+        return this.mapEngine.areas$.pipe(
+          map<HTMLElement[], Area[]>((areas) => areas.map((area) => {
+            return {
+              areaId: area.dataset.areaId,
+              state: {
+                occupiedBy: null,
+                troops: {
+                  soldiers: null,
+                  horses: null,
+                  gatlingGuns: null,
+                  spies: null
+                }
+              }
+            };
+          })),
+          map<Area[], PipeResult>((areas: Area[]) => {
 
-    this.subscriptions.add(areasSub);
+            return {
+              ...result, // self is included here
+              session: {
+                ...result.session,
+                state: {
+                  ...result.session.state,
+                  areas,
+                  areasReady: true
+                }
+              }
+            };
+          }),
+          tap((result) => this.update(result.session))
+        );
+      })
+    )
+    .subscribe((result) => {
+      this.session = result.session;
+      this.self = result.self;
+
+      if (Object.keys(result.session.state.players).length >= 2) {
+        this.gameEngine.setReadyState(true);
+      }
+
+      console.log(this.session, this.self);
+    }, (err) => {
+      console.log(err);
+    });
+
+    const ongoingSessionSub = merge(
+      this.socketApi.quit(false),
+      this.socketApi.update(false)
+    )
+    .subscribe((result) => {
+      this.session = result.session;
+      this.self = result.self;
+    });
+
     this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
+    this.subscriptions.add(ongoingSessionSub);
   }
 
   ngOnDestroy() {
@@ -205,8 +230,8 @@ export class SessionComponent implements OnDestroy {
     this.cd.detectChanges();
   }
 
-  update() {
-    this.socket.emit('session_update', { sessionId: this.session.sessionId, newState: this.session.state });
+  update(session) {
+    this.socket.emit('pre_game_update', { sessionId: session.sessionId, newState: session.state });
     console.log('updating..')
   }
 }

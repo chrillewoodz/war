@@ -2,8 +2,7 @@ import { GameLoggerService } from './game-logger.service';
 import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
-import { Player } from '../players/players.types';
-import { Session } from '../interfaces';
+import { Player, Session } from '../interfaces';
 
 @Component({
   selector: 'game-logger',

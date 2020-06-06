@@ -1,5 +1,5 @@
 import { AreaStatsService } from './area-stats.service';
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,15 +8,23 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./area-information.component.scss']
 })
 export class AreaInformationComponent implements OnDestroy {
-  @Input() areas: any[];
+  @Input() set areas (areas: any[]) {
+    this._areas = areas;
+    this.cd.detectChanges();
+  };
   @Input() activeAreas: any[];
 
   public isOpen = false;
   public information = null;
 
+  get areas() {
+    return this._areas;
+  }
+
+  private _areas;
   private sub: Subscription;
 
-  constructor(private as: AreaStatsService) {
+  constructor(private as: AreaStatsService, private cd: ChangeDetectorRef) {
 
     this.sub = this.as.emitter$.subscribe((event: any) => {
       this.isOpen = event.shouldOpen;

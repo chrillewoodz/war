@@ -1,9 +1,4 @@
-export interface Faction {
-  name: string;
-  colorRGB: string;
-  colorRGBA: string;
-  faction: string;
-}
+import { Faction } from './interfaces';
 
 export const Sweden: Faction = {
   name: 'Gustav Vasa',

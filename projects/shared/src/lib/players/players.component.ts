@@ -1,5 +1,6 @@
+import { GameEngine, GameEngineEvent } from './../game.engine';
 import { Component, Input } from '@angular/core';
-import { Player } from './players.types';
+import { Player } from '../interfaces';
 
 @Component({
   selector: 'players',
@@ -17,11 +18,17 @@ export class PlayersComponent {
     }
   };
 
+  public ready$ = this.gameEngine.listen(GameEngineEvent.Ready);
+  public start$ = this.gameEngine.listen(GameEngineEvent.Start);
   public _players: Player[] = [];
 
   get players() {
     return this._players;
   }
 
-  constructor() {}
+  constructor(private gameEngine: GameEngine) {}
+
+  startGame() {
+    this.gameEngine.startGame();
+  }
 }

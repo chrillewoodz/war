@@ -13,7 +13,7 @@ const fn = function(sessions, id) {
    */
   function filterBy(session) {
 
-    const hasStarted = session.hasStarted;
+    const hasStarted = session.state.started;
     const isPrivate = session.settings.private;
     const isFull = Object.keys(session.state.players).length === session.settings.maxPlayers;
 
