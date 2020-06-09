@@ -177,14 +177,28 @@ export class SessionComponent implements OnDestroy {
     .subscribe((result) => {
       this.session = result.session;
       this.self = result.self;
+      console.log(this.self);
 
-      if (Object.keys(result.session.state.players).length >= 2) {
-        this.gameEngine.setReadyState(true);
+      const playersInGame = Object.keys(this.session.state.players);
+      const minPlayers = this.session.settings.minPlayers;
+
+      if (playersInGame.length >= minPlayers) {
+
+        const allPlayersAreReady = playersInGame
+          .filter((clientId) => {
+
+            if (!this.session.state.players[clientId].state.ready) {
+              return true;
+            }
+          }).length === 0;
+
+        if (allPlayersAreReady && !this.session.state.started) {
+          console.log('starting game...')
+          this.gameEngine.startGame();
+        }
       }
-
-      console.log(this.session, this.self);
     }, (err) => {
-      console.log(err);
+      console.error(err);
     });
 
     const ongoingSessionSub = merge(

@@ -1,25 +1,34 @@
 @import './src/_variables';
 
-.btn-start-game {
+.btn-ready {
+  position: relative;
   width: 100%;
   margin-bottom: 10px;
+  background-color: green;
+  color: white;
+
+  .ready-icon {
+    position: absolute;
+    right: 20px;
+  }
 }
 
 .players-container {
-  width: 260px;
+  width: 300px;
 }
 
 .player {
   display: flex;
   align-items: center;
   line-height: 50px;
+  padding: 0 15px;
+  background-color: #8c7855;
 
   &.empty-player {
     opacity: 0.5;
   }
 
   &.self {
-    padding: 0 15px;
     background-color: darken($bgPrimaryRGB, 10%);
   }
 

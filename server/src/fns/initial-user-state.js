@@ -13,7 +13,8 @@ const fn = function(clientId) {
     state: {
       connected: true,
       resigned: false,
-      quit: false
+      quit: false,
+      ready: false
     }
   }
 }

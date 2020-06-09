@@ -1,30 +1,33 @@
-const addFactionToUser = require('../fns/add-faction-to-user');
-const createSession = require('../fns/create-session');
-const findSession = require('../fns/find-sessions');
-const setSessions = require('../helpers/set-sessions');
-const getResponseObject = require('../helpers/get-response-object');
+const SocketError = require('../classes/socket-error');
+const SocketResponse = require('../classes/socket-response');
+const Session = require('../classes/session');
+const SessionsStorage = require('../classes/sessions-storage');
+const SocketEvents = require('../classes/socket-events');
+const events = new SocketEvents();
 
 /**
  *
  * @param {SocketIO.Socket} socket
- * @param {{clientId: String}} ev
- * @param {Function} onSessionsShouldUpdate
+ * @param {{
+ *   faction: *
+ *   clientId: String
+ * }} ev
+ * @param {SessionsStorage} storage
  */
-const fn = async function(socket, ev, sessions) {
-
-  const _sessions = {...sessions};
+const fn = async function(socket, ev, storage) {
 
   try {
 
-    let session = createSession(ev.clientId, ev.settings);
-        session = addFactionToUser(session, ev.clientId, ev.faction);
+    const session = new Session({ settings: ev.settings });
+          session.addPlayer(ev.clientId, ev.faction);
 
-    _sessions[session.sessionId] = session;
-    await setSessions(_sessions);
-    socket.emit('host_success', getResponseObject(200, session));
+    await storage.set(session);
+
+    socket.emit(events.HOST_SUCCESS, new SocketResponse(200, session));
   }
   catch (err) {
-    socket.emit('internal_error', getResponseObject(500, null, err.message, 'on-host'));
+    console.error(err);
+    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
   }
 }
 

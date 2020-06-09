@@ -6,11 +6,12 @@ export interface Faction {
 }
 
 export interface Player {
-  id: string;
+  clientId: string;
   state: {
     connected: boolean;
     resigned: boolean;
     quit: boolean;
+    ready: boolean;
   };
   faction: {
     name: string;
@@ -39,13 +40,16 @@ export interface Area {
 
 export interface SessionSettings {
   readonly private: boolean;
+  readonly minPlayers: number;
   readonly maxPlayers: number;
 }
 
 export interface SessionState {
   started: boolean;
   paused: boolean;
-  players: Player;
+  players: {
+    [clientId: string]: Player
+  };
   logs: any[];
   areas: Area[];
   areasReady: boolean;
@@ -59,8 +63,8 @@ export interface Session {
 
 export interface SocketResponse {
   status: number;
-  res: Session;
-  err: string;
+  data?: Session;
+  err?: string;
 }
 
 export interface PipeResult {

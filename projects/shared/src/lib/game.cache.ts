@@ -21,7 +21,7 @@ export class GameCache {
     return sessionStorage.getItem('sessionId');
   }
 
-  get session() {
+  get session(): Session {
     return JSON.parse(sessionStorage.getItem('session'));
   }
 

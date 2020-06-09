@@ -13,6 +13,8 @@ import { Bound } from './decorators';
 
 export class SocketApi {
 
+  private socketEvents = new SocketEvents();
+
   constructor(
     private cache: GameCache,
     private socket: Socket
@@ -23,12 +25,12 @@ export class SocketApi {
 
     if (emitToServer) {
 
-      this.socket.emit(SocketEvents.GET, {
+      this.socket.emit(this.socketEvents.GET, {
         sessionId: this.cache.sessionId
       });
     }
 
-    return this.socketResponse$(SocketEvents.GET_SUCCESS);
+    return this.socketResponse$(this.socketEvents.GET_SUCCESS);
   }
 
   join(emitToServer: boolean, faction?: Faction, sessionId?: string) {
@@ -39,16 +41,14 @@ export class SocketApi {
         throw new Error('Faction must be provided');
       }
 
-      this.socket.emit(SocketEvents.JOIN, {
+      this.socket.emit(this.socketEvents.JOIN, {
         clientId: this.cache.clientId,
         sessionId: sessionId,
         faction
       });
     }
 
-    return this.socketResponse$(SocketEvents.JOIN_SUCCESS).pipe(
-      tap((result) => this.cache.setSessionId(result.session.sessionId))
-    );
+    return this.socketResponse$(this.socketEvents.JOIN_SUCCESS);
   }
 
   host(emitToServer: boolean, faction?: Faction, settings?: SessionSettings) {
@@ -59,29 +59,40 @@ export class SocketApi {
         throw new Error('Faction must be provided');
       }
 
-      this.socket.emit(SocketEvents.HOST, {
+      this.socket.emit(this.socketEvents.HOST, {
         clientId: this.cache.clientId,
         faction,
         settings
       });
     }
 
-    return this.socketResponse$(SocketEvents.HOST_SUCCESS).pipe(
-      tap((result) => this.cache.setSessionId(result.session.sessionId))
-    );
+    return this.socketResponse$(this.socketEvents.HOST_SUCCESS);
   }
 
   quit(emitToServer: boolean) {
 
     if (emitToServer) {
 
-      this.socket.emit(SocketEvents.QUIT, {
+      this.socket.emit(this.socketEvents.QUIT, {
         sessionId: this.cache.sessionId,
         clientId: this.cache.clientId
       });
     }
 
-    return this.socketResponse$(SocketEvents.QUIT_SUCCESS);
+    return this.socketResponse$(this.socketEvents.QUIT_SUCCESS);
+  }
+
+  ready(emitToServer: boolean) {
+
+    if (emitToServer) {
+
+      this.socket.emit(this.socketEvents.READY, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    return this.socketResponse$(this.socketEvents.PRE_UPDATE_SUCCESS);
   }
 
   preUpdate(emitToServer: boolean, newState?: Partial<SessionState>) {
@@ -92,16 +103,16 @@ export class SocketApi {
         throw new Error('newState was either empty or not provided');
       }
 
-      this.socket.emit(SocketEvents.PRE_UPDATE, {
+      this.socket.emit(this.socketEvents.PRE_UPDATE, {
         sessionId: this.cache.sessionId,
         newState: {
           ...this.cache.session.state,
-          newState
+          ...newState
         }
       });
     }
 
-    return this.socketResponse$(SocketEvents.PRE_UPDATE_SUCCESS);
+    return this.socketResponse$(this.socketEvents.PRE_UPDATE_SUCCESS);
   }
 
   update(emitToServer: boolean, newState?: Partial<SessionState>) {
@@ -112,27 +123,30 @@ export class SocketApi {
         throw new Error('newState was either empty or not provided');
       }
 
-      this.socket.emit(SocketEvents.UPDATE, {
+      this.socket.emit(this.socketEvents.UPDATE, {
         sessionId: this.cache.sessionId,
         newState: {
           ...this.cache.session.state,
-          newState
+          ...newState
         }
       });
     }
 
-    return this.socketResponse$(SocketEvents.UPDATE_SUCCESS);
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
   stats(emitToServer: boolean) {
 
     if (emitToServer) {
-      this.socket.emit(SocketEvents.STATS);
+      this.socket.emit(this.socketEvents.STATS);
     }
 
     // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
     // when compared to session-specific ones
-    return this.socket.fromEvent(SocketEvents.STATS_SUCCESS);
+    return this.socket.fromEvent(this.socketEvents.STATS_SUCCESS).pipe(
+      map(this.onSocketResponse),
+      catchError(this.onSocketError)
+    );
   }
 
   @Bound
@@ -151,7 +165,7 @@ export class SocketApi {
     console.log(response);
 
     switch (response.status) {
-      case 200: return response.res;
+      case 200: return response.data;
       default: throw response.err;
     }
   }
@@ -164,7 +178,7 @@ export class SocketApi {
 
   @Bound
   private getPipeResult(session: Session): PipeResult {
-    console.log(this)
+
     return {
       session,
       self: this.getSelf(session, this.cache.clientId)
@@ -175,14 +189,18 @@ export class SocketApi {
 
     return merge(
       this.socket.fromEvent(event),
-      this.socket.fromEvent(SocketEvents.INTERNAL_ERROR)
+      this.socket.fromEvent(this.socketEvents.INTERNAL_ERROR)
     )
     // VERY IMPORTANT: Remember to use @Bound when passed the callback(s)
     // directly into the pipe operator functions.
     .pipe(
       map(this.onSocketResponse),
       catchError(this.onSocketError),
-      map(this.getPipeResult)
-    )
+      map(this.getPipeResult),
+      tap((result) => {
+        this.cache.setSessionId(result.session.sessionId);
+        this.cache.setSession(result.session);
+      })
+    );
   }
 }

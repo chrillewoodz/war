@@ -8,8 +8,10 @@ const fn = function(sessions, id) {
     throw new Error('Must provide sessions');
   }
 
-  return Object.keys(sessions)
-    .map((sessionId) => sessions[sessionId])
+  const _sessions = {...sessions};
+
+  return Object.keys(_sessions)
+    .map((sessionId) => _sessions[sessionId])
     .find((session) => session.sessionId === id);
 }
 

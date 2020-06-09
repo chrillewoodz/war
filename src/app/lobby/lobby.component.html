@@ -22,7 +22,7 @@
       </div>
       <div class="col-12">
         <h6>Active users</h6>
-        <p>{{(stats$ | async)?.active}}</p>
+        <p>{{(stats$ | async)?.connections}}</p>
       </div>
     </div>
   </div>
@@ -33,6 +33,11 @@
     <div class="lobby-padding checkbox-group">
       <input class="checkbox" id="private" type="checkbox" formControlName="private">
       <label for="private">Private game</label>
+    </div>
+    <div class="lobby-padding">
+      <label class="label" for="min-players">Minimum number of players</label>
+      <input id="min-players" type="number" placeholder="2-4" formControlName="minPlayers">
+      <p class="error error-msg" *ngIf="settings.get('minPlayers').invalid">Must be between 2 and 4</p>
     </div>
     <div class="lobby-padding">
       <label class="label" for="max-players">Maximum number of players</label>

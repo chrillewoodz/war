@@ -2,7 +2,6 @@
   const app = require('express')();
   const http = require('http').Server(app);
   const io = require('socket.io')(http);
-  const storage = require('node-persist');
 
   // events
   const onGet = require('./events/on-get');
@@ -10,37 +9,39 @@
   const onJoin = require('./events/on-join');
   const onSessionUpdate = require('./events/on-session-update');
   const onQuit = require('./events/on-quit');
+  const onReady = require('./events/on-ready');
+  const onStats = require('./events/on-stats');
 
-  // fns
+  // Classes
+  const SessionsStorage = require('./classes/sessions-storage');
+  const Stats = require('./classes/stats');
+  const SocketEvents = require('./classes/socket-events');
+  const events = new SocketEvents();
 
-  // Helpers
-  const getSessions = require('./helpers/get-sessions');
+  // Initiate storage class
+  const sessionsStorage = new SessionsStorage();
+        sessionsStorage.init();
 
-  // Initiate data persistance
-  await storage.init();
-
-  let active = 0;
+  // TODO: Fix spamming connections bug
+  // perhaps by sending cached id at connection
+  const stats = new Stats();
 
   io.on('connect', socket => {
 
-    active++;
+    stats.connected();
 
-    socket.on('stats', () => {
-      io.emit('stats_success', {
-        active
-      });
-    });
-
-    socket.on('pre_update', async ev => onSessionUpdate(io, ev, await getSessions(), 'pre_update'));
-    socket.on('update', async ev => onSessionUpdate(io, ev, await getSessions(), 'update'));
-    socket.on('get', async ev => onGet(socket, ev, await getSessions()));
-    socket.on('host', async ev => onHost(socket, ev, await getSessions()));
-    socket.on('join', async ev => onJoin(io, ev, await getSessions()));
-    socket.on('quit', async ev => onQuit(io, ev, await getSessions()));
+    socket.on('stats', () => onStats(io, stats));
+    socket.on('pre_update', ev => onSessionUpdate(io, ev, sessionsStorage, events.PRE_UPDATE_SUCCESS));
+    socket.on('update', ev => onSessionUpdate(io, ev, sessionsStorage, events.UPDATE_SUCCESS));
+    socket.on('get', ev => onGet(socket, ev, sessionsStorage));
+    socket.on('host', ev => onHost(socket, ev, sessionsStorage));
+    socket.on('join', ev => onJoin(io, ev, sessionsStorage));
+    socket.on('quit', ev => onQuit(io, ev, sessionsStorage));
+    socket.on('ready', ev => onReady(io, ev, sessionsStorage));
 
     socket.on('disconnect', socket => {
-      active--;
-      io.emit('activeUsers', active);
+      stats.disconnected();
+      io.emit('stats_success');
     });
   });
 

@@ -6,6 +6,7 @@ import { Action } from './enums';
 import { exhaust } from './helpers';
 import config from './game.config.json';
 import { SocketApi } from './socket.api';
+import { first } from 'rxjs/operators';
 
 export enum GameEngineEvent {
   Start,
@@ -43,8 +44,18 @@ export class GameEngine {
     }
   }
 
-  setReadyState(state: boolean) {
-    this.ready.next(state);
+  setReadyState() {
+
+    this.socketApi.ready(true)
+      .pipe(
+        first()
+      )
+      .subscribe((result) => {
+        this.ready.next(result.session.state.players[this.cache.clientId].state.ready);
+      }, (err) => {
+        // TODO: Handle error
+      }
+    );
   }
 
   startGame() {
@@ -52,9 +63,14 @@ export class GameEngine {
     this.socketApi.preUpdate(true, {
       started: true
     })
-    .subscribe(() => {
-      this.start.next(true);
-    })
+    .pipe(
+      first()
+    )
+    .subscribe((result) => {
+      this.start.next(result.session.state.started);
+    }, (err => {
+      // TODO: Handle error
+    }));
   }
 
   doAction(action: Action) {

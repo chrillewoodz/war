@@ -1,6 +1,6 @@
-import { GameEngine, GameEngineEvent } from './../game.engine';
 import { Component, Input } from '@angular/core';
-import { Player } from '../interfaces';
+import { Player, Session } from '../interfaces';
+import { GameEngine } from '../game.engine';
 
 @Component({
   selector: 'players',
@@ -9,17 +9,15 @@ import { Player } from '../interfaces';
 })
 
 export class PlayersComponent {
-  @Input() self;
+  @Input() session: Session;
+  @Input() self: Player;
   @Input() set players(players: Player[]) {
 
     if (players) {
       this._players = Object.keys(players).map((player) => players[player]);
-      console.log(this._players);
     }
   };
 
-  public ready$ = this.gameEngine.listen(GameEngineEvent.Ready);
-  public start$ = this.gameEngine.listen(GameEngineEvent.Start);
   public _players: Player[] = [];
 
   get players() {
@@ -28,7 +26,7 @@ export class PlayersComponent {
 
   constructor(private gameEngine: GameEngine) {}
 
-  startGame() {
-    this.gameEngine.startGame();
+  ready() {
+    this.gameEngine.setReadyState();
   }
 }

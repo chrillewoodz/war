@@ -3,7 +3,7 @@
   <timer [total]="timePerRound" [timer$]="timer$" (ranOut)="endTurn()"></timer>
 
   <div class="game-hud">
-    <players [players]="session?.state.players" [self]="self"></players>
+    <players [session]="session" [players]="session?.state.players" [self]="self"></players>
     <area-information [areas]="session?.state.areas" [activeAreas]="activeAreas"></area-information>
     <game-logger [player]="self" [session]="session" (onNewLog)="update(session)"></game-logger>
   </div>

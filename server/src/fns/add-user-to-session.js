@@ -7,7 +7,7 @@ const initialUserState = require('./initial-user-state');
  */
 const fn = function(session, clientId) {
 
-  const _session = session;
+  const _session = {...session};
 
   _session.state.players[clientId] = initialUserState(clientId);
 

@@ -24,15 +24,17 @@ const fn = function(sessions, id) {
     throw new Error('Must provide sessions');
   }
 
+  const _sessions = {...sessions};
+
   if (id) {
-    return Object.keys(sessions)
-      .map((sessionId) => sessions[sessionId])
+    return Object.keys(_sessions)
+      .map((sessionId) => _sessions[sessionId])
       .filter(filterBy)
       .find((session) => session.sessionId === id);
   }
 
-  return Object.keys(sessions)
-    .map((sessionId) => sessions[sessionId])
+  return Object.keys(_sessions)
+    .map((sessionId) => _sessions[sessionId])
     .filter(filterBy)[0];
 }
 

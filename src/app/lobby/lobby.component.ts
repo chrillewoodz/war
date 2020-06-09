@@ -28,6 +28,7 @@ export class LobbyComponent {
 
   public settings = this.fb.group({
     private: [false],
+    minPlayers: [2, [Validators.required, Validators.min(2), Validators.max(4)]],
     maxPlayers: [4, [Validators.required, Validators.min(2), Validators.max(4)]]
   });
 
@@ -77,11 +78,9 @@ export class LobbyComponent {
           first()
         )
         .subscribe((e) => {
-          console.log(e);
           this.modalApi.close('host-settings');
           this.router.navigateByUrl('session');
         }, (e) => {
-          console.log(e);
           this.hostError.next(e);
         }
       );

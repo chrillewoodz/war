@@ -5,7 +5,7 @@
  */
 const fn = function(session, clientId, faction) {
 
-  const _session = session;
+  const _session = {...session};
 
   _session.state.players[clientId].faction = faction;
 

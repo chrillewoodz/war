@@ -1,5 +1,9 @@
-const storage = require('node-persist');
-const getResponseObject = require('../helpers/get-response-object');
+const SocketError = require('../classes/socket-error');
+const SocketResponse = require('../classes/socket-response');
+const Session = require('../classes/session');
+const SessionsStorage = require('../classes/sessions-storage');
+const SocketEvents = require('../classes/socket-events');
+const events = new SocketEvents();
 
 /**
  * Updates a session with new state and returns a new session object
@@ -8,17 +12,16 @@ const getResponseObject = require('../helpers/get-response-object');
  *   sessionId: String
  *   newState: *
  * }} ev
- * @param {Array} sessions
+ * @param {SessionsStorage} storage
  */
-const fn = function(socket, ev, sessions, event) {
-
+const fn = async function(socket, ev, storage, event) {
+  console.log(ev);
   try {
 
-    // Make it immutable
-    let _sessions = { ...sessions };
-
-    // Get the current session
-    const session = _sessions[ev.sessionId];
+    /**
+     * @type {Session}
+     */
+    const session = await storage.getById(ev.sessionId);
 
     if (!session) {
       throw new Error('No game session with that id');
@@ -26,17 +29,17 @@ const fn = function(socket, ev, sessions, event) {
     else {
 
       // Replace current session state with the new state
-      const _session = { ...session, state: { ...ev.newState } };
+      session.state = ev.newState;
 
       // Re-set the session in the immutable sessions object
-      _sessions = { ..._sessions, [ev.sessionId]: _session };
+      await storage.set(session);
 
-      storage.setItem('sessions', _sessions);
-      socket.emit(event, getResponseObject(200, _sessions[ev.sessionId]));
+      socket.emit(event, new SocketResponse(200, session));
     }
   }
   catch(err) {
-    socket.emit('internal_error', getResponseObject(500, null, err.message, 'on-session-update'));
+    console.error(err);
+    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
   }
 }
 

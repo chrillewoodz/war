@@ -1,3 +1,6 @@
+const storage = require('node-persist');
+const getSessionById = require('../fns/get-session-by-id');
+const getResponseObject = require('../helpers/get-response-object');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
@@ -25,11 +28,17 @@ const fn = async function(socket, ev, storage) {
 
     if (session) {
 
-      session.playerQuit(ev.clientId);
+      if (!session.state.started) {
 
-      await storage.set(session);
+        session.playerReady(ev.clientId);
 
-      socket.emit(events.QUIT_SUCCESS, new SocketResponse(200, session));
+        await storage.set(session);
+
+        socket.emit(events.PRE_UPDATE_SUCCESS, new SocketResponse(200, session));
+      }
+      else {
+        throw new Error('Game has already started');
+      }
     }
     else {
       throw new Error('No game session with that id');

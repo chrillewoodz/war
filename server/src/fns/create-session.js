@@ -24,7 +24,8 @@ const fn = function(clientId, settings) {
       logs: [],
       areas: null,
       areasReady: false
-    }
+    },
+    createdAt: new Date().toISOString()
   };
 }
 

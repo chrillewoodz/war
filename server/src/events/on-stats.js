@@ -1,25 +1,22 @@
+const Stats = require('../classes/stats');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
-const SessionsStorage = require('../classes/sessions-storage');
 const SocketEvents = require('../classes/socket-events');
 const events = new SocketEvents();
 
 /**
  *
  * @param {SocketIO.Socket} socket
- * @param {{sessionId: String}} ev
- * @param {SessionsStorage} storage
+ * @param {Stats} statsInstance
  */
-const fn = async function(socket, ev, storage) {
+const fn = function(socket, statsInstance) {
 
   try {
-
-    await storage.remove(ev.sessionId);
-
-    socket.emit(events.DELETE_SUCCESS, new SocketResponse(200, null));
+    const stats = statsInstance.get();
+    socket.emit(events.STATS_SUCCESS, new SocketResponse(200, stats));
   }
   catch (err) {
-    console.error(err);
+    console.log(err);
     socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
   }
 }
