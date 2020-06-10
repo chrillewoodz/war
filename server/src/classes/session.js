@@ -19,8 +19,8 @@ class Session {
     };
   }
 
-  addPlayer(clientId, faction) {
-    this.state.players[clientId] = new Player(clientId, faction);
+  addPlayer(clientId, extras) {
+    this.state.players[clientId] = new Player(clientId, extras);
   }
 
   playerReady(clientId) {

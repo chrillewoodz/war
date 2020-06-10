@@ -3,7 +3,7 @@
   const http = require('http').Server(app);
   const io = require('socket.io')(http);
 
-  // events
+  // Events
   const onGet = require('./events/on-get');
   const onHost = require('./events/on-host');
   const onJoin = require('./events/on-join');
@@ -18,14 +18,15 @@
   const SocketEvents = require('./classes/socket-events');
   const events = new SocketEvents();
 
-  // Initiate storage class
+  // Global instances
   const sessionsStorage = new SessionsStorage();
-        sessionsStorage.init();
+  const stats = new Stats();
+
+  // Initiate storage
+  sessionsStorage.init();
 
   // TODO: Fix spamming connections bug
   // perhaps by sending cached id at connection
-  const stats = new Stats();
-
   io.on('connect', socket => {
 
     stats.connected();
@@ -39,7 +40,7 @@
     socket.on('quit', ev => onQuit(io, ev, sessionsStorage));
     socket.on('ready', ev => onReady(io, ev, sessionsStorage));
 
-    socket.on('disconnect', socket => {
+    socket.on('disconnect', () => {
       stats.disconnected();
       io.emit('stats_success');
     });

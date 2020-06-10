@@ -62,9 +62,9 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
     if (this.message.valid) {
 
       this.gls.log({
-        color: this.player.faction.colorRGB,
+        color: this.player.extras.faction.colorRGB,
         message: this.message.value,
-        from: this.player.faction.name
+        from: this.player.extras.faction.name
       });
 
       this.message.setValue('');

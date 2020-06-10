@@ -17,7 +17,7 @@ const fn = function(socket, statsInstance) {
   }
   catch (err) {
     console.log(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
+    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

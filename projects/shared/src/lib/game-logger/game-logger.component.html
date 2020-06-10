@@ -5,6 +5,6 @@
       <p class="gl-message-text">{{msg.message}}</p>
     </li>
   </ul>
-  <input class="gl-input" [ngStyle]="{color: player?.faction.colorRGB}" [formControl]="message" placeholder="Write something" (keydown.enter)="submit($event)">
+  <input class="gl-input" [ngStyle]="{color: player?.extras.faction.colorRGB}" [formControl]="message" placeholder="Write something" (keydown.enter)="submit($event)">
   <p class="gl-input-error" *ngIf="message.invalid">The message is too long</p>
 </div>

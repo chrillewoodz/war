@@ -1,8 +1,12 @@
+export interface Extras {
+  faction: Faction;
+}
+
 export interface Faction {
   name: string;
   colorRGB: string;
   colorRGBA: string;
-  faction: string;
+  factionName: string;
 }
 
 export interface Player {
@@ -13,12 +17,9 @@ export interface Player {
     quit: boolean;
     ready: boolean;
   };
-  faction: {
-    name: string;
-    colorRGB: string;
-    colorRGBA: string;
-    faction: string;
-  };
+  extras: {
+    faction: Faction;
+  }
 }
 export interface Army {
   type: 'soldier' | 'horse' | 'gatling-gun' | 'spy';

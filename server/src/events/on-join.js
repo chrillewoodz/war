@@ -1,15 +1,17 @@
+const Faction = require('../classes/faction');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const SessionsStorage = require('../classes/sessions-storage');
 const Session = require('../classes/session');
 const SocketEvents = require('../classes/socket-events');
+const { getFactionNotUsed } = require('../factions');
 const events = new SocketEvents();
 
 /**
  *
  * @param {SocketIO.Socket} socket
  * @param {{
- *   faction: *
+ *   extras: *
  *   clientId: String
  * }} ev
  * @param {SessionsStorage} storage
@@ -27,7 +29,10 @@ const fn = async function(socket, ev, storage) {
 
     if (session) {
 
-      session.addPlayer(ev.clientId, ev.faction);
+      const { name, colorRGB, colorRGBA } = getFactionNotUsed(session);
+      const faction = new Faction(name, colorRGB, colorRGBA);
+      const extras = ev.extras ? { ...ev.extras, faction } : { faction };
+      session.addPlayer(ev.clientId, extras);
 
       await storage.set(session);
 
@@ -39,7 +44,7 @@ const fn = async function(socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
+    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

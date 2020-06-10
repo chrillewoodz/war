@@ -37,7 +37,7 @@ const config: SocketIoConfig = {
             .then(() => {
 
               const cachedId = cache.clientId;
-              const clientId = cachedId || socket.ioSocket.clientId;
+              const clientId = cachedId || socket.ioSocket.id;
 
               if (!cachedId) {
                 cache.setClientId(clientId);

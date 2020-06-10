@@ -1,10 +1,8 @@
 class Player {
 
-  faction = null;
-
-  constructor(clientId, faction) {
+  constructor(clientId, extras) {
     this.clientId = clientId;
-    this.faction = faction;
+    this.extras = extras || {};
     this.state = {
       connected: true,
       resigned: false,
@@ -13,8 +11,8 @@ class Player {
     };
   }
 
-  setFaction(faction) {
-    this.faction = faction;
+  addExtras(extras) {
+    this.extras = { ...this.extras, extras };
   }
 
   ready() {
@@ -33,7 +31,7 @@ class Player {
 
     return {
       clientId: this.clientId,
-      faction: this.faction,
+      extras: this.extras,
       state: this.state
     };
   }

@@ -7,7 +7,6 @@ import { first } from 'rxjs/operators';
 import {
   ModalApi,
   SocketApi,
-  FactionsHandler,
   SessionSettings
 } from 'shared';
 
@@ -36,7 +35,6 @@ export class LobbyComponent {
 
   constructor(
     private fb: FormBuilder,
-    private fh: FactionsHandler,
     private modalApi: ModalApi,
     private router: Router,
     private socketApi: SocketApi
@@ -51,7 +49,7 @@ export class LobbyComponent {
       }
     }
 
-    this.socketApi.join(true, this.fh.getRandomFaction(), sessionId)
+    this.socketApi.join(true, null, sessionId)
       .pipe(
         first()
       ).subscribe((e) => {
@@ -73,7 +71,7 @@ export class LobbyComponent {
 
     if (this.settings.valid) {
 
-      this.socketApi.host(true, this.fh.getRandomFaction(), this.settings.value as SessionSettings)
+      this.socketApi.host(true, null, this.settings.value as SessionSettings)
         .pipe(
           first()
         )
@@ -81,6 +79,7 @@ export class LobbyComponent {
           this.modalApi.close('host-settings');
           this.router.navigateByUrl('session');
         }, (e) => {
+          console.log(e);
           this.hostError.next(e);
         }
       );

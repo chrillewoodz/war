@@ -1,6 +1,3 @@
-const storage = require('node-persist');
-const getSessionById = require('../fns/get-session-by-id');
-const getResponseObject = require('../helpers/get-response-object');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
@@ -46,7 +43,7 @@ const fn = async function(socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
+    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

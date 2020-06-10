@@ -32,8 +32,6 @@ export * from './lib/directives.module';
 export * from './lib/area-handler.directive';
 export * from './lib/click-outside.directive';
 export * from './lib/decorators';
-export * from './lib/factions';
-export * from './lib/factions-handler';
 export * from './lib/game.cache';
 export * from './lib/game.engine';
 export * from './lib/interfaces';

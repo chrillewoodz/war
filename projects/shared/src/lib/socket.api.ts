@@ -1,4 +1,4 @@
-import { SocketResponse, PipeResult, Session, SessionState, Faction, SessionSettings } from './interfaces';
+import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras } from './interfaces';
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
@@ -33,35 +33,27 @@ export class SocketApi {
     return this.socketResponse$(this.socketEvents.GET_SUCCESS);
   }
 
-  join(emitToServer: boolean, faction?: Faction, sessionId?: string) {
+  join(emitToServer: boolean, extras?: Extras, sessionId?: string) {
 
     if (emitToServer) {
-
-      if (!faction) {
-        throw new Error('Faction must be provided');
-      }
 
       this.socket.emit(this.socketEvents.JOIN, {
         clientId: this.cache.clientId,
         sessionId: sessionId,
-        faction
+        extras
       });
     }
 
     return this.socketResponse$(this.socketEvents.JOIN_SUCCESS);
   }
 
-  host(emitToServer: boolean, faction?: Faction, settings?: SessionSettings) {
+  host(emitToServer: boolean, extras?: Extras, settings?: SessionSettings) {
 
     if (emitToServer) {
 
-      if (!faction) {
-        throw new Error('Faction must be provided');
-      }
-
       this.socket.emit(this.socketEvents.HOST, {
         clientId: this.cache.clientId,
-        faction,
+        extras,
         settings
       });
     }

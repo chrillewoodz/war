@@ -39,7 +39,7 @@ const fn = async function(socket, ev, storage, event) {
   }
   catch(err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(500, err.message));
+    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 
