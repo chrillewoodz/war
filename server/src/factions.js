@@ -24,7 +24,7 @@ const Germany = {
 
 const asArray = [Sweden, China, Somalia, Germany];
 
-function getFactionNotUsed(session) {
+function getUnusedFaction(session) {
 
   // Get factions that are already used by other players
   const factionsUsed = Object.keys(session.state.players)
@@ -44,5 +44,5 @@ module.exports = {
   Somalia,
   Germany,
   asArray,
-  getFactionNotUsed
+  getUnusedFaction
 }

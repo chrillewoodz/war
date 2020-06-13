@@ -16,6 +16,7 @@ export interface Player {
     resigned: boolean;
     quit: boolean;
     ready: boolean;
+    defeated: boolean;
   };
   extras: {
     faction: Faction;
@@ -48,6 +49,7 @@ export interface SessionSettings {
 export interface SessionState {
   started: boolean;
   paused: boolean;
+  ended: boolean;
   players: {
     [clientId: string]: Player
   };

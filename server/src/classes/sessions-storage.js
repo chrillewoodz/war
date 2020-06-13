@@ -1,4 +1,5 @@
 const storage = require('node-persist');
+const Player = require('../classes/player');
 const Session = require('../classes/session');
 
 class SessionsStorage {
@@ -18,7 +19,9 @@ class SessionsStorage {
    * @param {String} sessionId
    */
   async getById(sessionId) {
+
     const sessions = await this.getAll();
+
     return new Session(
       Object.keys(sessions)
         .map((sessionId) => sessions[sessionId])
@@ -26,11 +29,7 @@ class SessionsStorage {
     );
   }
 
-  /**
-   *
-   * @param {String} [sessionId]
-   */
-  async find(sessionId) {
+  async findAll() {
 
     /**
      * Filters out game sessions that are not available to join
@@ -47,20 +46,24 @@ class SessionsStorage {
 
     const sessions = await this.getAll();
 
+    return Object.keys(sessions)
+      .map((sessionId) => sessions[sessionId])
+      .filter(filterBy);
+  }
+
+  /**
+   *
+   * @param {String} [sessionId]
+   */
+  async find(sessionId) {
+
+    const sessions = await this.findAll(sessionId);
+
     if (sessionId) {
-      return new Session(
-        Object.keys(sessions)
-          .map((sessionId) => sessions[sessionId])
-          .filter(filterBy)
-          .find((session) => session.sessionId === sessionId)
-      );
+      return new Session(sessions.find((session) => session.sessionId === sessionId));
     }
 
-    return new Session(
-      Object.keys(sessions)
-        .map((sessionId) => sessions[sessionId])
-        .filter(filterBy)[0]
-    );
+    return new Session(sessions[0]);
   }
 
   /**
@@ -69,7 +72,7 @@ class SessionsStorage {
    */
   async set(session) {
     const sessions = await this.getAll();
-    sessions[session.sessionId] = session;
+    sessions[session.sessionId] = { ...session, lastUpdatedAt: new Date().toISOString() };
     return await this.update(sessions);
   }
 
@@ -82,27 +85,15 @@ class SessionsStorage {
    * @param {String} sessionId
    */
   async remove(sessionId) {
-    const sessions = await this.getAll();
-    delete sessions[sessionId];
-    return await this.update(sessions);
-  }
 
-  /**
-   *
-   * @param {Session} session
-   */
-  async cleanup(session) {
-
-    const playersLeft = Object.keys(session.state.players)
-      .map((clientId) => session.state.players[clientId])
-      .filter((player) => player.state.quit)
-      .length;
-
-    if (playersLeft < 2 && session.state.started) {
-      return await this.remove(session.sessionId);
+    try {
+      const sessions = await this.getAll();
+      delete sessions[sessionId];
+      return await this.update(sessions);
     }
-
-    return new Promise((res) => res());
+    catch (e) {
+      console.log(e);
+    }
   }
 }
 

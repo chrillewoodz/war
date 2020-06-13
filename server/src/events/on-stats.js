@@ -2,22 +2,23 @@ const Stats = require('../classes/stats');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const SocketEvents = require('../classes/socket-events');
-const events = new SocketEvents();
+const SessionsStorage = require('../classes/sessions-storage');
 
 /**
  *
  * @param {SocketIO.Socket} socket
  * @param {Stats} statsInstance
+ * @param {SessionsStorage} storage
  */
-const fn = function(socket, statsInstance) {
+const fn = async function(socket, statsInstance, storage) {
 
   try {
-    const stats = statsInstance.get();
-    socket.emit(events.STATS_SUCCESS, new SocketResponse(200, stats));
+    const stats = await statsInstance.get(socket, storage);
+    socket.emit(SocketEvents.STATS_SUCCESS, new SocketResponse(200, stats));
   }
   catch (err) {
     console.log(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

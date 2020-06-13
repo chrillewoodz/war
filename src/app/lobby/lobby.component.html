@@ -20,9 +20,19 @@
         <button class="btn-primary" (click)="join()">Join</button>
         <p class="error error-msg">{{joinError$ | async}}</p>
       </div>
-      <div class="col-12">
-        <h6>Active users</h6>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h4>Active users</h4>
         <p>{{(stats$ | async)?.connections}}</p>
+      </div>
+      <div class="col">
+        <h4>Active games</h4>
+        <p>{{(stats$ | async)?.gamesTotal}}</p>
+      </div>
+      <div class="col">
+        <h4>Available games</h4>
+        <p>{{(stats$ | async)?.gamesAvailable}}</p>
       </div>
     </div>
   </div>

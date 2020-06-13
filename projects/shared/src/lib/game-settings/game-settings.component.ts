@@ -1,3 +1,4 @@
+import { GameEngine } from './../game.engine';
 import { Component } from '@angular/core';
 import { GameCache } from '../game.cache';
 import { Socket } from 'ngx-socket-io';
@@ -16,6 +17,7 @@ export class GameSettingsComponent  {
 
   constructor(
     private cache: GameCache,
+    private gameEngine: GameEngine,
     private router: Router,
     private socket: Socket
   ) {}
@@ -33,14 +35,11 @@ export class GameSettingsComponent  {
   }
 
   quit() {
-    this.socket.emit('quit', { sessionId: this.sessionId, clientId: this.cache.clientId });
 
-    this.socket.fromEvent('quit_success')
-      .pipe(
-        first()
-      )
-      .subscribe(() => {
-        this.router.navigateByUrl('');
-      })
+    const confirmed = confirm('Are you sure you want to quit the game?');
+
+    if (confirmed) {
+      this.router.navigateByUrl('');
+    }
   }
 }

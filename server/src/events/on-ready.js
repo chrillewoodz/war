@@ -3,10 +3,10 @@ const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
 const SessionsStorage = require('../classes/sessions-storage');
 const SocketEvents = require('../classes/socket-events');
-const events = new SocketEvents();
 
 /**
  *
+ * @param {SocketIO.Server} io
  * @param {SocketIO.Socket} socket
  * @param {{
  *   sessionId: String
@@ -14,7 +14,7 @@ const events = new SocketEvents();
  * }} ev
  * @param {SessionsStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = async function(io, socket, ev, storage) {
 
   try {
 
@@ -31,7 +31,7 @@ const fn = async function(socket, ev, storage) {
 
         await storage.set(session);
 
-        socket.emit(events.PRE_UPDATE_SUCCESS, new SocketResponse(200, session));
+        io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
       }
       else {
         throw new Error('Game has already started');
@@ -43,7 +43,7 @@ const fn = async function(socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEventsINTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

@@ -4,11 +4,11 @@ const SocketResponse = require('../classes/socket-response');
 const SessionsStorage = require('../classes/sessions-storage');
 const Session = require('../classes/session');
 const SocketEvents = require('../classes/socket-events');
-const { getFactionNotUsed } = require('../factions');
-const events = new SocketEvents();
+const { getUnusedFaction } = require('../factions');
 
 /**
  *
+ * @param {SocketIO.Server} io
  * @param {SocketIO.Socket} socket
  * @param {{
  *   extras: *
@@ -16,7 +16,7 @@ const events = new SocketEvents();
  * }} ev
  * @param {SessionsStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = async function(io, socket, ev, storage) {
 
   try {
 
@@ -29,14 +29,16 @@ const fn = async function(socket, ev, storage) {
 
     if (session) {
 
-      const { name, colorRGB, colorRGBA } = getFactionNotUsed(session);
+      const { name, colorRGB, colorRGBA } = getUnusedFaction(session);
       const faction = new Faction(name, colorRGB, colorRGBA);
       const extras = ev.extras ? { ...ev.extras, faction } : { faction };
       session.addPlayer(ev.clientId, extras);
 
       await storage.set(session);
 
-      socket.emit(events.JOIN_SUCCESS, new SocketResponse(200, session));
+      socket.join(session.sessionId, () => {
+        io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+      });
     }
     else {
       throw new Error('No active game session, please create your own');
@@ -44,7 +46,7 @@ const fn = async function(socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

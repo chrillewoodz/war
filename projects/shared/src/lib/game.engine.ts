@@ -1,16 +1,15 @@
-
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
+
+import { SessionState, PipeResult, Area } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
 import config from './game.config.json';
 import { SocketApi } from './socket.api';
-import { first } from 'rxjs/operators';
 
 export enum GameEngineEvent {
-  Start,
-  Ready
+  Stop
 }
 
 @Injectable({
@@ -19,10 +18,8 @@ export enum GameEngineEvent {
 
 export class GameEngine {
 
-  private start = new ReplaySubject<boolean>(1);
-  private start$ = this.start.asObservable();
-  private ready = new ReplaySubject<boolean>(1);
-  private ready$ = this.ready.asObservable();
+  private stop = new ReplaySubject<boolean>(1);
+  private stop$ = this.stop.asObservable();
 
   constructor(private cache: GameCache, private socketApi: SocketApi) {
 
@@ -38,39 +35,80 @@ export class GameEngine {
   listen(event: GameEngineEvent) {
 
     switch(event) {
-      case GameEngineEvent.Start: return this.start$;
-      case GameEngineEvent.Ready: return this.ready$;
+      case GameEngineEvent.Stop: return this.stop$;
       default: exhaust(event);
     }
   }
 
-  setReadyState() {
-
-    this.socketApi.ready(true)
-      .pipe(
-        first()
-      )
-      .subscribe((result) => {
-        this.ready.next(result.session.state.players[this.cache.clientId].state.ready);
-      }, (err) => {
-        // TODO: Handle error
-      }
-    );
+  stopGame() {
+    this.stop.next(true);
   }
 
-  startGame() {
+  setReadyState() {
+    this.socketApi.ready(true);
+  }
 
-    this.socketApi.preUpdate(true, {
-      started: true
-    })
-    .pipe(
-      first()
-    )
-    .subscribe((result) => {
-      this.start.next(result.session.state.started);
-    }, (err => {
-      // TODO: Handle error
-    }));
+  updateGame(state: Partial<SessionState>) {
+    this.socketApi.update(true, state);
+  }
+
+  gameEnded() {
+    this.stop.next(true);
+  }
+
+  checkForReadyPlayers(result: PipeResult) {
+
+    const playersInGame = Object.keys(result.session.state.players);
+    const minPlayers = result.session.settings.minPlayers;
+
+    if (playersInGame.length >= minPlayers) {
+
+      const playersNotReady = playersInGame
+        .filter((clientId) => {
+
+          if (!result.session.state.players[clientId].state.ready) {
+            return true;
+          }
+        })
+        .length;
+
+      if (playersNotReady === 0) {
+        this.updateGame({ ...result.session.state, started: true });
+      }
+    }
+  }
+
+  createStateForAreas(areas: HTMLElement[]) {
+
+    return areas.map((area) => {
+      return {
+        areaId: area.dataset.areaId,
+        state: {
+          occupiedBy: null,
+          troops: {
+            soldiers: null,
+            horses: null,
+            gatlingGuns: null,
+            spies: null
+          }
+        }
+      };
+    });
+  }
+
+  applyAreasToState(result: PipeResult, areas: Area[]) {
+
+    return {
+      ...result, // self is included here
+      session: {
+        ...result.session,
+        state: {
+          ...result.session.state,
+          areas,
+          areasReady: true
+        }
+      }
+    };
   }
 
   doAction(action: Action) {

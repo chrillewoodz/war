@@ -1,11 +1,12 @@
-import { Component, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
-import { timer, Subscription, merge, of } from 'rxjs';
-import { takeUntil, map, take, tap, switchMap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { environment } from './../../environments/environment';
+import { Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { timer, Subscription, merge, of, interval } from 'rxjs';
+import { takeUntil, map, take, tap, switchMap, first, finalize, catchError, filter } from 'rxjs/operators';
 
 import {
   MapEngine,
   MapEuropeComponent,
-  SocketResponse,
   GameCache,
   Session,
   Player,
@@ -17,7 +18,6 @@ import {
 } from 'shared';
 
 import { Socket } from 'ngx-socket-io';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-session',
@@ -27,6 +27,15 @@ import { Router } from '@angular/router';
 
 export class SessionComponent implements OnDestroy {
   @ViewChild('mapInstance') map: MapEuropeComponent;
+
+  @HostListener('window:onbeforeunload')
+  onBeforeUnload() {
+
+    // Don't quit on every compile refresh in dev mode, that would be annoying :)
+    if (environment.production) {
+      this.socketApi.quit(true);
+    }
+  }
 
   public isFightActive = false;
 
@@ -111,30 +120,49 @@ export class SessionComponent implements OnDestroy {
 
   public session: Session;
   public self: Player;
+  public players: {[clientId: string]: Player};
 
   private subscriptions = new Subscription();
+  private shouldQuitOnDestroy = true;
 
   constructor(
     private cd: ChangeDetectorRef,
-    private cache: GameCache,
     private gameEngine: GameEngine,
     private mapEngine: MapEngine,
-    private socket: Socket,
+    private router: Router,
     private socketApi: SocketApi
   ) {
 
-    const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
-      this.activeAreas = activeAreas;
-    });
+    // Used to remove dead games, couldn't make it happen with a simple window refresh/close
+    // since it's really difficult to detect that whilst covering all cases and browsers.
+    // We just indicate to the backend that we're still active as long as this runs.
+    const activeEmitter = interval(30000)
+      .pipe(
+        takeUntil(this.gameEngine.listen(GameEngineEvent.Stop))
+      )
+      .subscribe(() => {
+        this.socketApi.isActive();
+      }
+    );
+
+    // const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
+    //   this.activeAreas = activeAreas;
+    // });
 
     const sessionSub = merge(
       this.socketApi.get(true),
-      this.socketApi.join(false),
-      this.socketApi.quit(false),
-      this.socketApi.preUpdate(false)
+      this.socketApi.update(false)
     )
     .pipe(
-      takeUntil(this.gameEngine.listen(GameEngineEvent.Start)),
+      filter((result) => {
+
+        if (result.session.state.ended) {
+          this.onEnded();
+          return false;
+        }
+
+        return true;
+      }),
       switchMap((result) => {
 
         if (result.session.state.areasReady) {
@@ -142,80 +170,39 @@ export class SessionComponent implements OnDestroy {
         }
 
         return this.mapEngine.areas$.pipe(
-          map<HTMLElement[], Area[]>((areas) => areas.map((area) => {
-            return {
-              areaId: area.dataset.areaId,
-              state: {
-                occupiedBy: null,
-                troops: {
-                  soldiers: null,
-                  horses: null,
-                  gatlingGuns: null,
-                  spies: null
-                }
-              }
-            };
-          })),
-          map<Area[], PipeResult>((areas: Area[]) => {
-
-            return {
-              ...result, // self is included here
-              session: {
-                ...result.session,
-                state: {
-                  ...result.session.state,
-                  areas,
-                  areasReady: true
-                }
-              }
-            };
-          }),
-          tap((result) => this.update(result.session))
+          map<HTMLElement[], Area[]>((areas) => this.gameEngine.createStateForAreas(areas)),
+          map<Area[], PipeResult>((areas) => this.gameEngine.applyAreasToState(result, areas)),
+          tap((result) => this.updateState(result.session.state))
         );
+      }),
+      tap((result) => {
+
+        if (!result.session.state.started) {
+          this.gameEngine.checkForReadyPlayers(result);
+        }
       })
     )
     .subscribe((result) => {
       this.session = result.session;
+      this.players = result.session.state.players;
       this.self = result.self;
-      console.log(this.self);
-
-      const playersInGame = Object.keys(this.session.state.players);
-      const minPlayers = this.session.settings.minPlayers;
-
-      if (playersInGame.length >= minPlayers) {
-
-        const allPlayersAreReady = playersInGame
-          .filter((clientId) => {
-
-            if (!this.session.state.players[clientId].state.ready) {
-              return true;
-            }
-          }).length === 0;
-
-        if (allPlayersAreReady && !this.session.state.started) {
-          console.log('starting game...')
-          this.gameEngine.startGame();
-        }
-      }
+      console.log(result);
     }, (err) => {
       console.error(err);
+      this.onError();
     });
 
-    const ongoingSessionSub = merge(
-      this.socketApi.quit(false),
-      this.socketApi.update(false)
-    )
-    .subscribe((result) => {
-      this.session = result.session;
-      this.self = result.self;
-    });
-
-    this.subscriptions.add(activeAreasSub);
+    this.subscriptions.add(activeEmitter);
+    // this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
-    this.subscriptions.add(ongoingSessionSub);
   }
 
   ngOnDestroy() {
+
+    if (this.shouldQuitOnDestroy) {
+      this.socketApi.quit(true).pipe(first()).subscribe();
+    }
+
     this.subscriptions.unsubscribe();
   }
 
@@ -244,8 +231,17 @@ export class SessionComponent implements OnDestroy {
     this.cd.detectChanges();
   }
 
-  update(session) {
-    this.socket.emit('pre_game_update', { sessionId: session.sessionId, newState: session.state });
-    console.log('updating..')
+  updateState(state = this.session.state) {
+    this.gameEngine.updateGame(state);
+  }
+
+  onEnded() {
+    this.shouldQuitOnDestroy = false;
+    this.router.navigateByUrl('/summary');
+  }
+
+  onError() {
+    this.shouldQuitOnDestroy = false;
+    this.router.navigateByUrl('/error');
   }
 }

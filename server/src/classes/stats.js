@@ -1,13 +1,23 @@
+const SessionsStorage = require('./sessions-storage');
+
 class Stats {
 
   connections = 0;
 
   constructor() {}
 
-  get() {
+  /**
+   *
+   * @param {SessionsStorage} storage
+   */
+  async get(io, storage) {
+
+    var srvSockets = io.sockets.sockets;
 
     return {
-      connections: this.connections
+      connections: Object.keys(srvSockets).length,
+      gamesTotal: Object.keys(await storage.getAll()).length,
+      gamesAvailable: Object.keys(await storage.findAll()).length
     }
   }
 

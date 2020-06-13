@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import {
+  GameCache,
   ModalApi,
   SocketApi,
   SessionSettings
@@ -34,11 +35,16 @@ export class LobbyComponent {
   public stats$ = this.socketApi.stats(true);
 
   constructor(
+    private cache: GameCache,
     private fb: FormBuilder,
     private modalApi: ModalApi,
     private router: Router,
     private socketApi: SocketApi
-  ) {}
+  ) {
+    console.log('resetting')
+    this.cache.removeSessionId();
+    this.cache.removeSession();
+  }
 
   join(sessionId?: string) {
 
@@ -52,8 +58,7 @@ export class LobbyComponent {
     this.socketApi.join(true, null, sessionId)
       .pipe(
         first()
-      ).subscribe((e) => {
-        console.log('join', e);
+      ).subscribe(() => {
         this.router.navigateByUrl('session');
       }, (e) => {
 
@@ -75,11 +80,10 @@ export class LobbyComponent {
         .pipe(
           first()
         )
-        .subscribe((e) => {
+        .subscribe(() => {
           this.modalApi.close('host-settings');
           this.router.navigateByUrl('session');
         }, (e) => {
-          console.log(e);
           this.hostError.next(e);
         }
       );

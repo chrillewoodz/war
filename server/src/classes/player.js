@@ -1,18 +1,24 @@
 class Player {
 
-  constructor(clientId, extras) {
-    this.clientId = clientId;
-    this.extras = extras || {};
-    this.state = {
+  constructor(props) {
+    this.clientId = props.clientId;
+    this.extras = props.extras || {};
+    this.state = props.state || {
       connected: true,
       resigned: false,
       quit: false,
-      ready: false
+      ready: false,
+      defeated: false,
+      lastActiveAt: new Date().toISOString()
     };
   }
 
   addExtras(extras) {
     this.extras = { ...this.extras, extras };
+  }
+
+  setLastActiveAt() {
+    this.state.lastActiveAt = new Date().toISOString();
   }
 
   ready() {

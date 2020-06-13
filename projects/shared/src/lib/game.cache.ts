@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
 import { Session } from './interfaces';
 
 @Injectable({
@@ -8,32 +7,41 @@ import { Session } from './interfaces';
 
 export class GameCache {
 
-  private emitter = new ReplaySubject(1);
-  public emitter$ = this.emitter.asObservable();
+  private readonly clientIdKey = 'clientId';
+  private readonly sessionIdKey = 'sessionId';
+  private readonly sessionKey = 'session';
 
   constructor() {}
 
   get clientId() {
-    return sessionStorage.getItem('clientId');
+    return sessionStorage.getItem(this.clientIdKey);
   }
 
   get sessionId() {
-    return sessionStorage.getItem('sessionId');
+    return sessionStorage.getItem(this.sessionIdKey);
   }
 
   get session(): Session {
-    return JSON.parse(sessionStorage.getItem('session'));
+    return JSON.parse(sessionStorage.getItem(this.sessionKey));
   }
 
   setClientId(id: string) {
-    sessionStorage.setItem('clientId', id);
+    sessionStorage.setItem(this.clientIdKey, id);
   }
 
   setSessionId(id: string) {
-    sessionStorage.setItem('sessionId', id);
+    sessionStorage.setItem(this.sessionIdKey, id);
   }
 
   setSession(session: Session) {
-    sessionStorage.setItem('session', JSON.stringify(session));
+    sessionStorage.setItem(this.sessionKey, JSON.stringify(session));
+  }
+
+  removeSessionId() {
+    sessionStorage.removeItem(this.sessionIdKey);
+  }
+
+  removeSession() {
+    sessionStorage.removeItem(this.sessionKey);
   }
 }

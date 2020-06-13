@@ -5,10 +5,10 @@ const Session = require('../classes/session');
 const SessionsStorage = require('../classes/sessions-storage');
 const SocketEvents = require('../classes/socket-events');
 const { asArray } = require('../factions');
-const events = new SocketEvents();
 
 /**
  *
+ * @param {SocketIO.Server} io
  * @param {SocketIO.Socket} socket
  * @param {{
  *   extras: *
@@ -16,7 +16,7 @@ const events = new SocketEvents();
  * }} ev
  * @param {SessionsStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = async function(io, socket, ev, storage) {
 
   try {
 
@@ -28,11 +28,14 @@ const fn = async function(socket, ev, storage) {
 
     await storage.set(session);
 
-    socket.emit(events.HOST_SUCCESS, new SocketResponse(200, session));
+    socket.join(session.sessionId, (err) => {
+      console.log(err);
+      io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+    });
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

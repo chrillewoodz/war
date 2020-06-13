@@ -3,19 +3,19 @@ const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
 const SessionsStorage = require('../classes/sessions-storage');
 const SocketEvents = require('../classes/socket-events');
-const events = new SocketEvents();
 
 /**
- * Updates a session with new state and returns a new session object
- * @param {*} session
+ *
+ * @param {SocketIO.Server} io
+ * @param {SocketIO.Socket} socket
  * @param {{
  *   sessionId: String
  *   newState: *
  * }} ev
  * @param {SessionsStorage} storage
  */
-const fn = async function(socket, ev, storage, event) {
-  console.log(ev);
+const fn = async function(io, socket, ev, storage) {
+
   try {
 
     /**
@@ -34,12 +34,12 @@ const fn = async function(socket, ev, storage, event) {
       // Re-set the session in the immutable sessions object
       await storage.set(session);
 
-      socket.emit(event, new SocketResponse(200, session));
+      io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
     }
   }
   catch(err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

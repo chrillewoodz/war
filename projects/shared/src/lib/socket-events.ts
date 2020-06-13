@@ -6,7 +6,9 @@ export class SocketEvents {
   readonly HOST = 'host';
   readonly QUIT = 'quit';
   readonly READY = 'ready';
+  readonly END = 'end';
   readonly STATS = 'stats';
+  readonly IS_ACTIVE = 'is_active';
   readonly INTERNAL_ERROR = 'internal_error';
 
   // Success responses
@@ -16,5 +18,6 @@ export class SocketEvents {
   readonly JOIN_SUCCESS = `${this.JOIN}_success`;
   readonly HOST_SUCCESS = `${this.HOST}_success`;
   readonly QUIT_SUCCESS = `${this.QUIT}_success`;
+  readonly END_SUCCESS = `${this.END}_success`;
   readonly STATS_SUCCESS = `${this.STATS}_success`;
 }

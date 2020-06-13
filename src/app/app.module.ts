@@ -36,6 +36,7 @@ const config: SocketIoConfig = {
           return socket.fromOneTimeEvent('connect')
             .then(() => {
 
+              // TODO: Send this with every emit to server
               const cachedId = cache.clientId;
               const clientId = cachedId || socket.ioSocket.id;
 

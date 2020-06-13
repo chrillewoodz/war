@@ -39,8 +39,11 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
     //   });
 
     this.sub = this.gls.emitter$.subscribe((newMessage) => {
-      this.session.state.logs.push(newMessage);
-      this.onNewLog.emit();
+
+      const updatedLogs = [...this.session.state.logs, newMessage];
+      const newState = { ...this.session.state, logs: updatedLogs };
+
+      this.onNewLog.emit(newState);
     });
   }
 

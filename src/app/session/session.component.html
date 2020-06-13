@@ -3,9 +3,10 @@
   <timer [total]="timePerRound" [timer$]="timer$" (ranOut)="endTurn()"></timer>
 
   <div class="game-hud">
-    <players [session]="session" [players]="session?.state.players" [self]="self"></players>
-    <area-information [areas]="session?.state.areas" [activeAreas]="activeAreas"></area-information>
-    <game-logger [player]="self" [session]="session" (onNewLog)="update(session)"></game-logger>
+    <players [session]="session" [players]="players" [self]="self"></players>
+    <!-- TODO: Set active areas -->
+    <area-information [areas]="session?.state.areas" [activeAreas]="[]"></area-information>
+    <game-logger [player]="self" [session]="session" (onNewLog)="updateState($event)"></game-logger>
   </div>
 
   <div class="map-container" [ngSwitch]="mapType" areaHandler>

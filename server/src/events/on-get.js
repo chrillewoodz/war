@@ -3,7 +3,6 @@ const SocketResponse = require('../classes/socket-response');
 const SessionsStorage = require('../classes/sessions-storage');
 const Session = require('../classes/session');
 const SocketEvents = require('../classes/socket-events');
-const events = new SocketEvents();
 
 /**
  *
@@ -21,7 +20,7 @@ const fn = async function(socket, ev, storage) {
     const session = await storage.getById(ev.sessionId);
 
     if (session) {
-      socket.emit(events.GET_SUCCESS, new SocketResponse(200, session));
+      socket.emit(SocketEvents.GET_SUCCESS, new SocketResponse(200, session));
     }
     else {
       throw new Error('No game session with that id');
@@ -29,7 +28,7 @@ const fn = async function(socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(events.INTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

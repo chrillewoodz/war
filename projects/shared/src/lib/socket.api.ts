@@ -2,7 +2,7 @@ import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Ext
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
-import { ObservableInput, merge } from 'rxjs';
+import { ObservableInput, merge, throwError } from 'rxjs';
 import { SocketEvents } from './socket-events';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Bound } from './decorators';
@@ -21,7 +21,6 @@ export class SocketApi {
   ) {}
 
   get(emitToServer: boolean) {
-    console.log(this.cache.sessionId);
 
     if (emitToServer) {
 
@@ -39,12 +38,12 @@ export class SocketApi {
 
       this.socket.emit(this.socketEvents.JOIN, {
         clientId: this.cache.clientId,
-        sessionId: sessionId,
+        sessionId,
         extras
       });
     }
 
-    return this.socketResponse$(this.socketEvents.JOIN_SUCCESS);
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
   host(emitToServer: boolean, extras?: Extras, settings?: SessionSettings) {
@@ -58,7 +57,7 @@ export class SocketApi {
       });
     }
 
-    return this.socketResponse$(this.socketEvents.HOST_SUCCESS);
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
   quit(emitToServer: boolean) {
@@ -71,7 +70,7 @@ export class SocketApi {
       });
     }
 
-    return this.socketResponse$(this.socketEvents.QUIT_SUCCESS);
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
   ready(emitToServer: boolean) {
@@ -84,27 +83,7 @@ export class SocketApi {
       });
     }
 
-    return this.socketResponse$(this.socketEvents.PRE_UPDATE_SUCCESS);
-  }
-
-  preUpdate(emitToServer: boolean, newState?: Partial<SessionState>) {
-
-    if (emitToServer) {
-
-      if (!newState || !Object.keys(newState).length) {
-        throw new Error('newState was either empty or not provided');
-      }
-
-      this.socket.emit(this.socketEvents.PRE_UPDATE, {
-        sessionId: this.cache.sessionId,
-        newState: {
-          ...this.cache.session.state,
-          ...newState
-        }
-      });
-    }
-
-    return this.socketResponse$(this.socketEvents.PRE_UPDATE_SUCCESS);
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
   update(emitToServer: boolean, newState?: Partial<SessionState>) {
@@ -141,6 +120,27 @@ export class SocketApi {
     );
   }
 
+  isActive() {
+
+    this.socket.emit(this.socketEvents.IS_ACTIVE, {
+      sessionId: this.cache.sessionId,
+      clientId: this.cache.clientId
+    });
+  }
+
+  end(emitToServer: boolean) {
+
+    if (emitToServer) {
+
+      this.socket.emit(this.socketEvents.END, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
+  }
+
   @Bound
   private getSelf(session, clientId: string) {
 
@@ -165,7 +165,7 @@ export class SocketApi {
   @Bound
   private onSocketError(err: string, caught: ObservableInput<any>) {
     console.error(err);
-    return caught;
+    return throwError(err);
   }
 
   @Bound
