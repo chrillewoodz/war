@@ -52,7 +52,7 @@
         const diff = differenceInMinutes(now, lastUpdatedAt);
         const isStarted = session.state.started;
         const isPaused = session.state.paused;
-        const isEnded = session.state.paused;
+        const isEnded = session.state.ended;
         const activePlayersLeft = session.activePlayersLeft();
 
         // Has started and was updated in last 2 minutes
@@ -73,13 +73,13 @@
         }
         // If the game was started but there's only one player left
         // end the game and let the client handle whatever comes next.
-        else if (session.state.started && !session.state.ended && activePlayersLeft < 2) {
+        else if (isStarted && !isEnded && activePlayersLeft < 2) {
           session.end();
           await storage.set(session);
           console.log(session.sessionId, ' was ended due to fewer than 2 active players in a started game.');
         }
         // Game hasn't started and there's no active players left waiting in the session
-        else if (!session.state.started && activePlayersLeft === 0) {
+        else if (!isStarted && activePlayersLeft === 0) {
           await storage.remove(session.sessionId);
           console.log(session.sessionId, ' was removed due to inactivity and unstarted game.');
         }
