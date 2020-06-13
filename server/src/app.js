@@ -63,7 +63,8 @@
         // Is paused and wasn't updated in the last 30min, end game
         else if (isPaused && diff > 30) {
           session.end();
-          console.log(session.sessionId, ' ended.');
+          await storage.set(session);
+          console.log(session.sessionId, ' ended due to paused game not resuming within 30min.');
         }
         // Has ended and wasn't updated in the last 2 minutes
         else if (isEnded && diff > 2) {
@@ -72,9 +73,10 @@
         }
         // If the game was started but there's only one player left
         // end the game and let the client handle whatever comes next.
-        else if (session.state.started && activePlayersLeft < 2) {
+        else if (session.state.started && !session.state.ended && activePlayersLeft < 2) {
           session.end();
-          console.log(session.sessionId, ' was removed due to fewer than 2 active players in a started game.');
+          await storage.set(session);
+          console.log(session.sessionId, ' was ended due to fewer than 2 active players in a started game.');
         }
         // Game hasn't started and there's no active players left waiting in the session
         else if (!session.state.started && activePlayersLeft === 0) {
