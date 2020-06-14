@@ -8,6 +8,7 @@ class SocketEvents {
   READY = 'ready';
   END = 'end';
   STATS = 'stats';
+  START = 'start';
   IS_ACTIVE = 'is_active';
   INTERNAL_ERROR = 'internal_error';
 

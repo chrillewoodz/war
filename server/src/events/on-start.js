@@ -10,7 +10,7 @@ const SocketEvents = require('../classes/socket-events');
  * @param {SocketIO.Socket} socket
  * @param {{
  *   sessionId: String
- *   clientId: String
+ *   newState: *
  * }} ev
  * @param {SessionsStorage} storage
  */
@@ -23,28 +23,21 @@ const fn = async function(io, socket, ev, storage) {
      */
     const session = await storage.getById(ev.sessionId);
 
-    if (session) {
-
-      if (!session.state.started) {
-
-        session.playerReady(ev.clientId);
-        session.checkForReadyPlayers();
-
-        await storage.set(session);
-
-        io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
-      }
-      else {
-        throw new Error('Game has already started');
-      }
-    }
-    else {
+    if (!session) {
       throw new Error('No game session with that id');
     }
+    else {
+
+      session.start();
+
+      await storage.set(session);
+
+      io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+    }
   }
-  catch (err) {
+  catch(err) {
     console.error(err);
-    socket.emit(SocketEventsINTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

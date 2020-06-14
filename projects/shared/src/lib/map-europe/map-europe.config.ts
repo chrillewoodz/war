@@ -2,17 +2,19 @@ export interface Areas {
   [k: string]: {
     name: string;
     connections: number[];
+    isStartingArea?: boolean;
   }
 }
 
-export const MapEuropeConnections: Areas = {
+export const MapEuropeConfig: Areas = {
   0: {
     name: 'Crimea (Ukraine)',
     connections: [1, 6]
   },
   1: {
     name: 'Russia',
-    connections: [1, 2, 3, 5, 6, 8, 10, 35, 37]
+    connections: [1, 2, 3, 5, 6, 8, 10, 35, 37],
+    isStartingArea: true
   },
   2: {
     name: 'Estonia',
@@ -88,7 +90,8 @@ export const MapEuropeConnections: Areas = {
   },
   20: {
     name: 'England',
-    connections: [13, 21, 23, 27, 28, 29, 35]
+    connections: [13, 21, 22, 27, 28, 29, 35],
+    isStartingArea: true
   },
   21: {
     name: 'Wales',
@@ -100,7 +103,8 @@ export const MapEuropeConnections: Areas = {
   },
   23: {
     name: 'Italy',
-    connections: [13, 17, 18, 19, 24, 25, 41, 42, 43]
+    connections: [13, 17, 18, 19, 24, 25, 41, 42, 43],
+    isStartingArea: true
   },
   24: {
     name: 'Switzerland',
@@ -152,7 +156,8 @@ export const MapEuropeConnections: Areas = {
   },
   36: {
     name: 'Sweden',
-    connections: [30, 31, 34, 35, 37, 44]
+    connections: [30, 31, 34, 35, 37, 44],
+    isStartingArea: true
   },
   37: {
     name: 'Finland',

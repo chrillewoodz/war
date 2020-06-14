@@ -28,7 +28,8 @@ export interface Army {
 }
 
 export interface Area {
-  areaId: string;
+  areaId: number;
+  isStartingArea: boolean;
   state: {
     occupiedBy?: Player;
     troops: {

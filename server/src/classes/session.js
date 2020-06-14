@@ -23,6 +23,27 @@ class Session {
     this.convertPlayersToClasses();
   }
 
+  setStartingAreas() {
+
+    const players = Object.keys(this.state.players);
+    const shuffledPlayers = players.sort(() => 0.5 - Math.random());
+    const areas = this.state.areas;
+    console.log(players, shuffledPlayers);
+    playersLoop: for (let i = 0; i < shuffledPlayers.length; i++) {
+
+      for (let j = 0; j < areas.length; j++) {
+
+        console.log(this.state.areas[j].isStartingArea);
+        if (this.state.areas[j].isStartingArea && this.state.areas[j].state.occupiedBy === null) {
+          console.log('if');
+          this.state.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
+          console.log(this.state.areas[j]);
+          continue playersLoop;
+        }
+      }
+    }
+  }
+
   addPlayer(clientId, extras) {
     this.state.players[clientId] = new Player({ clientId, extras });
   }
@@ -59,6 +80,11 @@ class Session {
     }
   }
 
+  start() {
+    this.state.started = true;
+    this.setStartingAreas();
+  }
+
   end() {
     this.state.ended = true;
   }
@@ -93,16 +119,28 @@ class Session {
       .length;
 
     return activePlayersLeft;
+  }
 
-    // if (this.state.started && activePlayersLeft >= 2) {
-    //   return true;
-    // }
-    // // Allow pending games with at least 1 player to continue to stay open
-    // else if (!this.state.started && activePlayersLeft >= 1) {
-    //   return true;
-    // }
+  checkForReadyPlayers() {
 
-    // return false;
+    const playersInGame = Object.keys(this.state.players);
+    const minPlayers = this.settings.minPlayers;
+
+    if (playersInGame.length >= minPlayers) {
+
+      const playersNotReady = playersInGame
+        .filter((clientId) => {
+
+          if (!this.state.players[clientId].state.ready) {
+            return true;
+          }
+        })
+        .length;
+
+      if (playersNotReady === 0) {
+        this.start();
+      }
+    }
   }
 
   convertPlayersToClasses() {

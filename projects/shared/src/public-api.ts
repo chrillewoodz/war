@@ -16,7 +16,7 @@ export * from './lib/game-stats/game-stats.component';
 export * from './lib/game-stats/game-stats.module';
 export * from './lib/map-europe/map-europe.component';
 export * from './lib/map-europe/map-europe.module';
-export * from './lib/map-europe/map-europe.connections';
+export * from './lib/map-europe/map-europe.config';
 export * from './lib/modal/modal.component';
 export * from './lib/modal/modal.module';
 export * from './lib/modal/modal.service';

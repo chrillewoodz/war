@@ -1,5 +1,5 @@
 import { Directive, HostListener, Renderer2 } from '@angular/core';
-import { MapEuropeConnections } from './map-europe/map-europe.connections';
+import { MapEuropeConfig } from './map-europe/map-europe.config';
 import { AreaStatsService } from './area-information/area-stats.service';
 
 @Directive({
@@ -35,7 +35,7 @@ export class AreaHandlerDirective {
 
     // TODO: Fetch real info
     this.ass.show({
-      country: MapEuropeConnections[areaId].name,
+      country: MapEuropeConfig[areaId].name,
       occupiedBy: {
         name: 'USA',
         color: 'rgb(40, 110, 53)'

@@ -176,9 +176,10 @@ export class SessionComponent implements OnDestroy {
         );
       }),
       tap((result) => {
-
-        if (!result.session.state.started) {
-          this.gameEngine.checkForReadyPlayers(result);
+        console.log(result.session.state.started);
+        if (result.session.state.started) {
+          console.log('updating map')
+          this.mapEngine.update(result);
         }
       })
     )
@@ -209,7 +210,7 @@ export class SessionComponent implements OnDestroy {
   ngAfterViewInit() {
 
     // TODO: Move to "dynamic" place
-    // this.mapEngine.renderActiveAreas(MapEuropeConnections, this.playerState?.areas);
+    // this.mapEngine.renderActiveAreas(MapEuropeConfig, this.playerState?.areas);
     // this.mapEngine.renderPlayerAreas(this.playerState?.areas, this.playerState?.colorRGB);
   }
 

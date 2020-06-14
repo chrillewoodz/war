@@ -56,33 +56,12 @@ export class GameEngine {
     this.stop.next(true);
   }
 
-  checkForReadyPlayers(result: PipeResult) {
-
-    const playersInGame = Object.keys(result.session.state.players);
-    const minPlayers = result.session.settings.minPlayers;
-
-    if (playersInGame.length >= minPlayers) {
-
-      const playersNotReady = playersInGame
-        .filter((clientId) => {
-
-          if (!result.session.state.players[clientId].state.ready) {
-            return true;
-          }
-        })
-        .length;
-
-      if (playersNotReady === 0) {
-        this.updateGame({ ...result.session.state, started: true });
-      }
-    }
-  }
-
   createStateForAreas(areas: HTMLElement[]) {
 
     return areas.map((area) => {
       return {
-        areaId: area.dataset.areaId,
+        areaId: Number(area.dataset.areaId),
+        isStartingArea: area.dataset.isStartingArea === 'true',
         state: {
           occupiedBy: null,
           troops: {

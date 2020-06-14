@@ -86,6 +86,19 @@ export class SocketApi {
     return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
+  start(emitToServer: boolean) {
+
+    if (emitToServer) {
+
+      this.socket.emit(this.socketEvents.START, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
+  }
+
   update(emitToServer: boolean, newState?: Partial<SessionState>) {
 
     if (emitToServer) {

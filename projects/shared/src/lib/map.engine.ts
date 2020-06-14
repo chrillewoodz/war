@@ -1,6 +1,7 @@
 import { Injectable, Renderer2, RendererFactory2, ElementRef } from '@angular/core';
-import { Areas } from './map-europe/map-europe.connections';
+import { Areas, MapEuropeConfig } from './map-europe/map-europe.config';
 import { ReplaySubject } from 'rxjs';
+import { PipeResult, Area } from './interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -24,15 +25,49 @@ export class MapEngine {
   mapReady(elementRef: ElementRef) {
 
     const areas: HTMLElement[] = Array.from(elementRef.nativeElement.querySelectorAll(this.areaSelector));
+    const config = MapEuropeConfig; // TODO: Make this dynamic
 
-    this.attachAreaIds(areas);
+    this.attachData(areas, config);
     this.areas.next(areas);
   }
 
-  attachAreaIds(areas: HTMLElement[]) {
+  // TODO: Create config type
+  attachData(areas: HTMLElement[], config: any) {
 
     areas.forEach((el, i) => {
       this.renderer.setAttribute(el, 'data-area-id', String(i));
+      this.renderer.setAttribute(el, 'data-is-starting-area', String(!!config[i].isStartingArea));
+    });
+  }
+
+  update(result: PipeResult) {
+
+    const areas = result.session.state.areas;
+
+    areas.forEach((area) => {
+
+      const areaEl = this.queryArea(area.areaId);
+
+      if (area.state.occupiedBy) {
+        this.renderFill(areaEl, area.state.occupiedBy.extras.faction.colorRGB);
+      }
+
+      if (area.state.occupiedBy?.clientId === result.self.clientId) {
+        this.renderConnections(area);
+        this.renderer.addClass(areaEl, 'active');
+      }
+    });
+  }
+
+  renderFill(area: HTMLElement, color: string) {
+    this.renderer.setStyle(area, 'fill', color);
+  }
+
+  renderConnections(area: Area) {
+
+    MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
+      const areaEl = this.queryArea(connectionId);
+      this.renderer.addClass(areaEl, 'active');
     });
   }
 
