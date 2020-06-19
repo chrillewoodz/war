@@ -42,6 +42,7 @@ export class MapEngine {
 
   update(result: PipeResult) {
 
+    const activeAreas = [];
     const areas = result.session.state.areas;
 
     areas.forEach((area) => {
@@ -52,11 +53,17 @@ export class MapEngine {
         this.renderFill(areaEl, area.state.occupiedBy.extras.faction.colorRGB);
       }
 
-      if (area.state.occupiedBy?.clientId === result.self.clientId) {
+      if (
+        area.state.occupiedBy?.clientId === result.self.clientId && // If occupied by me
+        result.session.state.currentTurn?.clientId === result.self.clientId // If it's my turn
+      ) {
         this.renderConnections(area);
         this.renderer.addClass(areaEl, 'active');
+        activeAreas.push(areaEl);
       }
     });
+
+    this.activeAreas.next(activeAreas);
   }
 
   renderFill(area: HTMLElement, color: string) {
@@ -68,34 +75,6 @@ export class MapEngine {
     MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
       const areaEl = this.queryArea(connectionId);
       this.renderer.addClass(areaEl, 'active');
-    });
-  }
-
-  renderActiveAreas(connections: Areas, areas: number[]) {
-
-    const activeAreas = [];
-
-    areas.forEach((id) => {
-
-      const ownedArea = this.queryArea(id);
-      this.renderer.addClass(ownedArea, 'owned');
-      this.renderer.addClass(ownedArea, 'active');
-      activeAreas.push(ownedArea);
-
-      connections[id].connections.forEach((connectionId) => {
-        const connectedArea = this.queryArea(connectionId);
-        this.renderer.addClass(connectedArea, 'active');
-        activeAreas.push(connectedArea);
-      });
-    });
-
-    this.activeAreas.next(activeAreas);
-  }
-
-  renderPlayerAreas(areaIds: number[], color: string) {
-
-    areaIds.forEach((id) => {
-      this.renderer.setStyle(this.queryArea(id), 'fill', color);
     });
   }
 

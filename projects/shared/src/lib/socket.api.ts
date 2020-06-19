@@ -1,4 +1,4 @@
-import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras } from './interfaces';
+import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras, TimerResponse } from './interfaces';
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
@@ -86,11 +86,11 @@ export class SocketApi {
     return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
-  start(emitToServer: boolean) {
+  changeTurn(emitToServer: boolean) {
 
     if (emitToServer) {
-
-      this.socket.emit(this.socketEvents.START, {
+      console.log(emitToServer);
+      this.socket.emit(this.socketEvents.CHANGE_TURN, {
         sessionId: this.cache.sessionId,
         clientId: this.cache.clientId
       });
@@ -127,11 +127,34 @@ export class SocketApi {
 
     // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
     // when compared to session-specific ones
-    return this.socket.fromEvent(this.socketEvents.STATS_SUCCESS).pipe(
+    // TODO: Type response
+    return this.socket.fromEvent<SocketResponse<any>>(this.socketEvents.STATS_SUCCESS).pipe(
       map(this.onSocketResponse),
       catchError(this.onSocketError)
     );
   }
+
+  timer<T>(emitToServer: boolean) {
+
+    if (emitToServer) {
+      this.socket.emit(this.socketEvents.TIMER_RESTART, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    console.log('restarting')
+    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
+    // when compared to session-specific ones
+    return merge(
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
+    ).pipe(
+      map(this.onSocketResponse),
+      catchError(this.onSocketError)
+    );
+  }
+
 
   isActive() {
 
@@ -166,7 +189,7 @@ export class SocketApi {
   }
 
   @Bound
-  private onSocketResponse(response: SocketResponse)  {
+  private onSocketResponse<T>(response: SocketResponse<T>)  {
     console.log(response);
 
     switch (response.status) {
@@ -176,7 +199,7 @@ export class SocketApi {
   }
 
   @Bound
-  private onSocketError(err: string, caught: ObservableInput<any>) {
+  private onSocketError(err: string) {
     console.error(err);
     return throwError(err);
   }
@@ -193,8 +216,8 @@ export class SocketApi {
   private socketResponse$(event: string) {
 
     return merge(
-      this.socket.fromEvent(event),
-      this.socket.fromEvent(this.socketEvents.INTERNAL_ERROR)
+      this.socket.fromEvent<SocketResponse>(event),
+      this.socket.fromEvent<SocketResponse>(this.socketEvents.INTERNAL_ERROR)
     )
     // VERY IMPORTANT: Remember to use @Bound when passed the callback(s)
     // directly into the pipe operator functions.

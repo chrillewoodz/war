@@ -28,7 +28,19 @@ const fn = async function(io, socket, ev, storage) {
       if (!session.state.started) {
 
         session.playerReady(ev.clientId);
-        session.checkForReadyPlayers();
+
+        session.checkForReadyPlayers(() => {
+
+          // Start game
+          session.start();
+
+          // Start counting down remaining time on the turn
+          session.startTurnTimer((e) => {
+            io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
+          }, (e) => {
+            io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
+          });
+        });
 
         await storage.set(session);
 

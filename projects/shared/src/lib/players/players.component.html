@@ -2,7 +2,11 @@
   <button *ngIf="!session?.state.players[self?.clientId]?.state.ready" class="btn-ready" type="button" (click)="ready()">I'm ready! <span class="ready-icon"><i class="fas fa-check"></i></span></button>
   <ul>
     <ng-container *ngFor="let player of players">
-      <li class="player" [ngClass]="{self: player.clientId === self?.clientId, quit: player.state.quit}" [ngStyle]="{color: player.extras.faction.colorRGB}">
+      <li class="player" [ngClass]="{
+        self: player.clientId === self?.clientId,
+        quit: player.state.quit,
+        'current-turn': session?.state.currentTurn?.clientId === player?.clientId
+      }" [ngStyle]="{color: player.extras.faction.colorRGB}">
         <img class="player-img" src="assets/SVG/{{player.extras.faction.name}}.svg" alt="Flag">
         <span>{{player.extras.faction.name}}</span>
         <div class="player-status">

@@ -1,5 +1,7 @@
 const { v4 } = require('uuid');
+const NanoTimer = require('nanotimer');
 const Player = require('./player');
+const SocketEvents = require('./socket-events');
 const differenceInSeconds = require('date-fns/differenceInSeconds')
 
 class Session {
@@ -17,10 +19,37 @@ class Session {
       players: {},
       logs: [],
       areas: null,
-      areasReady: false
+      areasReady: false,
+      currentTurn: null
     };
 
     this.convertPlayersToClasses();
+  }
+
+  changeTurn() {
+
+    const players = Object.keys(this.state.players);
+
+    if (this.state.currentTurn === null) {
+      this.state.currentTurn = this.state.players[players[0]];
+    }
+    else {
+      const currentIndex = players.indexOf(this.state.currentTurn.clientId);
+      let newIndex;
+
+      switch (currentIndex) {
+        case 0: newIndex = 1; break;
+        case 1: newIndex = 2; break;
+        case 2: newIndex = 3; break;
+        case 3: newIndex = 0; break;
+      }
+
+      if (!newIndex) {
+        throw new Error('Could not determine next player turn');
+      }
+
+      this.state.currentTurn = this.state.players[players[newIndex]];
+    }
   }
 
   setStartingAreas() {
@@ -80,9 +109,44 @@ class Session {
     }
   }
 
+  startTurnTimer(onInterval, onFinished) {
+
+    if (!onInterval || !onFinished) {
+      throw new Error('Both callbacks [onInterval, onFinished] must be provided');
+    }
+
+    const timer = new NanoTimer();
+    const interval = 1000;
+    const total = 10000;
+    let elapsed = 0;
+
+    const getResponse = () => {
+
+      return {
+        elapsed: {
+          percent: (elapsed / total) * 100,
+          milliseconds: elapsed
+        },
+        totalTime: total
+      }
+    }
+
+    timer.setInterval(() => {
+      elapsed += interval;
+      onInterval(getResponse());
+    }, '', `${interval}m`);
+
+    timer.setTimeout(() => {
+      timer.clearInterval();
+      timer.clearTimeout();
+      onFinished(getResponse());
+    }, [timer], `${total}m`);
+  }
+
   start() {
     this.state.started = true;
     this.setStartingAreas();
+    this.changeTurn();
   }
 
   end() {
@@ -121,7 +185,7 @@ class Session {
     return activePlayersLeft;
   }
 
-  checkForReadyPlayers() {
+  checkForReadyPlayers(onAllPlayersReady) {
 
     const playersInGame = Object.keys(this.state.players);
     const minPlayers = this.settings.minPlayers;
@@ -138,7 +202,7 @@ class Session {
         .length;
 
       if (playersNotReady === 0) {
-        this.start();
+        onAllPlayersReady();
       }
     }
   }

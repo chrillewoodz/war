@@ -12,9 +12,10 @@
   const onSessionUpdate = require('./events/on-session-update');
   const onQuit = require('./events/on-quit');
   const onReady = require('./events/on-ready');
-  const onStart = require('./events/on-start');
+  const onChangeTurn = require('./events/on-change-turn');
   const onStats = require('./events/on-stats');
   const onIsActive = require('./events/on-is-active');
+  const onTimerRestart = require('./events/on-timer-restart');
 
   // Classes
   const Session = require('./classes/session');
@@ -103,8 +104,11 @@
     socket.on(SocketEvents.JOIN, ev => onJoin(io, socket, ev, storage));
     socket.on(SocketEvents.QUIT, ev => onQuit(io, socket, ev, storage));
     socket.on(SocketEvents.READY, ev => onReady(io, socket, ev, storage));
-    socket.on(SocketEvents.START, ev => onStart(io, socket, ev, storage));
+    socket.on(SocketEvents.CHANGE_TURN, ev => onChangeTurn(io, socket, ev, storage));
     socket.on(SocketEvents.IS_ACTIVE, ev => onIsActive(socket, ev, storage));
+
+    // TODO: Only enable in dev mode
+    socket.on(SocketEvents.TIMER_RESTART, ev => onTimerRestart(io, socket, ev, storage));
 
     socket.on('disconnect', () => {
       io.emit(SocketEvents.STATS_SUCCESS);

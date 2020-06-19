@@ -57,6 +57,7 @@ export interface SessionState {
   logs: any[];
   areas: Area[];
   areasReady: boolean;
+  currentTurn?: Player;
 }
 
 export interface Session {
@@ -65,13 +66,22 @@ export interface Session {
   state: SessionState;
 }
 
-export interface SocketResponse {
+export interface SocketResponse<T = Session> {
   status: number;
-  data?: Session;
+  data?: T;
   err?: string;
 }
 
 export interface PipeResult {
   session: Session;
   readonly self: Player;
+}
+
+export interface TimerResponse {
+  elapsed: {
+    percent: number;
+    milliseconds: number;
+  };
+  totalTime: number;
+  finished: boolean;
 }

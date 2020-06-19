@@ -18,3 +18,7 @@ export function getLastPlayerWhoJoined(session: Session) {
     .map((id) => session.state.players[id])
     .pop();
 }
+
+export function isMyTurn(result: PipeResult) {
+  return result.self?.clientId === result.session?.state.currentTurn?.clientId;
+}

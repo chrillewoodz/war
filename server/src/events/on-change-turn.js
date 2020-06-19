@@ -28,7 +28,13 @@ const fn = async function(io, socket, ev, storage) {
     }
     else {
 
-      session.start();
+      session.changeTurn();
+
+      session.startTurnTimer((e) => {
+        io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
+      }, (e) => {
+        io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
+      });
 
       await storage.set(session);
 

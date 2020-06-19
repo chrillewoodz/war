@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
-import { environment } from './../../environments/environment';
+import { environment } from '../../environments/environment';
 import { Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { timer, Subscription, merge, of, interval } from 'rxjs';
+import { timer, Subscription, merge, of, interval, Observable } from 'rxjs';
 import { takeUntil, map, take, tap, switchMap, first, finalize, catchError, filter } from 'rxjs/operators';
 
 import {
@@ -14,10 +14,10 @@ import {
   GameEngine,
   GameEngineEvent,
   SocketApi,
-  PipeResult
+  PipeResult,
+  isMyTurn,
+  TimerResponse
 } from 'shared';
-
-import { Socket } from 'ngx-socket-io';
 
 @Component({
   selector: 'app-session',
@@ -56,18 +56,6 @@ export class SessionComponent implements OnDestroy {
       idleArmies: 8
     }
   }
-
-  // public players: Players = {
-  //   '1': Sweden,
-  //   '2': China,
-  //   '3': Somalia,
-  //   '4': Germany
-  // };
-
-  // public playerState = {
-  //   areas: [36, 13],
-  //   colorRGB: this.players['1'].colorRGB
-  // };
 
   public cards = [
     { img: 'soldier', title: 'An unexpected ally', action: () => {
@@ -109,21 +97,24 @@ export class SessionComponent implements OnDestroy {
   public mapType = 'europe';
   public activeAreas: HTMLElement[];
   public areas: HTMLElement[];
-  public timePerRound = 90000;
+  public timePerRound = 5000;
   public totalTerritories = 32;
+  public elapsedTime = 0;
 
-  public timer$ = timer(1000, 1000)
-    .pipe(
-      map((t) => (1 + t) * 1000),
-      take(this.timePerRound / 1000)
-    );
+  // public timer$ = timer(1000, 1000)
+  //   .pipe(
+  //     map((t) => (1 + t) * 1000),
+  //     take(this.timePerRound / 1000)
+  //   );
 
+  public result: PipeResult;
   public session: Session;
   public self: Player;
   public players: {[clientId: string]: Player};
 
   private subscriptions = new Subscription();
   private shouldQuitOnDestroy = true;
+  private firstCycleDone = environment.production ? true : false;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -145,12 +136,57 @@ export class SessionComponent implements OnDestroy {
       }
     );
 
-    // const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
-    //   this.activeAreas = activeAreas;
-    // });
+    // Don't restart on refresh/load in production
+    const turnSub = this.socketApi.timer<TimerResponse>(false)
+      .subscribe((result) => {
+        console.log(result);
+        this.elapsedTime = result.elapsed.percent;
+      }, (err) => {
+        console.log(err);
+      }
+    );
+
+    const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
+      this.activeAreas = activeAreas;
+    });
+
+    // NOTE: This cannot be used with function keyword
+    // or the timer call throws type error.
+    // NOTE: This is only to increase developer happiness
+    const onDevRefresh = (forwardedResult: PipeResult) => {
+
+      return new Observable((observer) => {
+        return observer.next();
+      })
+      .pipe(
+        first(),
+        map(() => forwardedResult),
+        tap((result) => {
+
+          if (!environment.production) {
+
+            if (isMyTurn(result)) {
+              console.log('yup')
+              this.socketApi.timer<TimerResponse>(true);
+            }
+          }
+
+          this.firstCycleDone = true;
+        })
+      );
+    };
 
     const sessionSub = merge(
-      this.socketApi.get(true),
+      this.socketApi.get(true).pipe(
+        switchMap((result) => {
+
+          if (this.firstCycleDone) {
+            return of(result);
+          }
+
+          return onDevRefresh(result);
+        })
+      ),
       this.socketApi.update(false)
     )
     .pipe(
@@ -176,14 +212,14 @@ export class SessionComponent implements OnDestroy {
         );
       }),
       tap((result) => {
-        console.log(result.session.state.started);
+
         if (result.session.state.started) {
-          console.log('updating map')
           this.mapEngine.update(result);
         }
       })
     )
     .subscribe((result) => {
+      this.result = result;
       this.session = result.session;
       this.players = result.session.state.players;
       this.self = result.self;
@@ -194,7 +230,8 @@ export class SessionComponent implements OnDestroy {
     });
 
     this.subscriptions.add(activeEmitter);
-    // this.subscriptions.add(activeAreasSub);
+    this.subscriptions.add(turnSub);
+    this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
   }
 
@@ -205,17 +242,6 @@ export class SessionComponent implements OnDestroy {
     }
 
     this.subscriptions.unsubscribe();
-  }
-
-  ngAfterViewInit() {
-
-    // TODO: Move to "dynamic" place
-    // this.mapEngine.renderActiveAreas(MapEuropeConfig, this.playerState?.areas);
-    // this.mapEngine.renderPlayerAreas(this.playerState?.areas, this.playerState?.colorRGB);
-  }
-
-  endTurn() {
-    console.log('turn ended');
   }
 
   initFight() {

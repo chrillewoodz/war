@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'timer',
@@ -8,16 +7,10 @@ import { Observable } from 'rxjs';
 })
 
 export class TimerComponent implements OnInit {
-  @Output() ranOut = new EventEmitter();
-  @Input() total: number;
-  @Input() set timer$ (timer$: Observable<number>) {
-
-    timer$.subscribe((time) => {
-      const percent = (time / this.total) * 100;
-      this.width = percent;
-      this.isMedium = percent >= 60 && percent < 90;
-      this.isHigh = percent >= 90;
-    });
+  @Input() set percent (percent: number) {
+    this.width = percent;
+    this.isMedium = percent >= 60 && percent < 90;
+    this.isHigh = percent >= 90;
   };
 
   public width = 0;

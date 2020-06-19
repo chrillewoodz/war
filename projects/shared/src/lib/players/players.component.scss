@@ -41,6 +41,10 @@
     background-color: rgb(76, 76, 76);
     color: red !important;
   }
+
+  &.current-turn {
+    background-color: rgb(3, 83, 90);
+  }
 }
 
 .player-img {

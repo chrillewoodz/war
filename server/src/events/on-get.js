@@ -19,12 +19,15 @@ const fn = async function(socket, ev, storage) {
      */
     const session = await storage.getById(ev.sessionId);
 
-    if (session) {
-      socket.emit(SocketEvents.GET_SUCCESS, new SocketResponse(200, session));
-    }
-    else {
-      throw new Error('No game session with that id');
-    }
+    socket.join(session.sessionId, () => {
+
+      if (session) {
+        socket.emit(SocketEvents.GET_SUCCESS, new SocketResponse(200, session));
+      }
+      else {
+        throw new Error('No game session with that id');
+      }
+    });
   }
   catch (err) {
     console.error(err);

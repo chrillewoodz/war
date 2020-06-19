@@ -8,7 +8,7 @@ export class SocketEvents {
   readonly READY = 'ready';
   readonly END = 'end';
   readonly STATS = 'stats';
-  readonly START = 'start';
+  readonly CHANGE_TURN = 'change_turn';
   readonly IS_ACTIVE = 'is_active';
   readonly INTERNAL_ERROR = 'internal_error';
 
@@ -21,4 +21,9 @@ export class SocketEvents {
   // readonly QUIT_SUCCESS = `${this.QUIT}_success`;
   // readonly END_SUCCESS = `${this.END}_success`;
   readonly STATS_SUCCESS = `${this.STATS}_success`;
+
+  // Others
+  readonly TIMER_RESTART = 'timer_restart';
+  readonly TIMER_UPDATED = 'timer_updated';
+  readonly TIMER_FINISHED = 'timer_finished';
 }

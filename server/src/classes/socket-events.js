@@ -8,7 +8,7 @@ class SocketEvents {
   READY = 'ready';
   END = 'end';
   STATS = 'stats';
-  START = 'start';
+  CHANGE_TURN = 'change_turn';
   IS_ACTIVE = 'is_active';
   INTERNAL_ERROR = 'internal_error';
 
@@ -21,6 +21,11 @@ class SocketEvents {
   // QUIT_SUCCESS = `${this.QUIT}_success`;
   // END_SUCCESS = `${this.END}_success`;
   STATS_SUCCESS = `${this.STATS}_success`;
+
+  // Others
+  TIMER_RESTART = 'timer_restart';
+  TIMER_UPDATED = 'timer_updated';
+  TIMER_FINISHED = 'timer_finished';
 }
 
 module.exports = new SocketEvents();

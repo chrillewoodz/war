@@ -1,11 +1,10 @@
 <div class="session-wrapper">
 
-  <timer [total]="timePerRound" [timer$]="timer$" (ranOut)="endTurn()"></timer>
+  <timer [percent]="elapsedTime"></timer>
 
   <div class="game-hud">
     <players [session]="session" [players]="players" [self]="self"></players>
-    <!-- TODO: Set active areas -->
-    <area-information [areas]="session?.state.areas" [activeAreas]="[]"></area-information>
+    <area-information [areas]="session?.state.areas" [activeAreas]="activeAreas"></area-information>
     <game-logger [player]="self" [session]="session" (onNewLog)="updateState($event)"></game-logger>
   </div>
 
