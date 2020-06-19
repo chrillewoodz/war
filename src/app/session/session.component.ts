@@ -51,7 +51,7 @@ export class SessionComponent implements OnDestroy {
     ownedArmies: {
       soldiers: 12,
       horses: 7,
-      gatlinGuns: 2,
+      gatlingGuns: 2,
       spies: 3,
       idleArmies: 8
     }
@@ -81,7 +81,7 @@ export class SessionComponent implements OnDestroy {
       troops: {
         soldiers: 5,
         horses: 2,
-        gatlinGuns: 1
+        gatlingGuns: 1
       }
     },
     defender: {
@@ -89,7 +89,7 @@ export class SessionComponent implements OnDestroy {
       troops: {
         soldiers: 3,
         horses: 1,
-        gatlinGuns: 0
+        gatlingGuns: 0
       }
     }
   }
@@ -148,6 +148,7 @@ export class SessionComponent implements OnDestroy {
 
     const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
       this.activeAreas = activeAreas;
+      console.log(this.activeAreas);
     });
 
     // NOTE: This cannot be used with function keyword

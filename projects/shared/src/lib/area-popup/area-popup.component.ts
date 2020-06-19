@@ -45,9 +45,11 @@ export class AreaPopupComponent {
       this.x = e.clientX + 15;
       this.y = e.clientY + 15;
       this.isOpen = true;
+      console.log(this);
     }
     else {
       this.isOpen = false;
+      console.log('else');
     }
   }
 

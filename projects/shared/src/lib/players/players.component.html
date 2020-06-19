@@ -17,14 +17,16 @@
         </div>
       </li>
     </ng-container>
-    <li *ngIf="players.length < 2" class="player empty-player">
-      <span>Waiting for player...</span>
-    </li>
-    <li *ngIf="players.length < 3" class="player empty-player">
-      <span>Waiting for player...</span>
-    </li>
-    <li *ngIf="players.length < 4" class="player empty-player">
-      <span>Waiting for player...</span>
-    </li>
+    <ng-container *ngIf="!session?.state.started">
+      <li *ngIf="players.length < 2" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+      <li *ngIf="players.length < 3" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+      <li *ngIf="players.length < 4" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+    </ng-container>
   </ul>
 </div>

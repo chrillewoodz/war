@@ -43,7 +43,7 @@ export class AreaHandlerDirective {
       troops: {
         soldiers: Math.floor(Math.random() * 50) + 1,
         horses: Math.floor(Math.random() * 30) + 1,
-        gatlinGuns: Math.floor(Math.random() * 20) + 1,
+        gatlingGuns: Math.floor(Math.random() * 20) + 1,
         spies: Math.floor(Math.random() * 6) + 1
       }
     });

@@ -12,7 +12,7 @@ export class MapEngine {
   public readonly areaSelector = '.cls-1';
 
   private areas = new ReplaySubject<HTMLElement[]>(1);
-  private activeAreas = new ReplaySubject<HTMLElement[]>(1);
+  private activeAreas = new ReplaySubject<Element[]>(1);
   private renderer: Renderer2;
 
   public areas$ = this.areas.asObservable();
@@ -42,7 +42,6 @@ export class MapEngine {
 
   update(result: PipeResult) {
 
-    const activeAreas = [];
     const areas = result.session.state.areas;
 
     areas.forEach((area) => {
@@ -59,11 +58,11 @@ export class MapEngine {
       ) {
         this.renderConnections(area);
         this.renderer.addClass(areaEl, 'active');
-        activeAreas.push(areaEl);
+        this.renderer.addClass(areaEl, 'owned');
       }
     });
 
-    this.activeAreas.next(activeAreas);
+    this.activeAreas.next(this.queryActiveAreas());
   }
 
   renderFill(area: HTMLElement, color: string) {
@@ -76,6 +75,10 @@ export class MapEngine {
       const areaEl = this.queryArea(connectionId);
       this.renderer.addClass(areaEl, 'active');
     });
+  }
+
+  private queryActiveAreas() {
+    return Array.from(document.querySelectorAll('.map-container polygon.active'));
   }
 
   private queryArea(areaId: number): HTMLElement {
