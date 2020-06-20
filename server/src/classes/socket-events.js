@@ -23,6 +23,8 @@ class SocketEvents {
   STATS_SUCCESS = `${this.STATS}_success`;
 
   // Others
+  TIMER_PAUSE = 'timer_pause';
+  TIMER_RESUME = 'timer_resume';
   TIMER_RESTART = 'timer_restart';
   TIMER_UPDATED = 'timer_updated';
   TIMER_FINISHED = 'timer_finished';

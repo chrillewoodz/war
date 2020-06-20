@@ -1,8 +1,9 @@
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
-const SessionsStorage = require('../classes/sessions-storage');
+const AppStorage = require('../classes/app-storage');
 const SocketEvents = require('../classes/socket-events');
+const Timers = require('../classes/timers');
 
 /**
  *
@@ -12,9 +13,10 @@ const SocketEvents = require('../classes/socket-events');
  *   sessionId: String
  *   clientId: String
  * }} ev
- * @param {SessionsStorage} storage
+ * @param {AppStorage} storage
+ * @param {Timers} timers
  */
-const fn = async function(io, socket, ev, storage) {
+const fn = async function(io, socket, ev, storage, timers) {
 
   try {
 
@@ -29,14 +31,19 @@ const fn = async function(io, socket, ev, storage) {
 
         session.playerReady(ev.clientId);
 
-        session.checkForReadyPlayers(() => {
+        session.checkForReadyPlayers(async () => {
 
           // Start game
           session.start();
 
-          // Start counting down remaining time on the turn
-          session.startTurnTimer((e) => {
+          timers.addTimer(session.sessionId);
+
+          await storage.setTimers(timers);
+
+          timers.startTimer(session.sessionId, async (e) => {
             io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
+            await storage.setTimers(timers);
+            await storage.set(session);
           }, (e) => {
             io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
           });
@@ -56,7 +63,7 @@ const fn = async function(io, socket, ev, storage) {
   }
   catch (err) {
     console.error(err);
-    socket.emit(SocketEventsINTERNAL_ERROR, new SocketError(err.message));
+    socket.emit(SocketEvents.INTERNAL_ERROR, new SocketError(err.message));
   }
 }
 

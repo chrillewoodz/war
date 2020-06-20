@@ -95,7 +95,7 @@ export class SessionComponent implements OnDestroy {
   }
 
   public mapType = 'europe';
-  public activeAreas: HTMLElement[];
+  public activeAreas: Element[];
   public areas: HTMLElement[];
   public timePerRound = 5000;
   public totalTerritories = 32;
@@ -139,8 +139,7 @@ export class SessionComponent implements OnDestroy {
     // Don't restart on refresh/load in production
     const turnSub = this.socketApi.timer<TimerResponse>(false)
       .subscribe((result) => {
-        console.log(result);
-        this.elapsedTime = result.elapsed.percent;
+        this.elapsedTime = result.percent;
       }, (err) => {
         console.log(err);
       }
@@ -169,6 +168,10 @@ export class SessionComponent implements OnDestroy {
             if (isMyTurn(result)) {
               console.log('yup')
               this.socketApi.timer<TimerResponse>(true);
+            }
+            else {
+              console.log('should set percent', result);
+              this.elapsedTime = result.session.state.timer?.percent;
             }
           }
 

@@ -23,7 +23,9 @@ export class SocketEvents {
   readonly STATS_SUCCESS = `${this.STATS}_success`;
 
   // Others
+  readonly TIMER_PAUSE = 'timer_pause';
   readonly TIMER_RESTART = 'timer_restart';
+  readonly TIMER_RESUME = 'timer_resume';
   readonly TIMER_UPDATED = 'timer_updated';
   readonly TIMER_FINISHED = 'timer_finished';
 }

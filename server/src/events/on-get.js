@@ -1,6 +1,6 @@
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
-const SessionsStorage = require('../classes/sessions-storage');
+const AppStorage = require('../classes/app-storage');
 const Session = require('../classes/session');
 const SocketEvents = require('../classes/socket-events');
 
@@ -8,7 +8,7 @@ const SocketEvents = require('../classes/socket-events');
  *
  * @param {SocketIO.Socket} socket
  * @param {{clientId: String}} ev
- * @param {SessionsStorage} storage
+ * @param {AppStorage} storage
  */
 const fn = async function(socket, ev, storage) {
 

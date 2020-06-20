@@ -2,7 +2,7 @@ const Faction = require('../classes/faction');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
-const SessionsStorage = require('../classes/sessions-storage');
+const AppStorage = require('../classes/app-storage');
 const SocketEvents = require('../classes/socket-events');
 const { asArray } = require('../factions');
 
@@ -14,7 +14,7 @@ const { asArray } = require('../factions');
  *   extras: *
  *   clientId: String
  * }} ev
- * @param {SessionsStorage} storage
+ * @param {AppStorage} storage
  */
 const fn = async function(io, socket, ev, storage) {
 

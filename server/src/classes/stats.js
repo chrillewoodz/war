@@ -1,4 +1,4 @@
-const SessionsStorage = require('./sessions-storage');
+const AppStorage = require('./app-storage');
 
 class Stats {
 
@@ -8,7 +8,7 @@ class Stats {
 
   /**
    *
-   * @param {SessionsStorage} storage
+   * @param {AppStorage} storage
    */
   async get(io, storage) {
 

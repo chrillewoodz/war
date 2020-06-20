@@ -30,17 +30,18 @@ const fn = async function(io, socket, ev, storage, timers) {
     }
     else {
 
-      timers.resetTimer(session.sessionId);
+      console.log('pausing')
 
-      await storage.setTimers(timers);
+      timers.pauseTimer(session.sessionId);
 
-      timers.startTimer(session.sessionId, async (e) => {
-        io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
-        await storage.setTimers(timers);
-        await storage.set(session);
-      }, (e) => {
-        io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
-      });
+
+      // session.startTimer(async (e) => {
+      //   io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
+      //   await storage.set(session);
+      // }, (e) => {
+      //   io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
+      // });
+      // io.to(session.sessionId).emit(SocketEvents.SESSION_UPDATED, new SocketResponse(200, session));
     }
   }
   catch(err) {

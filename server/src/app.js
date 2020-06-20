@@ -15,22 +15,27 @@
   const onChangeTurn = require('./events/on-change-turn');
   const onStats = require('./events/on-stats');
   const onIsActive = require('./events/on-is-active');
+  const onTimerPause = require('./events/on-timer-pause');
+  const onTimerResume = require('./events/on-timer-resume');
   const onTimerRestart = require('./events/on-timer-restart');
 
   // Classes
   const Session = require('./classes/session');
-  const SessionsStorage = require('./classes/sessions-storage');
+  const AppStorage = require('./classes/app-storage');
   const Stats = require('./classes/stats');
   const SocketEvents = require('./classes/socket-events');
   const SocketResponse = require('./classes/socket-response');
+  const Timers = require('./classes/timers');
 
   // Global instances
-  const storage = new SessionsStorage();
+  const timers = new Timers();
   const stats = new Stats();
+  const storage = new AppStorage();
 
   // Initiate storage
   try {
     await storage.init();
+    await timers.init(storage);
   }
   catch (e) {
     console.error(e);
@@ -103,12 +108,14 @@
     socket.on(SocketEvents.HOST, ev => onHost(io, socket, ev, storage));
     socket.on(SocketEvents.JOIN, ev => onJoin(io, socket, ev, storage));
     socket.on(SocketEvents.QUIT, ev => onQuit(io, socket, ev, storage));
-    socket.on(SocketEvents.READY, ev => onReady(io, socket, ev, storage));
-    socket.on(SocketEvents.CHANGE_TURN, ev => onChangeTurn(io, socket, ev, storage));
+    socket.on(SocketEvents.READY, ev => onReady(io, socket, ev, storage, timers));
+    socket.on(SocketEvents.CHANGE_TURN, ev => onChangeTurn(io, socket, ev, storage, timers));
     socket.on(SocketEvents.IS_ACTIVE, ev => onIsActive(socket, ev, storage));
+    socket.on(SocketEvents.TIMER_PAUSE, ev => onTimerPause(io, socket, ev, storage, timers));
+    socket.on(SocketEvents.TIMER_RESUME, ev => onTimerResume(io, socket, ev, storage, timers));
 
     // TODO: Only enable in dev mode
-    socket.on(SocketEvents.TIMER_RESTART, ev => onTimerRestart(io, socket, ev, storage));
+    socket.on(SocketEvents.TIMER_RESTART, ev => onTimerRestart(io, socket, ev, storage, timers));
 
     socket.on('disconnect', () => {
       io.emit(SocketEvents.STATS_SUCCESS);

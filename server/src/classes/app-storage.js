@@ -1,10 +1,24 @@
 const storage = require('node-persist');
-const Player = require('../classes/player');
-const Session = require('../classes/session');
+const Session = require('./session');
+const Timers = require('./timers');
 
-class SessionsStorage {
+class AppStorage {
 
-  constructor() {}
+  /**
+   *
+   * @param {Timers} timers
+   */
+  constructor(timers) {
+    this.timers = timers;
+  }
+
+  async getTimers() {
+    return await storage.getItem('timers') || {};
+  }
+
+  async setTimers(timers) {
+    return await storage.setItem('timers', timers);
+  }
 
   async init() {
     return await storage.init();
@@ -97,4 +111,4 @@ class SessionsStorage {
   }
 }
 
-module.exports = SessionsStorage;
+module.exports = AppStorage;

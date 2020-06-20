@@ -58,6 +58,7 @@ export interface SessionState {
   areas: Area[];
   areasReady: boolean;
   currentTurn?: Player;
+  timer?: Timer;
 }
 
 export interface Session {
@@ -77,11 +78,17 @@ export interface PipeResult {
   readonly self: Player;
 }
 
+export interface Timer {
+  percent: number;
+  elapsed: number;
+  milliseconds: number;
+  total: number;
+}
+
+// TODO: Inherit some from Timer
 export interface TimerResponse {
-  elapsed: {
-    percent: number;
-    milliseconds: number;
-  };
-  totalTime: number;
+  percent: number;
+  milliseconds: number;
+  total: number;
   finished: boolean;
 }

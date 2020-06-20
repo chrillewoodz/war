@@ -143,7 +143,6 @@ export class SocketApi {
       });
     }
 
-    console.log('restarting')
     // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
     // when compared to session-specific ones
     return merge(
@@ -155,6 +154,45 @@ export class SocketApi {
     );
   }
 
+  pauseTimer<T>(emitToServer: boolean) {
+
+    if (emitToServer) {
+      this.socket.emit(this.socketEvents.TIMER_PAUSE, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
+    // when compared to session-specific ones
+    return merge(
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
+    ).pipe(
+      map(this.onSocketResponse),
+      catchError(this.onSocketError)
+    );
+  }
+
+  resumeTimer<T>(emitToServer: boolean) {
+
+    if (emitToServer) {
+      this.socket.emit(this.socketEvents.TIMER_RESUME, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId
+      });
+    }
+
+    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
+    // when compared to session-specific ones
+    return merge(
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
+    ).pipe(
+      map(this.onSocketResponse),
+      catchError(this.onSocketError)
+    );
+  }
 
   isActive() {
 

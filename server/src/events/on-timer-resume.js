@@ -30,13 +30,10 @@ const fn = async function(io, socket, ev, storage, timers) {
     }
     else {
 
-      timers.resetTimer(session.sessionId);
+      console.log('resuming');
 
-      await storage.setTimers(timers);
-
-      timers.startTimer(session.sessionId, async (e) => {
+      timers.resumeTimer(session.sessionId, async (e) => {
         io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
-        await storage.setTimers(timers);
         await storage.set(session);
       }, (e) => {
         io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));

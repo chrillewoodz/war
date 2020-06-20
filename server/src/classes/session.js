@@ -1,8 +1,6 @@
 const { v4 } = require('uuid');
-const NanoTimer = require('nanotimer');
-const Player = require('./player');
-const SocketEvents = require('./socket-events');
 const differenceInSeconds = require('date-fns/differenceInSeconds')
+const Player = require('./player');
 
 class Session {
 
@@ -107,40 +105,6 @@ class Session {
     else {
       this.removePlayer(clientId);
     }
-  }
-
-  startTurnTimer(onInterval, onFinished) {
-
-    if (!onInterval || !onFinished) {
-      throw new Error('Both callbacks [onInterval, onFinished] must be provided');
-    }
-
-    const timer = new NanoTimer();
-    const interval = 1000;
-    const total = 10000;
-    let elapsed = 0;
-
-    const getResponse = () => {
-
-      return {
-        elapsed: {
-          percent: (elapsed / total) * 100,
-          milliseconds: elapsed
-        },
-        totalTime: total
-      }
-    }
-
-    timer.setInterval(() => {
-      elapsed += interval;
-      onInterval(getResponse());
-    }, '', `${interval}m`);
-
-    timer.setTimeout(() => {
-      timer.clearInterval();
-      timer.clearTimeout();
-      onFinished(getResponse());
-    }, [timer], `${total}m`);
   }
 
   start() {

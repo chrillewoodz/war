@@ -2,13 +2,13 @@ const Stats = require('../classes/stats');
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const SocketEvents = require('../classes/socket-events');
-const SessionsStorage = require('../classes/sessions-storage');
+const AppStorage = require('../classes/app-storage');
 
 /**
  *
  * @param {SocketIO.Socket} socket
  * @param {Stats} statsInstance
- * @param {SessionsStorage} storage
+ * @param {AppStorage} storage
  */
 const fn = async function(socket, statsInstance, storage) {
 
