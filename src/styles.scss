@@ -125,6 +125,10 @@ button {
     color: white;
   }
 
+  &.btn-neutral {
+    background-color: darken($bgPrimaryRGB, 10%);
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: default;

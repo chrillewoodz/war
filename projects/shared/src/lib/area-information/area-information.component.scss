@@ -3,8 +3,7 @@
   position: fixed;
   top: 35px;
   left: 20px;
-  width: 260px;
-  display: none;
+  width: 300px;
   transition: opacity 150ms ease;
 
   &.visible {
@@ -34,7 +33,7 @@
 }
 
 .ai-menu-item-img {
-  width: 40px;
+  width: 100%;
   margin-bottom: 5px;
   border-radius: 10px;
 }

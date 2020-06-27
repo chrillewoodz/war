@@ -1,10 +1,12 @@
+@import './src/_variables';
+
 .ap-container {
   position: fixed;
   min-width: 150px;
   padding: 10px;
   border-radius: 10px;
   display: none;
-  background-color: rgb(152, 133, 89);
+  background-color: $bgPrimaryRGB;
   color: black;
 
   &.visible {
@@ -36,5 +38,76 @@
 
   &:hover {
     background-color: darken(rgb(152, 133, 89), 10);
+  }
+}
+
+.army-selection-menu {
+  display: none;
+  position: absolute;
+  top: -200px;
+  left: -200px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 10px solid darken($bgPrimaryRGB, 10%);
+  background-color: $bgPrimaryRGB;
+
+  &.open {
+    display: block;
+  }
+
+  > .row {
+    height: 100%;
+
+    .form-row:nth-of-type(2) {
+      margin: 10px 0;
+    }
+  }
+
+  .ap-img-container {
+    margin: 0 10px;
+
+    .ap-img {
+      width: 36px;
+      border-radius: 8px;
+    }
+
+    .ap-input {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      padding: 0;
+      border: none;
+      background: none;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+
+  .ap-increase,
+  .ap-decrease {
+    padding: 0;
+    border: 0;
+  }
+
+  .ap-confirm {
+    padding-left: 20px;
+  }
+
+  .btn-close {
+    position: absolute;
+    left: 50%;
+    bottom: -30px;
+    transform: translateX(-50%);
+    padding: 5px 15px;
   }
 }

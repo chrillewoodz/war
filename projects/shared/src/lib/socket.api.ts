@@ -89,7 +89,7 @@ export class SocketApi {
   changeTurn(emitToServer: boolean) {
 
     if (emitToServer) {
-      console.log(emitToServer);
+
       this.socket.emit(this.socketEvents.CHANGE_TURN, {
         sessionId: this.cache.sessionId,
         clientId: this.cache.clientId
@@ -228,7 +228,6 @@ export class SocketApi {
 
   @Bound
   private onSocketResponse<T>(response: SocketResponse<T>)  {
-    console.log(response);
 
     switch (response.status) {
       case 200: return response.data;

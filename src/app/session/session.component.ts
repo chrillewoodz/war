@@ -16,7 +16,9 @@ import {
   SocketApi,
   PipeResult,
   isMyTurn,
-  TimerResponse
+  TimerResponse,
+  MapEuropePolygonPoints,
+  MapEuropeConfig
 } from 'shared';
 
 @Component({
@@ -45,17 +47,17 @@ export class SessionComponent implements OnDestroy {
     actionCost: 3
   }
 
-  public stats = {
-    totalTerritories: 32,
-    ownedTerritories: 3,
-    ownedArmies: {
-      soldiers: 12,
-      horses: 7,
-      gatlingGuns: 2,
-      spies: 3,
-      idleArmies: 8
-    }
-  }
+  // public stats = {
+  //   totalTerritories: 32,
+  //   ownedTerritories: 3,
+  //   ownedArmies: {
+  //     soldiers: 12,
+  //     horses: 7,
+  //     gatlingGuns: 2,
+  //     spies: 3,
+  //     idleArmies: 8
+  //   }
+  // }
 
   public cards = [
     { img: 'soldier', title: 'An unexpected ally', action: () => {
@@ -96,17 +98,10 @@ export class SessionComponent implements OnDestroy {
 
   public mapType = 'europe';
   public activeAreas: Element[];
-  public areas: HTMLElement[];
+  public areas: Area[];
   public timePerRound = 5000;
   public totalTerritories = 32;
   public elapsedTime = 0;
-
-  // public timer$ = timer(1000, 1000)
-  //   .pipe(
-  //     map((t) => (1 + t) * 1000),
-  //     take(this.timePerRound / 1000)
-  //   );
-
   public result: PipeResult;
   public session: Session;
   public self: Player;
@@ -114,10 +109,10 @@ export class SessionComponent implements OnDestroy {
 
   private subscriptions = new Subscription();
   private shouldQuitOnDestroy = true;
-  private firstCycleDone = environment.production ? true : false;
 
   constructor(
     private cd: ChangeDetectorRef,
+    private cache: GameCache,
     private gameEngine: GameEngine,
     private mapEngine: MapEngine,
     private router: Router,
@@ -145,16 +140,19 @@ export class SessionComponent implements OnDestroy {
       }
     );
 
+    const areasSub = this.mapEngine.areas$.subscribe((areas) => {
+      this.areas = areas;
+      console.log(this.areas);
+    });
+
     const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
       this.activeAreas = activeAreas;
-      console.log(this.activeAreas);
     });
 
     // NOTE: This cannot be used with function keyword
     // or the timer call throws type error.
-    // NOTE: This is only to increase developer happiness
-    const onDevRefresh = (forwardedResult: PipeResult) => {
-
+    const init = (forwardedResult: PipeResult) => {
+      console.log('ninitied')
       return new Observable((observer) => {
         return observer.next();
       })
@@ -165,17 +163,27 @@ export class SessionComponent implements OnDestroy {
 
           if (!environment.production) {
 
+            // NOTE: Decided against populating the percent of the timer
+            // in dev mode since it doesn't matter at all and won't be a
+            // problem in production since a refresh will cause you to leave the game
             if (isMyTurn(result)) {
-              console.log('yup')
               this.socketApi.timer<TimerResponse>(true);
-            }
-            else {
-              console.log('should set percent', result);
-              this.elapsedTime = result.session.state.timer?.percent;
             }
           }
 
-          this.firstCycleDone = true;
+          console.log('preparing mappppp')
+          this.mapEngine.prepareMap(MapEuropePolygonPoints, MapEuropeConfig);
+        }),
+        filter((result) => !result.session.state.started),
+        map((result) => {
+          console.log('doing stuff')
+          let _result = { ...result };
+              _result = this.gameEngine.setStartingArmies(_result);
+
+          return _result;
+        }),
+        tap((result) => {
+          this.updateState(result.session.state);
         })
       );
     };
@@ -183,12 +191,17 @@ export class SessionComponent implements OnDestroy {
     const sessionSub = merge(
       this.socketApi.get(true).pipe(
         switchMap((result) => {
-
-          if (this.firstCycleDone) {
+          console.log(this.cache.initDone);
+          if (this.cache.initDone) {
             return of(result);
           }
 
-          return onDevRefresh(result);
+          return init(result).pipe(
+            finalize(() => {
+              console.log('hello');
+              this.cache.setInitDone();
+            })
+          );
         })
       ),
       this.socketApi.update(false)
@@ -200,7 +213,7 @@ export class SessionComponent implements OnDestroy {
           this.onEnded();
           return false;
         }
-
+        console.log('continuing')
         return true;
       }),
       switchMap((result) => {
@@ -208,9 +221,8 @@ export class SessionComponent implements OnDestroy {
         if (result.session.state.areasReady) {
           return of(result);
         }
-
+        console.log('setting areas');
         return this.mapEngine.areas$.pipe(
-          map<HTMLElement[], Area[]>((areas) => this.gameEngine.createStateForAreas(areas)),
           map<Area[], PipeResult>((areas) => this.gameEngine.applyAreasToState(result, areas)),
           tap((result) => this.updateState(result.session.state))
         );
@@ -218,7 +230,7 @@ export class SessionComponent implements OnDestroy {
       tap((result) => {
 
         if (result.session.state.started) {
-          this.mapEngine.update(result);
+          this.mapEngine.updateMap(result);
         }
       })
     )
@@ -227,12 +239,13 @@ export class SessionComponent implements OnDestroy {
       this.session = result.session;
       this.players = result.session.state.players;
       this.self = result.self;
-      console.log(result);
+      console.log(this)
     }, (err) => {
       console.error(err);
       this.onError();
     });
 
+    this.subscriptions.add(areasSub);
     this.subscriptions.add(activeEmitter);
     this.subscriptions.add(turnSub);
     this.subscriptions.add(activeAreasSub);
@@ -254,7 +267,6 @@ export class SessionComponent implements OnDestroy {
 
   fightCompleted(e) {
     this.isFightActive = false;
-    console.log('fight completed');
   }
 
   onMapReady(e) {
@@ -263,6 +275,7 @@ export class SessionComponent implements OnDestroy {
   }
 
   updateState(state = this.session.state) {
+    console.log('updating state', state);
     this.gameEngine.updateGame(state);
   }
 

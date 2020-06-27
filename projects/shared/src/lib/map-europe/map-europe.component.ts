@@ -1,5 +1,6 @@
+import { Component, Input } from '@angular/core';
 import { MapEngine } from './../map.engine';
-import { AfterViewInit, Component, EventEmitter, Output, Input, ElementRef } from '@angular/core';
+import { Area } from './../interfaces';
 
 @Component({
   selector: 'map-europe',
@@ -7,12 +8,15 @@ import { AfterViewInit, Component, EventEmitter, Output, Input, ElementRef } fro
   styleUrls: ['./map-europe.component.scss']
 })
 
-export class MapEuropeComponent implements AfterViewInit {
-  @Output() mapReady = new EventEmitter();
+export class MapEuropeComponent {
+  @Input() areas: Area[] = [];
 
-  constructor(private host: ElementRef, private mapEngine: MapEngine) {}
+  constructor(private mapEngine: MapEngine) {}
 
-  ngAfterViewInit() {
-    this.mapEngine.mapReady(this.host);
+  areaClicked(event: MouseEvent, area: Area) {
+
+    if (area.state.isActive) {
+      this.mapEngine.setSelected({ areas: this.areas, area, mouseEvent: event });
+    }
   }
 }

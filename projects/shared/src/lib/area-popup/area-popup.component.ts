@@ -1,3 +1,7 @@
+import { AreaPopupService } from './area-popup.service';
+import { ArmyType } from './../interfaces';
+import { GameCache } from './../game.cache';
+import { FormBuilder, FormControl, AbstractControl, Validators } from '@angular/forms';
 import { Component, HostListener, Input } from '@angular/core';
 
 import { ActionPointsApi } from '../action-points/action-points.service';
@@ -7,7 +11,7 @@ import { GameEngine } from '../game.engine';
 interface Option {
   label: string;
   cost: number;
-  action: void;
+  action: () => void;
 }
 
 @Component({
@@ -20,49 +24,95 @@ export class AreaPopupComponent {
   @Input() areas: any[];
   @Input() activeAreas: any[];
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(e: MouseEvent) {
+  // @HostListener('document:click', ['$event'])
+  // onDocumentClick(e: MouseEvent) {
 
-    const target: HTMLElement = e.target as HTMLElement;
+  //   const target: HTMLElement = e.target as HTMLElement;
+  //   const areaId = Number(target.dataset.areaId);
 
-    if (target.dataset.areaId && target.classList.contains('active')) {
+  //   if (typeof areaId === 'number' && target.classList.contains('active')) {
 
-      this.options = [];
+  //     this.options = [];
 
-      if (target.classList.contains('owned')) {
-        this.options = [
-          { label: 'Deploy troops', cost: 1, action: this.gameEngine.doAction(Action.Deploy) },
-          { label: 'Relocate troops', cost: 1, action: this.gameEngine.doAction(Action.Relocate) }
-        ];
-      }
-      else {
-        this.options = [
-          { label: 'Attack', cost: 3, action: this.gameEngine.doAction(Action.Attack) },
-          { label: 'Send spy', cost: 1, action: this.gameEngine.doAction(Action.Spy) }
-        ];
-      }
+  //     if (target.classList.contains('owned')) {
+  //       this.options = [
+  //         { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
+  //         { label: 'Relocate troops', cost: 1, action: () => this.gameEngine.doAction(Action.Relocate, areaId) }
+  //       ];
+  //     }
+  //     else {
+  //       this.options = [
+  //         { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
+  //         { label: 'Send spy', cost: 1, action: () => this.gameEngine.doAction(Action.Spy, areaId) }
+  //       ];
+  //     }
 
-      this.x = e.clientX + 15;
-      this.y = e.clientY + 15;
-      this.isOpen = true;
-      console.log(this);
-    }
-    else {
-      this.isOpen = false;
-      console.log('else');
-    }
-  }
+  //     this.x = e.clientX + 15;
+  //     this.y = e.clientY + 15;
+  //     this.isOpen = true;
+  //   }
+  //   else {
+  //     this.isOpen = false;
+  //   }
+  // }
 
   public options: Option[] = [];
   public x: number;
   public y: number;
   public actions = Action;
   public isOpen = false;
+  public isArmySelectionMenuOpen = false;
+  public armyTypes = ArmyType;
+
+  public counts = this.fb.group({
+    soldiers: [1],
+    horses: [1],
+    gatlingGuns: [1]
+  });
 
   constructor(
+    private aps: AreaPopupService,
     private apApi: ActionPointsApi,
+    private cache: GameCache,
+    private fb: FormBuilder,
     private gameEngine: GameEngine
-  ) {}
+  ) {
+
+    this.aps.emitter$.subscribe(({ mouseEvent, area }) => {
+
+      const areaId = area.areaId;
+
+      if (area.state.isActive) {
+
+        this.options = [];
+
+        if (area.state.isOwnedBySelf) {
+          this.options = [
+            { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
+            { label: 'Relocate troops', cost: 1, action: () => this.gameEngine.doAction(Action.Relocate, areaId) }
+          ];
+        }
+        else {
+          this.options = [
+            { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
+            { label: 'Send spy', cost: 1, action: () => this.gameEngine.doAction(Action.Spy, areaId) }
+          ];
+        }
+
+        this.x = mouseEvent.clientX + 15;
+        this.y = mouseEvent.clientY + 15;
+        this.isOpen = true;
+      }
+      else {
+        this.isOpen = false;
+      }
+    });
+  }
+
+  optionClicked(action: Action, areaId: number) {
+    this.gameEngine.doAction(action, areaId);
+    this.isArmySelectionMenuOpen = true;
+  }
 
   showCost(cost: number) {
     this.apApi.showCost(cost);
@@ -72,7 +122,49 @@ export class AreaPopupComponent {
     this.apApi.hideCost();
   }
 
+  openArmySelectionMenu() {
+    this.isArmySelectionMenuOpen = true;
+  }
+
+  decrease(type: ArmyType) {
+
+    const control = this.counts.get(type);
+    const newValue = control.value - 1;
+
+    if (newValue < 0) {
+      return;
+    }
+
+    control.setValue(control.value - 1);
+  }
+
+  increase(type: ArmyType) {
+
+    const control = this.counts.get(type);
+    const newValue = control.value + 1;
+    const ownedArmiesOfType = this.cache.self.state.armies[type].amount;
+
+    // TODO: Check with the attacking army, not the total count
+    if (newValue > ownedArmiesOfType) {
+      return;
+    }
+
+    control.setValue(newValue);
+  }
+
+  confirm() {
+
+    // TODO: Do stuff
+    this.close();
+  }
+
   close() {
+    console.log('closing popup')
     this.isOpen = false;
+    this.closeArmySelectionMenu();
+  }
+
+  closeArmySelectionMenu() {
+    this.isArmySelectionMenuOpen = false;
   }
 }

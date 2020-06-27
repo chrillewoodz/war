@@ -4,12 +4,12 @@
 
   <div class="game-hud">
     <players [session]="session" [players]="players" [self]="self"></players>
-    <area-information [areas]="session?.state.areas" [activeAreas]="activeAreas"></area-information>
+    <area-information></area-information>
     <game-logger [player]="self" [session]="session" (onNewLog)="updateState($event)"></game-logger>
   </div>
 
-  <div class="map-container" [ngSwitch]="mapType" areaHandler>
-    <map-europe #mapInstance *ngSwitchCase="'europe'" (mapReady)="onMapReady($event)"></map-europe>
+  <div class="map-container" [ngSwitch]="mapType">
+    <map-europe #mapInstance *ngSwitchCase="'europe'" [areas]="areas"></map-europe>
     <area-popup [areas]="areas" [activeAreas]="activeAreas"></area-popup>
   </div>
 
@@ -19,10 +19,10 @@
 
   <footer class="bottom-bar">
     <div class="right-bar">
-      <action-points [config]="config"></action-points>
-      <game-stats [stats]="stats"></game-stats>
+      <action-points *ngIf="session?.state.started" [config]="config"></action-points>
+      <game-stats *ngIf="session?.state.started" [stats]="self?.state"></game-stats>
     </div>
-    <game-cards [cards]="cards"></game-cards>
+    <game-cards *ngIf="session?.state.started" [cards]="cards"></game-cards>
     <game-settings></game-settings>
   </footer>
 

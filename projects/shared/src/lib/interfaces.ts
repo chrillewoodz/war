@@ -9,6 +9,13 @@ export interface Faction {
   factionName: string;
 }
 
+interface Armies {
+  soldiers: Army;
+  horses: Army;
+  gatlingGuns: Army;
+  spies: Army;
+}
+
 export interface Player {
   clientId: string;
   state: {
@@ -17,27 +24,39 @@ export interface Player {
     quit: boolean;
     ready: boolean;
     defeated: boolean;
+    armies: Armies;
+    idle: Armies;
   };
   extras: {
     faction: Faction;
   }
 }
+
+export enum ArmyType {
+  Soldiers = 'soldiers',
+  Horses = 'horses',
+  GatlingGuns = 'gatlingGuns',
+  Spies = 'spies'
+}
+
 export interface Army {
-  type: 'soldier' | 'horse' | 'gatling-gun' | 'spy';
+  type: ArmyType;
   power: number;
+  amount?: number;
 }
 
 export interface Area {
   areaId: number;
   isStartingArea: boolean;
+  points: string;
+  name: string;
   state: {
     occupiedBy?: Player;
-    troops: {
-      soldiers: Army;
-      horses: Army;
-      gatlingGuns: Army;
-      spies: Army;
-    }
+    armies: Armies;
+    isActive?: boolean;
+    isSelected?: boolean;
+    isConnectedToSelected?: boolean;
+    isOwnedBySelf?: boolean;
   }
 }
 
@@ -91,4 +110,25 @@ export interface TimerResponse {
   milliseconds: number;
   total: number;
   finished: boolean;
+}
+
+export interface SelectedEvent {
+  areas: Area[];
+  area: Area;
+  mouseEvent?: MouseEvent;
+}
+
+export interface AreaPopupEvent {
+  mouseEvent?: MouseEvent;
+  area?: Area;
+  shouldOpen: boolean;
+}
+
+export interface AreaInformationEvent {
+  stats: AreaStatsInformation;
+}
+
+export interface AreaStatsInformation {
+  country: string;
+  occupiedBy: Player;
 }

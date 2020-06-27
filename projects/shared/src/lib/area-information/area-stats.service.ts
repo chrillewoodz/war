@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { AreaInformationEvent, AreaStatsInformation } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -7,23 +8,19 @@ import { Subject } from 'rxjs';
 
 export class AreaStatsService {
 
-  private emitter = new Subject();
+  private emitter = new Subject<AreaInformationEvent>();
   public emitter$ = this.emitter.asObservable();
 
   constructor() {}
 
-  show(stats: any) {
+  show(stats: AreaStatsInformation) {
     this.emitter.next({
-      shouldOpen: true,
-      stats: {
-        ...stats
-      }
+      stats
     });
   }
 
   hide() {
     this.emitter.next({
-      shouldOpen: false,
       stats: null
     });
   }

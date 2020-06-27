@@ -41,7 +41,6 @@ export class LobbyComponent {
     private router: Router,
     private socketApi: SocketApi
   ) {
-    console.log('resetting')
     this.cache.removeSessionId();
     this.cache.removeSession();
   }

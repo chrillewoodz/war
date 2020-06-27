@@ -16,4 +16,8 @@ export class ErrorComponent implements OnInit {
   backToLobby() {
     this.router.navigateByUrl('');
   }
+
+  attemptRestore() {
+    this.router.navigateByUrl('/session');
+  }
 }

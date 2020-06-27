@@ -1,3 +1,4 @@
+import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 
@@ -5,7 +6,7 @@ import { SessionState, PipeResult, Area } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
-import config from './game.config.json';
+import { GameConfig } from './game.config';
 import { SocketApi } from './socket.api';
 
 export enum GameEngineEvent {
@@ -21,7 +22,11 @@ export class GameEngine {
   private stop = new ReplaySubject<boolean>(1);
   private stop$ = this.stop.asObservable();
 
-  constructor(private cache: GameCache, private socketApi: SocketApi) {
+  constructor(
+    private cache: GameCache,
+    private mapEngine: MapEngine,
+    private socketApi: SocketApi
+  ) {
 
     // for (let i = 0; i < 26; i++) {
     //   console.log('greater', `26 vs ${i}`, this.getWinPercentage(26, i));
@@ -30,6 +35,62 @@ export class GameEngine {
     // for (let i = 26; i > 0; i--) {
     //   console.log('lesser', `${i} vs 26`, this.getWinPercentage(i, 26));
     // }
+  }
+
+  setStartingArmies(result: PipeResult) {
+
+    for (const clientId in result.session.state.players) {
+
+      result.session.state.players[clientId].state.armies = {
+        soldiers: {
+          ...GameConfig.armyTypes.soldier,
+          amount: 10
+        },
+        horses: {
+          ...GameConfig.armyTypes.horse,
+          amount: 4
+        },
+        gatlingGuns: {
+          ...GameConfig.armyTypes.gatlingGun,
+          amount: 2
+        },
+        spies: {
+          ...GameConfig.armyTypes.spy,
+          amount: 2
+        }
+      }
+
+      result.session.state.players[clientId].state.idle = {
+        soldiers: {
+          ...GameConfig.armyTypes.soldier,
+          amount: 0
+        },
+        horses: {
+          ...GameConfig.armyTypes.horse,
+          amount: 0
+        },
+        gatlingGuns: {
+          ...GameConfig.armyTypes.gatlingGun,
+          amount: 0
+        },
+        spies: {
+          ...GameConfig.armyTypes.spy,
+          amount: 0
+        }
+      }
+
+      // result.session.state.areas = result.session.state.areas.map((area) => {
+
+      //   console.log(area.state)
+      //   if (area.isStartingArea && area.state.occupiedBy.clientId === clientId) {
+      //     area.state.armies = result.session.state.players[clientId].state.armies;
+      //   }
+
+      //   return area;
+      // })
+    }
+
+    return result;
   }
 
   listen(event: GameEngineEvent) {
@@ -64,7 +125,7 @@ export class GameEngine {
         isStartingArea: area.dataset.isStartingArea === 'true',
         state: {
           occupiedBy: null,
-          troops: {
+          armies: {
             soldiers: null,
             horses: null,
             gatlingGuns: null,
@@ -76,7 +137,7 @@ export class GameEngine {
   }
 
   applyAreasToState(result: PipeResult, areas: Area[]) {
-
+    console.log('applying state to areas')
     return {
       ...result, // self is included here
       session: {
@@ -90,10 +151,10 @@ export class GameEngine {
     };
   }
 
-  doAction(action: Action) {
+  doAction(action: Action, areaId: number) {
 
     switch (action) {
-      case Action.Attack: return this.attack();
+      case Action.Attack: return this.attack(areaId);
       case Action.Deploy: return this.deploy();
       case Action.Relocate: return this.relocate();
       case Action.Spy: return this.spy();
@@ -101,8 +162,19 @@ export class GameEngine {
     }
   }
 
-  private attack() {
+  private attack(areaId: number) {
 
+    const updatedAreas = this.cache.session.state.areas.map((area) => {
+
+      if (area.areaId === areaId) {
+
+        if (area.state.occupiedBy === null || area.state.occupiedBy === undefined) {
+          area.state.occupiedBy = this.cache.session.state.players[this.cache.clientId];
+        }
+      }
+
+      return area;
+    })
   }
 
   private deploy() {
@@ -123,7 +195,7 @@ export class GameEngine {
     const roll = Math.floor(Math.random() * 5);
 
     switch (roll) {
-      case 0: return config.negativeFightModifier;
+      case 0: return GameConfig.negativeFightModifier;
       default: return 0;
     }
   }
@@ -145,11 +217,11 @@ export class GameEngine {
 
       // If attacker has more or equal amount of troops, gain 1.5% chance to win
       if (diff >= 0) {
-        return b + config.fightModifier;
+        return b + GameConfig.fightModifier;
       }
 
       // If less, give the 1.5% modifier to the defender instead
-      return b + -config.fightModifier;
+      return b + -GameConfig.fightModifier;
     })();
 
     const diffAsPercentage = (() => {

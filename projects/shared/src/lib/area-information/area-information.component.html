@@ -1,27 +1,27 @@
-<div class="common-container ai-container" [ngClass]="{visible: isOpen}" (clickOutside)="close()" [exceptions]="activeAreas">
+<div *ngIf="stats" class="common-container ai-container">
   <div class="ai-section">
-    <h3>{{information?.country}}</h3>
+    <h3>{{stats?.country}}</h3>
     <h5>Occupied by:</h5>
-    <p [ngStyle]="{color: information?.occupiedBy?.colorRGB}">{{information?.occupiedBy?.name}}</p>
+    <p [ngStyle]="{color: stats?.occupiedBy?.extras.faction.colorRGB}">{{stats?.occupiedBy?.extras.faction.name || stats?.country}}</p>
   </div>
   <div class="ai-section">
     <h5>Armies:</h5>
-    <ul class="ai-menu">
-      <li class="ai-menu-item">
+    <ul class="row no-gutters ai-menu">
+      <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/soldier.svg">
-        <p>{{information?.troops?.soldiers}}</p>
+        <p>{{stats?.occupiedBy?.state?.armies?.soldiers.amount || '?'}}</p>
       </li>
-      <li class="ai-menu-item">
+      <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/horse.svg">
-        <p>{{information?.troops?.horses}}</p>
+        <p>{{stats?.occupiedBy?.state?.armies?.horses.amount || '?'}}</p>
       </li>
-      <li class="ai-menu-item">
+      <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/gatling-gun.svg">
-        <p>{{information?.troops?.gatlingGuns}}</p>
+        <p>{{stats?.occupiedBy?.state?.armies?.gatlingGuns.amount || '?'}}</p>
       </li>
-      <li class="ai-menu-item">
+      <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/spy.svg">
-        <p>{{information?.troops?.spies}}</p>
+        <p>{{stats?.occupiedBy?.state?.armies?.spies.amount || '?'}}</p>
       </li>
     </ul>
   </div>

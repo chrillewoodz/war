@@ -13,7 +13,7 @@ export const MapEuropeConfig: Areas = {
   },
   1: {
     name: 'Russia',
-    connections: [1, 2, 3, 5, 6, 8, 10, 35, 37],
+    connections: [0, 2, 3, 5, 6, 8, 10, 35, 37],
     isStartingArea: true
   },
   2: {

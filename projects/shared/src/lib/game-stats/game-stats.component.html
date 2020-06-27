@@ -5,23 +5,23 @@
       <ul class="army-types">
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/soldier.svg">
-          <number-bubble number="1"></number-bubble>
-          <number-bubble [number]="stats?.ownedArmies?.soldiers" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.armies?.soldiers.power"></number-bubble>
+          <number-bubble [number]="stats?.armies?.soldiers.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/horse.svg">
-          <number-bubble number="3"></number-bubble>
-          <number-bubble [number]="stats?.ownedArmies?.horses" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.armies?.horses.power"></number-bubble>
+          <number-bubble [number]="stats?.armies?.horses.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/gatling-gun.svg">
-          <number-bubble number="5"></number-bubble>
-          <number-bubble [number]="stats?.ownedArmies?.gatlingGuns" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.armies?.gatlingGuns.power"></number-bubble>
+          <number-bubble [number]="stats?.armies?.gatlingGuns.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/spy.svg">
-          <number-bubble number="0"></number-bubble>
-          <number-bubble [number]="stats?.ownedArmies?.spies" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.armies?.spies.power"></number-bubble>
+          <number-bubble [number]="stats?.armies?.spies.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
       </ul>
     </li>
@@ -30,7 +30,7 @@
       <ul class="army-types no-padding">
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/idle-armies.svg">
-          <number-bubble [number]="stats?.ownedArmies?.idleArmies" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="totalIdle" type="amount" position="bottom-right"></number-bubble>
         </li>
       </ul>
     </li>

@@ -1,4 +1,4 @@
-import { SocketResponse, Session, PipeResult } from './interfaces';
+import { SocketResponse, Session, PipeResult, Area } from './interfaces';
 import { throwError, Observable, ObservableInput } from 'rxjs';
 
 export function exhaust(p: never) {};
@@ -21,4 +21,8 @@ export function getLastPlayerWhoJoined(session: Session) {
 
 export function isMyTurn(result: PipeResult) {
   return result.self?.clientId === result.session?.state.currentTurn?.clientId;
+}
+
+export function isOccupiedByMe(result: PipeResult, area: Area) {
+  return area.state.occupiedBy?.clientId === result.self.clientId;
 }
