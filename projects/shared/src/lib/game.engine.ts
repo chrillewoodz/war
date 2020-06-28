@@ -117,41 +117,7 @@ export class GameEngine {
     this.stop.next(true);
   }
 
-  createStateForAreas(areas: HTMLElement[]) {
-
-    return areas.map((area) => {
-      return {
-        areaId: Number(area.dataset.areaId),
-        isStartingArea: area.dataset.isStartingArea === 'true',
-        state: {
-          occupiedBy: null,
-          armies: {
-            soldiers: null,
-            horses: null,
-            gatlingGuns: null,
-            spies: null
-          }
-        }
-      };
-    });
-  }
-
-  applyAreasToState(result: PipeResult, areas: Area[]) {
-    console.log('applying state to areas')
-    return {
-      ...result, // self is included here
-      session: {
-        ...result.session,
-        state: {
-          ...result.session.state,
-          areas,
-          areasReady: true
-        }
-      }
-    };
-  }
-
-  doAction(action: Action, areaId: number) {
+  doAction(action: Action, areaId: string) {
 
     switch (action) {
       case Action.Attack: return this.attack(areaId);
@@ -162,7 +128,7 @@ export class GameEngine {
     }
   }
 
-  private attack(areaId: number) {
+  private attack(areaId: string) {
 
     const updatedAreas = this.cache.session.state.areas.map((area) => {
 

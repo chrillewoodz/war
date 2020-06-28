@@ -1,4 +1,4 @@
-<div class="europe-container">
+<div class="europe-container" [ngClass]="{'is-my-turn': isMyTurn}" (click)="result?.session.state.started && mapClicked($event)">
   <div>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 487.25 365.31">
       <defs>
@@ -9,16 +9,16 @@
           <g id="europe">
             <polygon
               class="cls-1"
-              *ngFor="let area of areas"
+              *ngFor="let area of result?.session.state.areas"
               [ngClass]="{
                 active: area.state.isActive,
                 selected: area.state.isSelected,
                 connection: area.state.isConnectedToSelected,
-                owned: area.state.isOwnedBySelf
+                owned: area.state.__ui?.isOwnedBySelf
               }"
               [ngStyle]="{fill: area.state.occupiedBy?.extras.faction.colorRGB}"
               [attr.points]="area.points"
-              (click)="areaClicked($event, area)"
+              [attr.data-areaId]="area.areaId"
             ></polygon>
           </g>
         </g>

@@ -35,9 +35,19 @@ export class GameCache {
     return session.state.players[this.clientId];
   }
 
-  getAreaById(areaId: number) {
+  getAreaById(areaId: string) {
     const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
     return session.state.areas.find((area) => area.areaId === areaId);
+  }
+
+  getSelectedArea() {
+    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    return session.state.areas.find((area) => area.state.isSelected === true);
+  }
+
+  getSelectedConnectedArea() {
+    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    return session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === true);
   }
 
   setClientId(id: string) {
@@ -62,5 +72,9 @@ export class GameCache {
 
   removeSession() {
     sessionStorage.removeItem(this.sessionKey);
+  }
+
+  removeInitDone() {
+    sessionStorage.removeItem(this.initDoneKey);
   }
 }

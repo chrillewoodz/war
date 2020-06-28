@@ -1,5 +1,6 @@
 const { v4 } = require('uuid');
 const differenceInSeconds = require('date-fns/differenceInSeconds')
+const GameMap = require('./game-map');
 const Player = require('./player');
 
 class Session {
@@ -18,10 +19,12 @@ class Session {
       logs: [],
       areas: null,
       areasReady: false,
+      lastPopupCoordinates: null,
       currentTurn: null
     };
 
     this.convertPlayersToClasses();
+    this.convertAreasToClass();
   }
 
   changeTurn() {
@@ -54,17 +57,14 @@ class Session {
 
     const players = Object.keys(this.state.players);
     const shuffledPlayers = players.sort(() => 0.5 - Math.random());
-    const areas = this.state.areas;
-    console.log(players, shuffledPlayers);
+    const areas = this.state.areas.areas;
+
     playersLoop: for (let i = 0; i < shuffledPlayers.length; i++) {
 
       for (let j = 0; j < areas.length; j++) {
 
-        console.log(this.state.areas[j].isStartingArea);
-        if (this.state.areas[j].isStartingArea && this.state.areas[j].state.occupiedBy === null) {
-          console.log('if');
-          this.state.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
-          console.log(this.state.areas[j]);
+        if (this.state.areas.areas[j].isStartingArea && this.state.areas.areas[j].state.occupiedBy === null) {
+          this.state.areas.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
           continue playersLoop;
         }
       }
@@ -105,6 +105,10 @@ class Session {
     else {
       this.removePlayer(clientId);
     }
+  }
+
+  prepareMap(points, config) {
+    this.state.areas.prepare(points, config);
   }
 
   start() {
@@ -176,6 +180,10 @@ class Session {
     for (const clientId in this.state.players) {
       this.state.players[clientId] = new Player(this.state.players[clientId]);
     }
+  }
+
+  convertAreasToClass() {
+    this.state.areas = new GameMap(this.state.areas);
   }
 
   toJSON() {

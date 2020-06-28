@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { AreaInformationEvent, AreaStatsInformation } from '../interfaces';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { AreaInformationEvent, AreaStatsInformation } from '../interfaces';
 
 export class AreaStatsService {
 
-  private emitter = new Subject<AreaInformationEvent>();
+  private emitter = new ReplaySubject<AreaInformationEvent>(1);
   public emitter$ = this.emitter.asObservable();
 
   constructor() {}

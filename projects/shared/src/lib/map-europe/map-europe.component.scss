@@ -7,25 +7,34 @@
   > div {
     width: 55%;
   }
+
+  &.is-my-turn {
+
+    .cls-1 {
+
+      &.active {
+        opacity: 1;
+        cursor: pointer;
+
+        &:hover,
+        &.selected {
+          fill: darkred;
+        }
+
+        &.owned.selected {
+          stroke: rgb(0, 255, 110);
+        }
+      }
+    }
+  }
 }
 
 .cls-1 {
-  cursor: pointer;
   stroke-width: 0.75px;
   opacity: 0.6;
   cursor: default;
 
   &.active {
-    opacity: 1;
-    cursor: pointer;
-
-    &:hover,
-    &.selected {
-      fill: darkred;
-    }
-
-    &.owned.selected {
-      stroke: blue;
-    }
+    opacity: 0.8;
   }
 }

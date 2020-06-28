@@ -5,6 +5,8 @@ const Session = require('../classes/session');
 const AppStorage = require('../classes/app-storage');
 const SocketEvents = require('../classes/socket-events');
 const { asArray } = require('../factions');
+const EuropeConfig = require('../map-configs/europe.json');
+const EuropePoints = require('../map-points/europe');
 
 /**
  *
@@ -25,6 +27,7 @@ const fn = async function(io, socket, ev, storage) {
     const extras = ev.extras ? { ...ev.extras, faction } : { faction };
     const session = new Session({ settings: ev.settings });
           session.addPlayer(ev.clientId, extras);
+          session.prepareMap(EuropePoints, EuropeConfig);
 
     await storage.set(session);
 

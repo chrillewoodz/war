@@ -31,6 +31,7 @@ const fn = async function(io, socket, ev, storage, timers) {
 
         session.playerReady(ev.clientId);
 
+        // Callback runs when all players are ready
         session.checkForReadyPlayers(async () => {
 
           // Start game

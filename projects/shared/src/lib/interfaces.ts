@@ -16,17 +16,19 @@ interface Armies {
   spies: Army;
 }
 
+export interface PlayerState {
+  connected: boolean;
+  resigned: boolean;
+  quit: boolean;
+  ready: boolean;
+  defeated: boolean;
+  armies: Armies;
+  idle: Armies;
+}
+
 export interface Player {
   clientId: string;
-  state: {
-    connected: boolean;
-    resigned: boolean;
-    quit: boolean;
-    ready: boolean;
-    defeated: boolean;
-    armies: Armies;
-    idle: Armies;
-  };
+  state: PlayerState;
   extras: {
     faction: Faction;
   }
@@ -45,8 +47,20 @@ export interface Army {
   amount?: number;
 }
 
+export interface Areas {
+  [k: string]: {
+    name: string;
+    connections: number[];
+    isStartingArea?: boolean;
+  }
+}
+
+export interface AreaUI {
+  isOwnedBySelf?: boolean;
+}
+
 export interface Area {
-  areaId: number;
+  areaId: string;
   isStartingArea: boolean;
   points: string;
   name: string;
@@ -56,7 +70,7 @@ export interface Area {
     isActive?: boolean;
     isSelected?: boolean;
     isConnectedToSelected?: boolean;
-    isOwnedBySelf?: boolean;
+    __ui: AreaUI; // Should be omitted when storing the session
   }
 }
 
@@ -76,6 +90,7 @@ export interface SessionState {
   logs: any[];
   areas: Area[];
   areasReady: boolean;
+  lastPopupCoordinates: Pick<MouseEvent, 'clientX' | 'clientY'>;
   currentTurn?: Player;
   timer?: Timer;
 }
@@ -113,13 +128,15 @@ export interface TimerResponse {
 }
 
 export interface SelectedEvent {
+  selected: Area;
+  selectedConnection: Area;
   areas: Area[];
-  area: Area;
-  mouseEvent?: MouseEvent;
+  area?: Area;
+  mouseEvent?: MouseEvent | Partial<MouseEvent>;
 }
 
 export interface AreaPopupEvent {
-  mouseEvent?: MouseEvent;
+  mouseEvent?: MouseEvent | Partial<MouseEvent>;
   area?: Area;
   shouldOpen: boolean;
 }

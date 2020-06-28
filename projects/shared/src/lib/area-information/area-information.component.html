@@ -1,8 +1,8 @@
-<div *ngIf="stats" class="common-container ai-container">
+<div class="common-container ai-container">
   <div class="ai-section">
-    <h3>{{stats?.country}}</h3>
+    <h3>{{stats?.country || '?'}}</h3>
     <h5>Occupied by:</h5>
-    <p [ngStyle]="{color: stats?.occupiedBy?.extras.faction.colorRGB}">{{stats?.occupiedBy?.extras.faction.name || stats?.country}}</p>
+    <p [ngStyle]="{color: stats?.occupiedBy?.extras.faction.colorRGB}">{{stats?.occupiedBy?.extras.faction.name || stats?.country || '?'}}</p>
   </div>
   <div class="ai-section">
     <h5>Armies:</h5>

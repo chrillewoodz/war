@@ -1,15 +1,13 @@
-import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { timer, Subscription, merge, of, interval, Observable } from 'rxjs';
-import { takeUntil, map, take, tap, switchMap, first, finalize, catchError, filter } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Subscription, merge, of, interval, Observable } from 'rxjs';
+import { takeUntil, map, tap, switchMap, first, finalize, filter } from 'rxjs/operators';
 
 import {
   MapEngine,
   MapEuropeComponent,
   GameCache,
-  Session,
-  Player,
   Area,
   GameEngine,
   GameEngineEvent,
@@ -17,8 +15,6 @@ import {
   PipeResult,
   isMyTurn,
   TimerResponse,
-  MapEuropePolygonPoints,
-  MapEuropeConfig
 } from 'shared';
 
 @Component({
@@ -102,10 +98,8 @@ export class SessionComponent implements OnDestroy {
   public timePerRound = 5000;
   public totalTerritories = 32;
   public elapsedTime = 0;
+  public isMyTurn = false;
   public result: PipeResult;
-  public session: Session;
-  public self: Player;
-  public players: {[clientId: string]: Player};
 
   private subscriptions = new Subscription();
   private shouldQuitOnDestroy = true;
@@ -140,15 +134,6 @@ export class SessionComponent implements OnDestroy {
       }
     );
 
-    const areasSub = this.mapEngine.areas$.subscribe((areas) => {
-      this.areas = areas;
-      console.log(this.areas);
-    });
-
-    const activeAreasSub = this.mapEngine.activeAreas$.subscribe((activeAreas) => {
-      this.activeAreas = activeAreas;
-    });
-
     // NOTE: This cannot be used with function keyword
     // or the timer call throws type error.
     const init = (forwardedResult: PipeResult) => {
@@ -170,13 +155,10 @@ export class SessionComponent implements OnDestroy {
               this.socketApi.timer<TimerResponse>(true);
             }
           }
-
-          console.log('preparing mappppp')
-          this.mapEngine.prepareMap(MapEuropePolygonPoints, MapEuropeConfig);
         }),
         filter((result) => !result.session.state.started),
         map((result) => {
-          console.log('doing stuff')
+
           let _result = { ...result };
               _result = this.gameEngine.setStartingArmies(_result);
 
@@ -213,42 +195,34 @@ export class SessionComponent implements OnDestroy {
           this.onEnded();
           return false;
         }
-        console.log('continuing')
+
         return true;
       }),
-      switchMap((result) => {
-
-        if (result.session.state.areasReady) {
-          return of(result);
-        }
-        console.log('setting areas');
-        return this.mapEngine.areas$.pipe(
-          map<Area[], PipeResult>((areas) => this.gameEngine.applyAreasToState(result, areas)),
-          tap((result) => this.updateState(result.session.state))
-        );
-      }),
-      tap((result) => {
+      map((result) => {
 
         if (result.session.state.started) {
-          this.mapEngine.updateMap(result);
+          result = this.mapEngine.updateMap(result);
         }
+
+        return result;
+      }),
+      tap((result) => {
+        this.cache.setSession(result.session);
+        this.isMyTurn = isMyTurn(result);
       })
     )
     .subscribe((result) => {
       this.result = result;
-      this.session = result.session;
-      this.players = result.session.state.players;
-      this.self = result.self;
-      console.log(this)
+      console.log(this.result);
     }, (err) => {
       console.error(err);
       this.onError();
     });
 
-    this.subscriptions.add(areasSub);
+    // this.subscriptions.add(areasSub);
     this.subscriptions.add(activeEmitter);
     this.subscriptions.add(turnSub);
-    this.subscriptions.add(activeAreasSub);
+    // this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
   }
 
@@ -274,7 +248,7 @@ export class SessionComponent implements OnDestroy {
     this.cd.detectChanges();
   }
 
-  updateState(state = this.session.state) {
+  updateState(state = this.result.session.state) {
     console.log('updating state', state);
     this.gameEngine.updateGame(state);
   }

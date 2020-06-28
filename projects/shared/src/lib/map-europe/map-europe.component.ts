@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { MapEngine } from './../map.engine';
-import { Area } from './../interfaces';
+import { MapEngine } from '../map.engine';
+import { GameCache } from '../game.cache';
+import { PipeResult } from '../interfaces';
 
 @Component({
   selector: 'map-europe',
@@ -9,14 +10,34 @@ import { Area } from './../interfaces';
 })
 
 export class MapEuropeComponent {
-  @Input() areas: Area[] = [];
+  @Input() result: PipeResult;
+  @Input() isMyTurn: boolean;
 
-  constructor(private mapEngine: MapEngine) {}
+  constructor(private cache: GameCache, private mapEngine: MapEngine) {}
 
-  areaClicked(event: MouseEvent, area: Area) {
+  mapClicked(event: MouseEvent) {
 
-    if (area.state.isActive) {
-      this.mapEngine.setSelected({ areas: this.areas, area, mouseEvent: event });
+    if (!this.isMyTurn) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    const areaId = target.dataset.areaId; // NOTE: Don't parse to Number here or if check will fail for 0
+
+    if (areaId) {
+
+      const areas = this.cache.session.state.areas;
+      const area = areas.find((area) => area.areaId === areaId);
+
+      if (area.state.isActive) {
+
+        this.mapEngine.areaClicked({
+          mouseEvent: event,
+          areas,
+          selected: area.state.__ui.isOwnedBySelf ? area : null,
+          selectedConnection: area.state.isConnectedToSelected ? area : null
+        });
+      }
     }
   }
 }

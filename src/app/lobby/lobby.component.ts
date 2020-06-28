@@ -43,6 +43,7 @@ export class LobbyComponent {
   ) {
     this.cache.removeSessionId();
     this.cache.removeSession();
+    this.cache.removeInitDone();
   }
 
   join(sessionId?: string) {

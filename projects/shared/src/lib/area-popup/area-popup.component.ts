@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators';
 import { AreaPopupService } from './area-popup.service';
 import { ArmyType } from './../interfaces';
 import { GameCache } from './../game.cache';
@@ -21,40 +22,6 @@ interface Option {
 })
 
 export class AreaPopupComponent {
-  @Input() areas: any[];
-  @Input() activeAreas: any[];
-
-  // @HostListener('document:click', ['$event'])
-  // onDocumentClick(e: MouseEvent) {
-
-  //   const target: HTMLElement = e.target as HTMLElement;
-  //   const areaId = Number(target.dataset.areaId);
-
-  //   if (typeof areaId === 'number' && target.classList.contains('active')) {
-
-  //     this.options = [];
-
-  //     if (target.classList.contains('owned')) {
-  //       this.options = [
-  //         { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
-  //         { label: 'Relocate troops', cost: 1, action: () => this.gameEngine.doAction(Action.Relocate, areaId) }
-  //       ];
-  //     }
-  //     else {
-  //       this.options = [
-  //         { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
-  //         { label: 'Send spy', cost: 1, action: () => this.gameEngine.doAction(Action.Spy, areaId) }
-  //       ];
-  //     }
-
-  //     this.x = e.clientX + 15;
-  //     this.y = e.clientY + 15;
-  //     this.isOpen = true;
-  //   }
-  //   else {
-  //     this.isOpen = false;
-  //   }
-  // }
 
   public options: Option[] = [];
   public x: number;
@@ -78,38 +45,43 @@ export class AreaPopupComponent {
     private gameEngine: GameEngine
   ) {
 
-    this.aps.emitter$.subscribe(({ mouseEvent, area }) => {
+    this.aps.emitter$
+      .pipe(
+        filter((e) => !!e.area)
+      )
+      .subscribe(({ mouseEvent, area }) => {
 
-      const areaId = area.areaId;
+        const areaId = area.areaId;
 
-      if (area.state.isActive) {
+        if (area.state.isActive) {
 
-        this.options = [];
+          this.options = [];
 
-        if (area.state.isOwnedBySelf) {
-          this.options = [
-            { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
-            { label: 'Relocate troops', cost: 1, action: () => this.gameEngine.doAction(Action.Relocate, areaId) }
-          ];
+          if (area.state.__ui.isOwnedBySelf) {
+            this.options = [
+              { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
+              { label: 'Relocate troops', cost: 1, action: () => this.gameEngine.doAction(Action.Relocate, areaId) }
+            ];
+          }
+          else {
+            this.options = [
+              { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
+              { label: 'Send spy', cost: 1, action: () => this.gameEngine.doAction(Action.Spy, areaId) }
+            ];
+          }
+
+          this.x = mouseEvent.clientX + 15;
+          this.y = mouseEvent.clientY + 15;
+          this.isOpen = true;
         }
         else {
-          this.options = [
-            { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
-            { label: 'Send spy', cost: 1, action: () => this.gameEngine.doAction(Action.Spy, areaId) }
-          ];
+          this.isOpen = false;
         }
-
-        this.x = mouseEvent.clientX + 15;
-        this.y = mouseEvent.clientY + 15;
-        this.isOpen = true;
       }
-      else {
-        this.isOpen = false;
-      }
-    });
+    );
   }
 
-  optionClicked(action: Action, areaId: number) {
+  optionClicked(action: Action, areaId: string) {
     this.gameEngine.doAction(action, areaId);
     this.isArmySelectionMenuOpen = true;
   }

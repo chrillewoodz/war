@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { AreaPopupEvent } from '../interfaces';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { AreaPopupEvent } from '../interfaces';
 
 export class AreaPopupService {
 
-  private emitter = new Subject<AreaPopupEvent>();
+  private emitter = new ReplaySubject<AreaPopupEvent>(1);
   public emitter$ = this.emitter.asObservable();
 
   constructor() {}

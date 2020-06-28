@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Player, Session } from '../interfaces';
 import { GameEngine } from '../game.engine';
+import { PipeResult, Player } from '../interfaces';
 
 @Component({
   selector: 'players',
@@ -9,20 +9,27 @@ import { GameEngine } from '../game.engine';
 })
 
 export class PlayersComponent {
-  @Input() session: Session;
-  @Input() self: Player;
-  @Input() set players(players: Player[]) {
+  @Input() set result(result: PipeResult) {
 
-    if (players) {
-      this._players = Object.keys(players).map((player) => players[player]);
+    if (result) {
+
+      const players = result.session.state.players;
+
+      if (players) {
+        this.players = Object.keys(players).map((player) => players[player]);
+      }
+
+      this._result = result;
     }
   };
 
-  public _players: Player[] = [];
-
-  get players() {
-    return this._players;
+  get result() {
+    return this._result;
   }
+
+  public players: Player[] = [];
+
+  private _result: PipeResult;
 
   constructor(private gameEngine: GameEngine) {}
 

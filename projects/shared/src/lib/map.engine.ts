@@ -1,12 +1,14 @@
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { ReplaySubject, Subject, merge, Observable, of } from 'rxjs';
+import { tap, map, startWith, switchMap } from 'rxjs/operators';
+
+import { PipeResult, Area, SelectedEvent, SessionState } from './interfaces';
+import { isMyTurn, isOccupiedByMe } from './helpers';
+import { SocketApi } from './socket.api';
 import { AreaPopupService } from './area-popup/area-popup.service';
 import { AreaStatsService } from './area-information/area-stats.service';
 import { GameCache } from './game.cache';
-import { tap, map, filter, first } from 'rxjs/operators';
-import { Injectable, Renderer2, RendererFactory2, ElementRef, Pipe } from '@angular/core';
-import { Areas, MapEuropeConfig } from './map-europe/map-europe.config';
-import { ReplaySubject } from 'rxjs';
-import { PipeResult, Area, SelectedEvent } from './interfaces';
-import { isMyTurn, isOccupiedByMe } from './helpers';
+import MapEuropeConfig from './map-configs/europe.json';
 
 @Injectable({
   providedIn: 'root'
@@ -16,297 +18,180 @@ export class MapEngine {
 
   public readonly areaSelector = '.cls-1';
 
-  private areas = new ReplaySubject<Area[]>(1);
-  private activeAreas = new ReplaySubject<Element[]>(1);
+  private update = new Subject<Partial<SessionState>>();
+  private update$ = this.update.asObservable();
+
+  // private areas = new ReplaySubject<Area[]>(1);
+  // private activeAreas = new ReplaySubject<Element[]>(1);
   private selected = new ReplaySubject<SelectedEvent>(1); // areaId
-  private connection = new ReplaySubject<number>(1); // areaId
-  private renderer: Renderer2;
+  private connection = new ReplaySubject<SelectedEvent>(1); // areaId
 
-  public areas$ = this.areas.asObservable();
-  public activeAreas$ = this.activeAreas.asObservable();
-  public selected$ = this.selected.asObservable().pipe(
-    map(({ mouseEvent, areas, area }) => {
+  // public areas$ = this.areas.asObservable();
+  // public activeAreas$ = this.activeAreas.asObservable();
+  public selected$ = this.selected.asObservable();
 
-      if (area) {
-        return {
-          areas,
-          area,
-          mouseEvent,
-          areaEl: this.queryArea(area.areaId),
-        } as SelectedEvent;
-      }
-      else {
-        return null;
-      }
-    })
-  );
   public connection$ = this.connection.asObservable();
 
   constructor(
     private aps: AreaPopupService,
     private ass: AreaStatsService,
     private cache: GameCache,
-    private rendererFactory: RendererFactory2
+    private socketApi: SocketApi
   ) {
 
-    this.renderer = this.rendererFactory.createRenderer(null, null);
+    this.update$.subscribe((newState) => {
+      this.socketApi.update(true, newState);
+    });
 
-    this.selected$.pipe(
-      map((e) => {
+    of<SelectedEvent>({
+      areas: this.cache.session.state.areas,
+      selected: this.cache.getSelectedArea(),
+      selectedConnection: this.cache.getSelectedConnectedArea(),
+      mouseEvent: this.cache.session.state.lastPopupCoordinates
+    })
+    .pipe(
+      tap((e) => {
 
-        return {
-          ...e,
-          areas: e.areas.map((area) => {
-
-            if (area.state.isSelected && !area.state.isOwnedBySelf) {
-              console.log(area, area.state.isSelected, area.state.isOwnedBySelf)
-              area.state.isSelected = false;
-            }
-
-            return area;
-          })
+        if (e.selectedConnection) {
+          this.connection.next(e);
+        }
+        else if (e.selected) {
+          this.selected.next(e);
         }
       }),
-      tap(({ mouseEvent, areas, area}) => {
+      switchMap(() => {
 
-        if (area?.state.isOwnedBySelf && !area?.state.isSelected) {
-          this.selectArea(areas, area);
-        }
-        else if (area?.state.isConnectedToSelected) {
-          this.selectConnection(areas, area);
-        }
+        return merge(
+          this.selected$.pipe(
+            map((e) => {
 
-        this.ass.show({
-          country: area?.name,
-          occupiedBy: area?.state.occupiedBy
-        });
+              if (e.selected.state.__ui.isOwnedBySelf) {
+                console.log('selectAreaIf')
+                // e.selected.state.isSelected = true;
 
-        this.aps.show({
-          mouseEvent,
-          area
-        });
+                MapEuropeConfig[e.selected.areaId].connections.forEach((connectionId) => {
+
+                  const state = e.areas[connectionId].state;
+                  state.isActive = true;
+                  state.isConnectedToSelected = true;
+                });
+              }
+
+              return {...e, area: e.selected};
+            })
+          ),
+          this.connection$.pipe(
+            map((e) => {
+              return {...e, area: e.selectedConnection};
+            })
+          )
+        )
+        .pipe(
+          map((e) => {
+
+            e.areas = e.areas.map((area) => {
+
+              // If it's a connected area that's selected
+              if (area.state.isConnectedToSelected && area.state.isSelected) {
+                area.state.isSelected = false;
+              }
+              // If it's an owned area that is selected and we're not clicking on a connection
+              else if (!area.state.isConnectedToSelected && area.state.isSelected && e.selected && !e.selectedConnection) {
+                area.state.isSelected = false;
+              }
+
+              console.log('event', e.selectedConnection?.areaId === area.areaId, e.selected?.areaId === area.areaId)
+              if (e.selectedConnection?.areaId === area.areaId || e.selected?.areaId === area.areaId) {
+                console.log('standalone if');
+                area.state.isSelected = true;
+              }
+
+              return area;
+            });
+
+            return e;
+          }),
+          tap((e) => {
+            console.log('pipetap', e.area);
+            this.ass.show({
+              country: e.area?.name,
+              occupiedBy: e.area?.state.occupiedBy
+            });
+
+            this.aps.show(e);
+          })
+        )
       })
-    ).subscribe(({ areas }) => {
+    )
+    .subscribe(({ mouseEvent, areas }) => {
 
-      // if (selected) {
+      const newState = {
+        areas,
+        lastPopupCoordinates: mouseEvent ? {
+          clientX: mouseEvent.clientX,
+          clientY: mouseEvent.clientY
+        } : null
+      };
 
-      //   selected.area.state.isSelected = true;
-      //   // this.addSelectedClass(selected.areaEl);
+      // console.log('newState', newState);
 
-      //   if (this.queryOwnedSelectedArea() === selected.areaEl) {
-      //     this.renderConnections(selected.area);
-      //   }
-
-      //   // this.getActiveAreas();
-      // }
-      // else {
-      //   // this.clearRenderedConnections();
-      //   // this.removeOwnedSelectedClass(); // NOTE: Has to be removed after
-      // }
-
-      this.activeAreas.next(this.queryActiveAreas());
-      this.areas.next(areas);
-    });
-
-    this.connection$.pipe(
-      map((areaId) => {
-
-        if (areaId) {
-          return {
-            areaEl: this.queryArea(areaId),
-            area: this.cache.getAreaById(areaId)
-          };
-        }
-        else {
-          return null;
-        }
-      })
-    ).subscribe((selected) => {
-
-      if (selected) {
-        this.removeConnectionSelectedClass();
-        this.addSelectedClass(selected.areaEl);
-      }
-      else {
-        this.removeConnectionSelectedClass();
-      }
+      this.update.next(newState);
     });
   }
 
-  setSelected(e: SelectedEvent) {
-    this.selected.next(e);
-  }
+  areaClicked(e: SelectedEvent) {
 
-  clearSelected() {
-    this.selected.next(null);
-  }
-
-  setConnection(areaId: number) {
-    this.connection.next(areaId);
-  }
-
-  clearConnection() {
-    this.connection.next(null);
-  }
-
-  selectArea(areas: Area[], area: Area) {
-
-    if (area.state.isOwnedBySelf) {
-      area.state.isSelected = true;
-
-      MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
-
-        const state = areas[connectionId].state;
-        state.isActive = true;
-        state.isConnectedToSelected = true;
-      });
+    if (e.selectedConnection) {
+      this.connection.next(e);
+    }
+    else if (e.selected) {
+      this.selected.next(e);
     }
   }
-
-  deselectArea(area: Area) {
-    area.state.isSelected = false;
-  }
-
-  selectConnection(areas: Area[], area: Area) {
-    area.state.isSelected = true;
-    this.areas.next(areas);
-  }
-
-  prepareMap(areaPoints: string[], config: Areas) {
-    console.log('preparing map')
-    const areas: Area[] = areaPoints.map((points, areaId) => {
-
-      return {
-        areaId,
-        points,
-        name: config[areaId].name,
-        isStartingArea: config[areaId].isStartingArea,
-        state: {
-          occupiedBy: null,
-          armies: {
-            soldiers: null,
-            horses: null,
-            gatlingGuns: null,
-            spies: null
-          },
-          isActive: false,
-          isSelected: false,
-          isConnectedToSelected: false,
-          isOwnedBySelf: false
-        }
-      }
-    });
-
-    this.areas.next(areas);
-  }
-
-  // mapReady(elementRef: ElementRef) {
-
-  //   const areas: HTMLElement[] = Array.from(elementRef.nativeElement.querySelectorAll(this.areaSelector));
-  //   const config = MapEuropeConfig; // TODO: Make this dynamic
-
-  //   this.attachData(areas, config);
-  //   this.areas.next(areas);
+  // setSelected(e: SelectedEvent) {
+  //   this.selected.next(e);
   // }
 
-  // TODO: Create config type
-  // private attachData(areas: HTMLElement[], config: any) {
+  // clearSelected() {
+  //   this.selected.next(null);
+  // }
 
-  //   areas.forEach((el, i) => {
-  //     this.renderer.setAttribute(el, 'data-area-id', String(i));
-  //     this.renderer.setAttribute(el, 'data-is-starting-area', String(!!config[i].isStartingArea));
-  //   });
+  // selectArea(areas: Area[], area: Area) {
+  //   console.log('selectArea', area);
+  //   if (area.state.__ui.isOwnedBySelf) {
+  //     console.log('selectAreaIf')
+  //     area.state.isSelected = true;
+
+  //     MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
+
+  //       const state = areas[connectionId].state;
+  //       state.isActive = true;
+  //       state.isConnectedToSelected = true;
+  //     });
+  //   }
+  // }
+
+  // deselectArea(area: Area) {
+  //   area.state.isSelected = false;
   // }
 
   updateMap(result: PipeResult) {
 
-    // Don't set area UI-related states on the stored areas
-    const areas = [...result.session.state.areas];
+    result.session.state.areas = result.session.state.areas.map((area) => {
 
-    areas.forEach((area) => {
+      area.state.__ui = {};
 
       if (isOccupiedByMe(result, area) && isMyTurn(result)) {
+        area.state.__ui.isOwnedBySelf = true;
         area.state.isActive = true;
-        area.state.isOwnedBySelf = true;
       }
+      else if (isOccupiedByMe(result, area)) {
+        area.state.__ui.isOwnedBySelf = true;
+      }
+
+      return area;
     });
 
-    this.areas.next(areas);
-  }
-
-  private addSelectedClass(area: HTMLElement) {
-    this.renderer.addClass(area, 'selected');
-  }
-
-  // private removeOwnedSelectedClass() {
-
-  //   const selectedArea = this.queryOwnedSelectedArea();
-
-  //   if (selectedArea) {
-  //     selectedArea.classList.remove('selected');
-  //   }
-  // }
-
-  private removeConnectionSelectedClass() {
-
-    const selectedArea = this.queryConnectionSelectedArea();
-
-    if (selectedArea) {
-      selectedArea.classList.remove('selected');
-    }
-  }
-
-  // private renderFill(area: HTMLElement, color: string) {
-  //   this.renderer.setStyle(area, 'fill', color);
-  // }
-
-  private renderConnections(area: Area) {
-
-    MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
-      const areaEl = this.queryArea(connectionId);
-      this.renderer.addClass(areaEl, 'active');
-      this.renderer.addClass(areaEl, 'connection');
-    });
-  }
-
-  private clearRenderedConnections() {
-
-    // this.areas.pipe(
-    //   first()
-    // )
-    // .subscribe((areas) => {
-
-    //   areas.forEach((area) => {
-
-    //     const classes = area.classList;
-
-    //     if (!classes.contains('selected') && !classes.contains('owned')) {
-    //       this.renderer.removeClass(area, 'active');
-    //     }
-    //     else if (classes.contains('connection')) {
-    //       this.renderer.removeClass(area, 'active');
-    //     }
-    //   });
-    // });
-  }
-
-  // private queryAreas() {
-  //   return Array.from(document.querySelectorAll('.map-container polygon'));
-  // }
-
-  private queryActiveAreas() {
-    return Array.from(document.querySelectorAll('.map-container polygon.active'));
-  }
-
-  private queryArea(areaId: number): HTMLElement {
-    return document.querySelector(`[data-area-id="${areaId}"]`);
-  }
-
-  private queryOwnedSelectedArea(): HTMLElement {
-    return document.querySelector(`.map-container polygon.owned.selected`);
-  }
-
-  private queryConnectionSelectedArea(): HTMLElement {
-    return document.querySelector(`.map-container polygon.connection.selected`);
+    return result;
   }
 }

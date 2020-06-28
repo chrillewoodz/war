@@ -1,3 +1,4 @@
+import { PipeResult } from './../interfaces';
 import { GameLoggerService } from './game-logger.service';
 import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
@@ -11,8 +12,7 @@ import { Player, Session } from '../interfaces';
 })
 
 export class GameLoggerComponent implements AfterViewInit, OnDestroy {
-  @Input() session: Session;
-  @Input() player: Player;
+  @Input() result: PipeResult;
   @Output() onNewLog = new EventEmitter();
   @ViewChild('listRef') listRef: ElementRef;
   @ViewChildren('messageRef') messagesRef: QueryList<HTMLLIElement>;
@@ -40,8 +40,8 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
 
     this.sub = this.gls.emitter$.subscribe((newMessage) => {
 
-      const updatedLogs = [...this.session.state.logs, newMessage];
-      const newState = { ...this.session.state, logs: updatedLogs };
+      const updatedLogs = [...this.result.session.state.logs, newMessage];
+      const newState = { ...this.result.session.state, logs: updatedLogs };
 
       this.onNewLog.emit(newState);
     });
@@ -65,9 +65,9 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
     if (this.message.valid) {
 
       this.gls.log({
-        color: this.player.extras.faction.colorRGB,
+        color: this.result.self.extras.faction.colorRGB,
         message: this.message.value,
-        from: this.player.extras.faction.name
+        from: this.result.self.extras.faction.name
       });
 
       this.message.setValue('');

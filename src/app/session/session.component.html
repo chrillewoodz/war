@@ -3,14 +3,14 @@
   <timer [percent]="elapsedTime"></timer>
 
   <div class="game-hud">
-    <players [session]="session" [players]="players" [self]="self"></players>
-    <area-information></area-information>
-    <game-logger [player]="self" [session]="session" (onNewLog)="updateState($event)"></game-logger>
+    <players [result]="result"></players>
+    <area-information *ngIf="result?.session?.state.started && isMyTurn"></area-information>
+    <game-logger [result]="result" (onNewLog)="updateState($event)"></game-logger>
   </div>
 
   <div class="map-container" [ngSwitch]="mapType">
-    <map-europe #mapInstance *ngSwitchCase="'europe'" [areas]="areas"></map-europe>
-    <area-popup [areas]="areas" [activeAreas]="activeAreas"></area-popup>
+    <map-europe #mapInstance *ngSwitchCase="'europe'" [result]="result" [isMyTurn]="isMyTurn"></map-europe>
+    <area-popup *ngIf="isMyTurn"></area-popup>
   </div>
 
   <div class="screens">
@@ -19,10 +19,10 @@
 
   <footer class="bottom-bar">
     <div class="right-bar">
-      <action-points *ngIf="session?.state.started" [config]="config"></action-points>
-      <game-stats *ngIf="session?.state.started" [stats]="self?.state"></game-stats>
+      <action-points *ngIf="result?.session?.state.started" [config]="config"></action-points>
+      <game-stats *ngIf="result?.session?.state.started" [result]="result"></game-stats>
     </div>
-    <game-cards *ngIf="session?.state.started" [cards]="cards"></game-cards>
+    <game-cards *ngIf="result?.session?.state.started" [cards]="cards"></game-cards>
     <game-settings></game-settings>
   </footer>
 

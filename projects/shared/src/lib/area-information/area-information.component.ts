@@ -1,5 +1,5 @@
 import { AreaStatsService } from './area-stats.service';
-import { Component, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AreaInformationEvent } from '../interfaces';
 
@@ -19,8 +19,7 @@ export class AreaInformationComponent implements OnDestroy {
 
     this.sub = this.as.emitter$.subscribe((event: AreaInformationEvent) => {
       this.stats = event.stats;
-      this.cd.detectChanges();
-      console.log(event);
+      this.cd.markForCheck();
     });
   }
 
