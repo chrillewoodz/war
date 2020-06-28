@@ -16,9 +16,8 @@
         opacity: 1;
         cursor: pointer;
 
-        &:hover,
-        &.selected {
-          fill: darkred;
+        &:hover {
+          fill: rgb(52, 81, 79);
         }
 
         &.owned.selected {
@@ -36,5 +35,9 @@
 
   &.active {
     opacity: 0.8;
+
+    &.selected {
+      fill: darkred;
+    }
   }
 }

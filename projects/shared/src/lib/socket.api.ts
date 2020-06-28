@@ -111,8 +111,11 @@ export class SocketApi {
         sessionId: this.cache.sessionId,
         newState: {
           ...this.cache.session.state,
-          ...newState,
-          __ui: {}
+          areas: this.cache.session.state.areas.map((area) => {
+            area.state.__ui = null;
+            return area;
+          }),
+          ...newState
         }
       });
     }

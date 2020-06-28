@@ -66,8 +66,6 @@ export class MapEngine {
             map((e) => {
 
               if (e.selected.state.__ui.isOwnedBySelf) {
-                console.log('selectAreaIf')
-                // e.selected.state.isSelected = true;
 
                 MapEuropeConfig[e.selected.areaId].connections.forEach((connectionId) => {
 
@@ -100,9 +98,7 @@ export class MapEngine {
                 area.state.isSelected = false;
               }
 
-              console.log('event', e.selectedConnection?.areaId === area.areaId, e.selected?.areaId === area.areaId)
               if (e.selectedConnection?.areaId === area.areaId || e.selected?.areaId === area.areaId) {
-                console.log('standalone if');
                 area.state.isSelected = true;
               }
 
@@ -112,7 +108,7 @@ export class MapEngine {
             return e;
           }),
           tap((e) => {
-            console.log('pipetap', e.area);
+
             this.ass.show({
               country: e.area?.name,
               occupiedBy: e.area?.state.occupiedBy
@@ -133,8 +129,6 @@ export class MapEngine {
         } : null
       };
 
-      // console.log('newState', newState);
-
       this.update.next(newState);
     });
   }
@@ -148,32 +142,6 @@ export class MapEngine {
       this.selected.next(e);
     }
   }
-  // setSelected(e: SelectedEvent) {
-  //   this.selected.next(e);
-  // }
-
-  // clearSelected() {
-  //   this.selected.next(null);
-  // }
-
-  // selectArea(areas: Area[], area: Area) {
-  //   console.log('selectArea', area);
-  //   if (area.state.__ui.isOwnedBySelf) {
-  //     console.log('selectAreaIf')
-  //     area.state.isSelected = true;
-
-  //     MapEuropeConfig[area.areaId].connections.forEach((connectionId) => {
-
-  //       const state = areas[connectionId].state;
-  //       state.isActive = true;
-  //       state.isConnectedToSelected = true;
-  //     });
-  //   }
-  // }
-
-  // deselectArea(area: Area) {
-  //   area.state.isSelected = false;
-  // }
 
   updateMap(result: PipeResult) {
 
