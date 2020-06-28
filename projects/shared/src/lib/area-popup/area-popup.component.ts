@@ -131,7 +131,6 @@ export class AreaPopupComponent {
   }
 
   close() {
-    console.log('closing popup')
     this.isOpen = false;
     this.closeArmySelectionMenu();
   }

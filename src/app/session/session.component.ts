@@ -137,7 +137,7 @@ export class SessionComponent implements OnDestroy {
     // NOTE: This cannot be used with function keyword
     // or the timer call throws type error.
     const init = (forwardedResult: PipeResult) => {
-      console.log('ninitied')
+
       return new Observable((observer) => {
         return observer.next();
       })
@@ -173,14 +173,13 @@ export class SessionComponent implements OnDestroy {
     const sessionSub = merge(
       this.socketApi.get(true).pipe(
         switchMap((result) => {
-          console.log(this.cache.initDone);
+
           if (this.cache.initDone) {
             return of(result);
           }
 
           return init(result).pipe(
             finalize(() => {
-              console.log('hello');
               this.cache.setInitDone();
             })
           );
@@ -213,7 +212,6 @@ export class SessionComponent implements OnDestroy {
     )
     .subscribe((result) => {
       this.result = result;
-      console.log(this.result);
     }, (err) => {
       console.error(err);
       this.onError();
@@ -249,7 +247,6 @@ export class SessionComponent implements OnDestroy {
   }
 
   updateState(state = this.result.session.state) {
-    console.log('updating state', state);
     this.gameEngine.updateGame(state);
   }
 
