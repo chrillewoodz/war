@@ -5,27 +5,27 @@
       <ul class="army-types">
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/soldier.svg">
-          <number-bubble [number]="stats?.armies?.soldiers.power"></number-bubble>
-          <number-bubble [number]="stats?.armies?.soldiers.amount" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.idle?.soldiers.power"></number-bubble>
+          <number-bubble [number]="stats?.idle?.soldiers.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/horse.svg">
-          <number-bubble [number]="stats?.armies?.horses.power"></number-bubble>
-          <number-bubble [number]="stats?.armies?.horses.amount" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.idle?.horses.power"></number-bubble>
+          <number-bubble [number]="stats?.idle?.horses.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/gatling-gun.svg">
-          <number-bubble [number]="stats?.armies?.gatlingGuns.power"></number-bubble>
-          <number-bubble [number]="stats?.armies?.gatlingGuns.amount" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.idle?.gatlingGuns.power"></number-bubble>
+          <number-bubble [number]="stats?.idle?.gatlingGuns.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
         <li class="army-type">
           <img class="army-type-img" src="assets/SVG/spy.svg">
-          <number-bubble [number]="stats?.armies?.spies.power"></number-bubble>
-          <number-bubble [number]="stats?.armies?.spies.amount" type="amount" position="bottom-right"></number-bubble>
+          <number-bubble [number]="stats?.idle?.spies.power"></number-bubble>
+          <number-bubble [number]="stats?.idle?.spies.amount" type="amount" position="bottom-right"></number-bubble>
         </li>
       </ul>
     </li>
-    <li class="game-stat">
+    <!-- <li class="game-stat">
       <h4>Idle</h4>
       <ul class="army-types no-padding">
         <li class="army-type">
@@ -33,7 +33,7 @@
           <number-bubble [number]="totalIdle" type="amount" position="bottom-right"></number-bubble>
         </li>
       </ul>
-    </li>
+    </li> -->
   </ul>
 
   <!-- <ul class="text-center">

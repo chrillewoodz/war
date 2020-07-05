@@ -1,8 +1,7 @@
-import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, of, Observable } from 'rxjs';
 
-import { SessionState, PipeResult, Area } from './interfaces';
+import { SessionState, PipeResult, ActionEvent, Armies, Area, Session } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
@@ -11,6 +10,12 @@ import { SocketApi } from './socket.api';
 
 export enum GameEngineEvent {
   Stop
+}
+
+interface ArmiesToDeploy {
+  soldiers: number;
+  horses: number;
+  gatlingGuns: number;
 }
 
 @Injectable({
@@ -24,7 +29,6 @@ export class GameEngine {
 
   constructor(
     private cache: GameCache,
-    private mapEngine: MapEngine,
     private socketApi: SocketApi
   ) {
 
@@ -41,7 +45,7 @@ export class GameEngine {
 
     for (const clientId in result.session.state.players) {
 
-      result.session.state.players[clientId].state.armies = {
+      result.session.state.players[clientId].state.idle = {
         soldiers: {
           ...GameConfig.armyTypes.soldier,
           amount: 10
@@ -59,35 +63,6 @@ export class GameEngine {
           amount: 2
         }
       }
-
-      result.session.state.players[clientId].state.idle = {
-        soldiers: {
-          ...GameConfig.armyTypes.soldier,
-          amount: 0
-        },
-        horses: {
-          ...GameConfig.armyTypes.horse,
-          amount: 0
-        },
-        gatlingGuns: {
-          ...GameConfig.armyTypes.gatlingGun,
-          amount: 0
-        },
-        spies: {
-          ...GameConfig.armyTypes.spy,
-          amount: 0
-        }
-      }
-
-      // result.session.state.areas = result.session.state.areas.map((area) => {
-
-      //   console.log(area.state)
-      //   if (area.isStartingArea && area.state.occupiedBy.clientId === clientId) {
-      //     area.state.armies = result.session.state.players[clientId].state.armies;
-      //   }
-
-      //   return area;
-      // })
     }
 
     return result;
@@ -110,49 +85,113 @@ export class GameEngine {
   }
 
   updateGame(state: Partial<SessionState>) {
-    this.socketApi.update(true, state);
+    return this.socketApi.update(true, state);
   }
 
   gameEnded() {
     this.stop.next(true);
   }
 
-  doAction(action: Action, areaId: string) {
+  doAction(action: Action, areaId: string): Observable<ActionEvent> {
 
     switch (action) {
       case Action.Attack: return this.attack(areaId);
-      case Action.Deploy: return this.deploy();
-      case Action.Relocate: return this.relocate();
-      case Action.Spy: return this.spy();
+      case Action.Deploy: return this.deploy(areaId);
+      case Action.Relocate: return this.relocate(areaId);
+      case Action.Spy: return this.spy(areaId);
       default: exhaust(action);
     }
   }
 
   private attack(areaId: string) {
 
-    const updatedAreas = this.cache.session.state.areas.map((area) => {
+    // const updatedAreas = this.cache.session.state.areas.map((area) => {
 
-      if (area.areaId === areaId) {
+    //   if (area.areaId === areaId) {
 
-        if (area.state.occupiedBy === null || area.state.occupiedBy === undefined) {
-          area.state.occupiedBy = this.cache.session.state.players[this.cache.clientId];
-        }
+    //     if (area.state.occupiedBy === null || area.state.occupiedBy === undefined) {
+    //       area.state.occupiedBy = this.cache.session.state.players[this.cache.clientId];
+    //     }
+    //   }
+
+    //   return area;
+    // })
+
+    return of({
+      areaId,
+      armies: this.cache.getSelectedArea().state.armies as Armies
+    });
+  }
+
+  private deploy(areaId: string) {
+
+    return of({
+      areaId,
+      armies: this.cache.self.state.idle
+    });
+  }
+
+  private relocate(areaId: string) {
+
+    return of({
+      areaId,
+      armies: this.cache.getSelectedArea().state.armies as Armies
+    });
+  }
+
+  private spy(areaId: string) {
+
+    return of({
+      areaId,
+      armies: this.cache.self.state.idle
+    });
+  }
+
+  deployConfirmed(count: ArmiesToDeploy) {
+
+    const session = this.cache.session;
+    const self = this.cache.self;
+    const selectedArea = this.cache.getSelectedArea();
+
+    // Deselect area
+    this.resetAreaAndConnections(selectedArea, session);
+
+    // Add armies to area state
+    (selectedArea.state.armies.soldiers.amount as number) += count.soldiers;
+    (selectedArea.state.armies.horses.amount as number) += count.horses;
+    (selectedArea.state.armies.gatlingGuns.amount as number) += count.gatlingGuns;
+
+    // Negate armies from idle armies
+    (self.state.idle.soldiers.amount as number) -= count.soldiers;
+    (self.state.idle.horses.amount as number) -= count.horses;
+    (self.state.idle.gatlingGuns.amount as number) -= count.gatlingGuns;
+
+    const areas = session.state.areas;
+    const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
+
+    areas[i] = selectedArea;
+
+    return this.updateGame({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
       }
-
-      return area;
-    })
+    });
   }
 
-  private deploy() {
+  private resetAreaAndConnections(selectedArea: Area, session: Session) {
 
-  }
+    selectedArea.state.isSelected = false;
 
-  private relocate() {
+    // Resets all connections
+    session.state.areas.forEach((area) => {
 
-  }
-
-  private spy() {
-
+      if (selectedArea.areaId !== area.areaId) {
+        area.state.isActive = false;
+        area.state.isConnectedToSelected = false;
+      }
+    });
   }
 
   private get winModifier() {

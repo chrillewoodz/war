@@ -3,7 +3,7 @@
     <ul class="ap-menu">
       <li class="ap-menu-item" *ngFor="let option of options" (mouseover)="showCost(option.cost)" (mouseout)="hideCost()" (click)="option.action()">{{option.label}}</li>
     </ul>
-    <div class="army-selection-menu" [ngClass]="{open: isArmySelectionMenuOpen}" [formGroup]="counts">
+    <div class="army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts">
       <div class="row no-gutters align-items-center justify-content-center">
         <div class="col">
           <div class="row no-gutters align-items-center justify-content-center form-row">

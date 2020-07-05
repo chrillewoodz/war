@@ -42,7 +42,7 @@ export class GameCache {
 
   getSelectedArea() {
     const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
-    return session.state.areas.find((area) => area.state.isSelected === true);
+    return session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === false);
   }
 
   getSelectedConnectedArea() {

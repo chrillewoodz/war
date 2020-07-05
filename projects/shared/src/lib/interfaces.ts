@@ -9,7 +9,7 @@ export interface Faction {
   factionName: string;
 }
 
-interface Armies {
+export interface Armies {
   soldiers: Army;
   horses: Army;
   gatlingGuns: Army;
@@ -22,7 +22,6 @@ export interface PlayerState {
   quit: boolean;
   ready: boolean;
   defeated: boolean;
-  armies: Armies;
   idle: Armies;
 }
 
@@ -44,7 +43,7 @@ export enum ArmyType {
 export interface Army {
   type: ArmyType;
   power: number;
-  amount?: number;
+  amount?: number | '?';
 }
 
 export interface Areas {
@@ -59,6 +58,10 @@ export interface AreaUI {
   isOwnedBySelf?: boolean;
 }
 
+export interface SpiedOnBy {
+  [k: string]: Player;
+}
+
 export interface Area {
   areaId: string;
   isStartingArea: boolean;
@@ -70,6 +73,7 @@ export interface Area {
     isActive?: boolean;
     isSelected?: boolean;
     isConnectedToSelected?: boolean;
+    spiedOnBy: SpiedOnBy;
     __ui: AreaUI; // Should be omitted when storing the session
   }
 }
@@ -133,6 +137,7 @@ export interface SelectedEvent {
   areas: Area[];
   area?: Area;
   mouseEvent?: MouseEvent | Partial<MouseEvent>;
+  emitUpdateEvent: boolean;
 }
 
 export interface AreaPopupEvent {
@@ -148,4 +153,10 @@ export interface AreaInformationEvent {
 export interface AreaStatsInformation {
   country: string;
   occupiedBy: Player;
+  armies: Armies;
+}
+
+export interface ActionEvent {
+  areaId: string;
+  armies: Armies;
 }

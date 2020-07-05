@@ -19,7 +19,7 @@ export class AreaStatsService {
     });
   }
 
-  hide() {
+  reset() {
     this.emitter.next({
       stats: null
     });

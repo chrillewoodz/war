@@ -1,8 +1,8 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { ReplaySubject, Subject, merge, Observable, of } from 'rxjs';
-import { tap, map, startWith, switchMap } from 'rxjs/operators';
+import { tap, map, startWith, switchMap, first } from 'rxjs/operators';
 
-import { PipeResult, Area, SelectedEvent, SessionState } from './interfaces';
+import { PipeResult, Area, SelectedEvent, SessionState, Army } from './interfaces';
 import { isMyTurn, isOccupiedByMe } from './helpers';
 import { SocketApi } from './socket.api';
 import { AreaPopupService } from './area-popup/area-popup.service';
@@ -47,7 +47,8 @@ export class MapEngine {
       areas: this.cache.session.state.areas,
       selected: this.cache.getSelectedArea(),
       selectedConnection: this.cache.getSelectedConnectedArea(),
-      mouseEvent: this.cache.session.state.lastPopupCoordinates
+      mouseEvent: this.cache.session.state.lastPopupCoordinates,
+      emitUpdateEvent: false
     })
     .pipe(
       tap((e) => {
@@ -67,12 +68,20 @@ export class MapEngine {
 
               if (e.selected.state.__ui.isOwnedBySelf) {
 
-                MapEuropeConfig[e.selected.areaId].connections.forEach((connectionId) => {
+                const totalArmiesInArea = Object.keys(e.selected.state.armies)
+                  .reduce((total, armyType) => {
+                    return total + (((e.selected.state.armies[armyType] as Army)?.amount as number) || 0);
+                  }, 0);
 
-                  const state = e.areas[connectionId].state;
-                  state.isActive = true;
-                  state.isConnectedToSelected = true;
-                });
+                if (totalArmiesInArea > 0) {
+
+                  MapEuropeConfig[e.selected.areaId].connections.forEach((connectionId) => {
+
+                    const state = e.areas[connectionId].state;
+                    state.isActive = true;
+                    state.isConnectedToSelected = true;
+                  });
+                }
               }
 
               return {...e, area: e.selected};
@@ -109,9 +118,13 @@ export class MapEngine {
           }),
           tap((e) => {
 
+            const hasSelfSpiedOnArea = !!e.area.state.spiedOnBy[this.cache.self.clientId];
+            const isAreaOwnedBySelf = e.area.state.occupiedBy?.clientId === this.cache.self.clientId;
+
             this.ass.show({
               country: e.area?.name,
-              occupiedBy: e.area?.state.occupiedBy
+              occupiedBy: e.area?.state.occupiedBy,
+              armies: (hasSelfSpiedOnArea || isAreaOwnedBySelf) ? e.area?.state.armies : null
             });
 
             this.aps.show(e);
@@ -119,17 +132,26 @@ export class MapEngine {
         )
       })
     )
-    .subscribe(({ mouseEvent, areas }) => {
+    .subscribe(({ mouseEvent, areas, emitUpdateEvent }) => {
+
+      let lastPopupCoordinates = null;
+
+      if (mouseEvent) {
+
+        lastPopupCoordinates = {
+          clientX: mouseEvent.clientX,
+          clientY: mouseEvent.clientY
+        };
+      }
 
       const newState = {
         areas,
-        lastPopupCoordinates: mouseEvent ? {
-          clientX: mouseEvent.clientX,
-          clientY: mouseEvent.clientY
-        } : null
+        lastPopupCoordinates
       };
 
-      this.update.next(newState);
+      if (emitUpdateEvent) {
+        this.update.next(newState);
+      }
     });
   }
 
@@ -159,6 +181,13 @@ export class MapEngine {
 
       return area;
     });
+
+    const cachedSelectedArea = this.cache.getSelectedArea();
+    const cachedSelectedConnectionArea = this.cache.getSelectedConnectedArea();
+
+    if (!cachedSelectedConnectionArea && !cachedSelectedArea) {
+      this.ass.reset();
+    }
 
     return result;
   }

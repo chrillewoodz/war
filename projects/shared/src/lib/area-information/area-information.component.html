@@ -9,19 +9,19 @@
     <ul class="row no-gutters ai-menu">
       <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/soldier.svg">
-        <p>{{stats?.occupiedBy?.state?.armies?.soldiers.amount || '?'}}</p>
+        <p>{{stats?.armies ? stats?.armies.soldiers.amount : '?'}}</p>
       </li>
       <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/horse.svg">
-        <p>{{stats?.occupiedBy?.state?.armies?.horses.amount || '?'}}</p>
+        <p>{{stats?.armies ? stats?.armies.horses.amount : '?'}}</p>
       </li>
       <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/gatling-gun.svg">
-        <p>{{stats?.occupiedBy?.state?.armies?.gatlingGuns.amount || '?'}}</p>
+        <p>{{stats?.armies ? stats?.armies.gatlingGuns.amount : '?'}}</p>
       </li>
       <li class="col ai-menu-item">
         <img class="ai-menu-item-img" src="assets/SVG/spy.svg">
-        <p>{{stats?.occupiedBy?.state?.armies?.spies.amount || '?'}}</p>
+        <p>{{stats?.armies ? stats?.armies.spies.amount : '?'}}</p>
       </li>
     </ul>
   </div>

@@ -212,6 +212,7 @@ export class SessionComponent implements OnDestroy {
     )
     .subscribe((result) => {
       this.result = result;
+      console.log(this.result);
     }, (err) => {
       console.error(err);
       this.onError();

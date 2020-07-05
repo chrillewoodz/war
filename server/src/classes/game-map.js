@@ -16,11 +16,20 @@ class GameMap {
         state: {
           occupiedBy: null,
           armies: {
-            soldiers: null,
-            horses: null,
-            gatlingGuns: null,
-            spies: null
+            soldiers: {
+              amount: 0
+            },
+            horses: {
+              amount: 0
+            },
+            gatlingGuns: {
+              amount: 0
+            },
+            spies: {
+              amount: 0
+            }
           },
+          spiedOnBy: {},
           isActive: false,
           isSelected: false,
           isConnectedToSelected: false,

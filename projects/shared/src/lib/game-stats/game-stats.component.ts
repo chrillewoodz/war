@@ -9,7 +9,7 @@ import { PipeResult, PlayerState } from '../interfaces';
 export class GameStatsComponent {
   @Input() set result(result: PipeResult) {
     this._stats = result.self.state;
-    this.getTotalIdle();
+    // this.getTotalIdle();
   };
 
   get stats() {
@@ -22,11 +22,11 @@ export class GameStatsComponent {
 
   constructor() {}
 
-  getTotalIdle() {
+  // getTotalIdle() {
 
-    this.totalIdle = Object.keys(this.stats.idle)
-      .reduce((acc, curr) => {
-        return acc += this.stats.idle[curr].amount;
-      }, 0);
-  }
+  //   this.totalIdle = Object.keys(this.stats.idle)
+  //     .reduce((acc, curr) => {
+  //       return acc += this.stats.idle[curr].amount;
+  //     }, 0);
+  // }
 }

@@ -35,7 +35,8 @@ export class MapEuropeComponent {
           mouseEvent: event,
           areas,
           selected: area.state.__ui.isOwnedBySelf ? area : null,
-          selectedConnection: area.state.isConnectedToSelected ? area : null
+          selectedConnection: area.state.isConnectedToSelected ? area : null,
+          emitUpdateEvent: true
         });
       }
     }
