@@ -16,6 +16,7 @@ interface ArmiesToDeploy {
   soldiers: number;
   horses: number;
   gatlingGuns: number;
+  spies: number;
 }
 
 @Injectable({
@@ -160,11 +161,13 @@ export class GameEngine {
     (selectedArea.state.armies.soldiers.amount as number) += count.soldiers;
     (selectedArea.state.armies.horses.amount as number) += count.horses;
     (selectedArea.state.armies.gatlingGuns.amount as number) += count.gatlingGuns;
+    (selectedArea.state.armies.spies.amount as number) += count.spies;
 
     // Negate armies from idle armies
     (self.state.idle.soldiers.amount as number) -= count.soldiers;
     (self.state.idle.horses.amount as number) -= count.horses;
     (self.state.idle.gatlingGuns.amount as number) -= count.gatlingGuns;
+    (self.state.idle.spies.amount as number) -= count.spies;
 
     const areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);

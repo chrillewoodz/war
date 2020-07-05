@@ -1,65 +1,80 @@
-<div class="ap-container" [ngClass]="{visible: isOpen}" [ngStyle]="{left: x + 'px', top: y + 'px'}">
+<div class="common-container ap-container" [ngClass]="{visible: isOpen}" [ngStyle]="{left: x + 'px', top: y + 'px'}">
   <div (click)="$event.stopPropagation()">
-    <ul class="ap-menu">
+    <ul #menu class="ap-menu">
       <li class="ap-menu-item" *ngFor="let option of options" (mouseover)="showCost(option.cost)" (mouseout)="hideCost()" (click)="option.action()">{{option.label}}</li>
     </ul>
-    <div class="army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts">
-      <div class="row no-gutters align-items-center justify-content-center">
-        <div class="col">
-          <div class="row no-gutters align-items-center justify-content-center form-row">
-            <div class="col-auto">
-              <button class="ap-decrease" (click)="decrease(armyTypes.Soldiers)">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
-            <div class="col-auto ap-img-container">
-              <img class="ap-img" src="/assets/SVG/soldier.svg">
-              <input class="ap-input" type="number" readonly formControlName="soldiers">
-            </div>
-            <div class="col-auto">
-              <button class="ap-increase" (click)="increase(armyTypes.Soldiers)">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-          </div>
-          <div class="row no-gutters align-items-center justify-content-center form-row">
-            <div class="col-auto">
-              <button class="ap-decrease" (click)="decrease(armyTypes.GatlingGuns)">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
-            <div class="col-auto ap-img-container">
-              <img class="ap-img" src="/assets/SVG/gatling-gun.svg">
-              <input class="ap-input" type="number" readonly formControlName="gatlingGuns">
-            </div>
-            <div class="col-auto">
-              <button class="ap-increase" (click)="increase(armyTypes.GatlingGuns)">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            <div class="col-auto ap-confirm">
-              <button class="btn-primary" type="button" (click)="confirm()">Confirm</button>
-            </div>
-          </div>
-          <div class="row no-gutters align-items-center justify-content-center form-row">
-            <div class="col-auto">
-              <button class="ap-decrease" (click)="decrease(armyTypes.Horses)">
-                <i class="fas fa-minus"></i>
-              </button>
-            </div>
-            <div class="col-auto ap-img-container">
-              <img class="ap-img" src="/assets/SVG/horse.svg">
-              <input class="ap-input" type="number" readonly formControlName="horses">
-            </div>
-            <div class="col-auto">
-              <button class="ap-increase" (click)="increase(armyTypes.Horses)">
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-          </div>
+    <div class="common-container army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts" (clickOutside)="closeArmySelectionMenu()" [exceptions]=[menu]>
+      <h4>{{armySelectionConfig.currentAction}}</h4>
+      <div class="row no-gutters align-items-center justify-content-center form-row">
+        <div class="col-auto">
+          <button class="ap-decrease" (click)="decrease(armyTypes.Soldiers)">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+        <div class="col-auto ap-img-container">
+          <img class="ap-img" src="/assets/SVG/soldier.svg">
+          <input class="ap-input" type="number" readonly formControlName="soldiers">
+        </div>
+        <div class="col-auto">
+          <button class="ap-increase" (click)="increase(armyTypes.Soldiers)">
+            <i class="fas fa-plus"></i>
+          </button>
         </div>
       </div>
-      <button class="btn-neutral btn-close" (click)="closeArmySelectionMenu()">Close</button>
+      <div class="row no-gutters align-items-center justify-content-center form-row">
+        <div class="col-auto">
+          <button class="ap-decrease" (click)="decrease(armyTypes.Horses)">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+        <div class="col-auto ap-img-container">
+          <img class="ap-img" src="/assets/SVG/horse.svg">
+          <input class="ap-input" type="number" readonly formControlName="horses">
+        </div>
+        <div class="col-auto">
+          <button class="ap-increase" (click)="increase(armyTypes.Horses)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row no-gutters align-items-center justify-content-center form-row">
+        <div class="col-auto">
+          <button class="ap-decrease" (click)="decrease(armyTypes.GatlingGuns)">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+        <div class="col-auto ap-img-container">
+          <img class="ap-img" src="/assets/SVG/gatling-gun.svg">
+          <input class="ap-input" type="number" readonly formControlName="gatlingGuns">
+        </div>
+        <div class="col-auto">
+          <button class="ap-increase" (click)="increase(armyTypes.GatlingGuns)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row no-gutters align-items-center justify-content-center form-row">
+        <div class="col-auto">
+          <button class="ap-decrease" (click)="decrease(armyTypes.Spies)">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+        <div class="col-auto ap-img-container">
+          <img class="ap-img" src="/assets/SVG/spy.svg">
+          <input class="ap-input" type="number" readonly formControlName="spies">
+        </div>
+        <div class="col-auto">
+          <button class="ap-increase" (click)="increase(armyTypes.Spies)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col">
+          <button class="btn-primary" type="button" (click)="confirm()">Confirm</button>
+          <button class="btn-neutral btn-close" (click)="closeArmySelectionMenu()">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

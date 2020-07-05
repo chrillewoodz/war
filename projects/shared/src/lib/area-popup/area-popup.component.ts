@@ -1,14 +1,12 @@
 import { filter, tap, first } from 'rxjs/operators';
 import { AreaPopupService } from './area-popup.service';
 import { ArmyType, Armies } from './../interfaces';
-import { GameCache } from './../game.cache';
-import { FormBuilder, FormControl, AbstractControl, Validators } from '@angular/forms';
-import { Component, HostListener, Input } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Component } from '@angular/core';
 
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
-import { exhaust } from '../helpers';
 
 interface Option {
   label: string;
@@ -43,13 +41,13 @@ export class AreaPopupComponent {
   public counts = this.fb.group({
     soldiers: [0],
     horses: [0],
-    gatlingGuns: [0]
+    gatlingGuns: [0],
+    spies: [0]
   });
 
   constructor(
     private aps: AreaPopupService,
     private apApi: ActionPointsApi,
-    private cache: GameCache,
     private fb: FormBuilder,
     private gameEngine: GameEngine
   ) {
@@ -104,7 +102,8 @@ export class AreaPopupComponent {
           this.counts.reset({
             soldiers: 0,
             horses: 0,
-            gatlingGuns: 0
+            gatlingGuns: 0,
+            spies: 0
           });
         })
       )

@@ -1,6 +1,6 @@
 export enum Action {
-  Attack,
-  Deploy,
-  Relocate,
-  Spy
+  Attack = 'Attack',
+  Deploy = 'Deploy',
+  Relocate = 'Relocate',
+  Spy = 'Spy'
 }
