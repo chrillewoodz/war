@@ -65,6 +65,7 @@ class Session {
 
         if (this.state.areas.areas[j].isStartingArea && this.state.areas.areas[j].state.occupiedBy === null) {
           this.state.areas.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
+          this.state.players[shuffledPlayers[i]].state.idle = this.state.areas.areas[j].state.armies;
           continue playersLoop;
         }
       }

@@ -13,22 +13,10 @@ class GameMap {
         points,
         name: config[areaId].name,
         isStartingArea: config[areaId].isStartingArea,
+        anchorPoints: config[areaId].anchorPoints,
         state: {
           occupiedBy: null,
-          armies: {
-            soldiers: {
-              amount: 0
-            },
-            horses: {
-              amount: 0
-            },
-            gatlingGuns: {
-              amount: 0
-            },
-            spies: {
-              amount: 0
-            }
-          },
+          armies: config[areaId].armies,
           spiedOnBy: {},
           isActive: false,
           isSelected: false,

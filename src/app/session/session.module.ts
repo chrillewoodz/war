@@ -14,6 +14,7 @@ import {
   GameSettingsModule,
   GameStatsModule,
   MapEuropeModule,
+  OutcomeModule,
   PlayersModule,
   ScreenFightModule,
   TimerModule
@@ -35,6 +36,7 @@ import {
      GameSettingsModule,
      GameStatsModule,
      MapEuropeModule,
+     OutcomeModule,
      PlayersModule,
      ScreenFightModule,
      TimerModule

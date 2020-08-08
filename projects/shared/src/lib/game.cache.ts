@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
 import { Session } from './interfaces';
+import { OutcomeDirective } from './outcome/outcome.directive';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,9 @@ export class GameCache {
   private readonly sessionIdKey = 'sessionId';
   private readonly sessionKey = 'session';
   private readonly initDoneKey = 'initDone';
+
+  private _mapElement: SVGSVGElement;
+  private _outcomeViewContainerRef: ViewContainerRef;
 
   constructor() {}
 
@@ -33,6 +37,14 @@ export class GameCache {
   get self() {
     const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
     return session.state.players[this.clientId];
+  }
+
+  get mapElement() {
+    return this._mapElement;
+  }
+
+  get outcomeViewContainerRef() {
+    return this._outcomeViewContainerRef;
   }
 
   getAreaById(areaId: string) {
@@ -64,6 +76,14 @@ export class GameCache {
 
   setInitDone() {
     sessionStorage.setItem(this.initDoneKey, JSON.stringify(true));
+  }
+
+  setMapElement(mapElement: SVGSVGElement) {
+    this._mapElement = mapElement;
+  }
+
+  setOutcomeHost(outcomeViewContainerRef: ViewContainerRef) {
+    this._outcomeViewContainerRef = outcomeViewContainerRef;
   }
 
   removeSessionId() {

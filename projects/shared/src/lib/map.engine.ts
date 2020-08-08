@@ -1,4 +1,6 @@
-import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { DynamicComponent } from './dynamic-component';
+import { OutcomeComponent } from './outcome/outcome.component';
+import { Injectable, Renderer2, RendererFactory2, ComponentFactoryResolver } from '@angular/core';
 import { ReplaySubject, Subject, merge, Observable, of } from 'rxjs';
 import { tap, map, startWith, switchMap, first } from 'rxjs/operators';
 
@@ -36,6 +38,7 @@ export class MapEngine {
     private aps: AreaPopupService,
     private ass: AreaStatsService,
     private cache: GameCache,
+    private componentFactoryResolver: ComponentFactoryResolver,
     private socketApi: SocketApi
   ) {
 
@@ -190,5 +193,31 @@ export class MapEngine {
     }
 
     return result;
+  }
+
+  mapToScreenCoordinates(mapElement: SVGSVGElement, svgX, svgY) {
+    var p = mapElement.createSVGPoint();
+     p.x = svgX;
+     p.y = svgY;
+     return p.matrixTransform(mapElement.getScreenCTM());
+  }
+
+  screenToSVGCoordinates(mapElement: SVGSVGElement, svgX, svgY) {
+    var p = mapElement.createSVGPoint();
+     p.x = svgX;
+     p.y = svgY;
+     return p.matrixTransform(mapElement.getScreenCTM().inverse());
+  }
+
+  loadOutcome() {
+
+    const outcomeComponent = new DynamicComponent(OutcomeComponent);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(outcomeComponent.component);
+    const viewContainerRef = this.cache.outcomeViewContainerRef;
+
+    const componentRef = viewContainerRef.createComponent<OutcomeComponent>(componentFactory);
+
+    // Pass componentRef so we can self destruct the component
+    componentRef.instance.componentRef = componentRef;
   }
 }

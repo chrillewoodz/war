@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { MapEngine } from '../map.engine';
 import { GameCache } from '../game.cache';
 import { PipeResult } from '../interfaces';
@@ -9,13 +9,20 @@ import { PipeResult } from '../interfaces';
   styleUrls: ['./map-europe.component.scss']
 })
 
-export class MapEuropeComponent {
+export class MapEuropeComponent implements AfterViewInit {
+  @ViewChild('mapElement') map: ElementRef<SVGSVGElement>;
   @Input() result: PipeResult;
   @Input() isMyTurn: boolean;
 
   constructor(private cache: GameCache, private mapEngine: MapEngine) {}
 
+  ngAfterViewInit() {
+    this.cache.setMapElement(this.map.nativeElement);
+  }
+
   mapClicked(event: MouseEvent) {
+
+    console.log(event.screenX, event.screenY);
 
     if (!this.isMyTurn) {
       return;
@@ -38,6 +45,13 @@ export class MapEuropeComponent {
           selectedConnection: area.state.isConnectedToSelected ? area : null,
           emitUpdateEvent: true
         });
+
+        // DO NOT REMOVE
+        // Calculates x and y in the SVG itself, useful for finding anchor points
+        // VERY IMPORTANT: See https://stackoverflow.com/questions/6073505/what-is-the-difference-between-screenx-y-clientx-y-and-pagex-y
+        // why we must use clientX/Y instead of screenX/Y.
+        const areaCoords = this.mapEngine.screenToSVGCoordinates(this.map.nativeElement, event.clientX, event.clientY);
+        console.log('AREA_COORDS', areaCoords);
       }
     }
   }

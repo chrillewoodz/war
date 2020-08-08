@@ -5,70 +5,74 @@
     </ul>
     <div class="common-container army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts" (clickOutside)="closeArmySelectionMenu()" [exceptions]=[menu]>
       <h4>{{armySelectionConfig.currentAction}}</h4>
-      <div class="row no-gutters align-items-center justify-content-center form-row">
-        <div class="col-auto">
-          <button class="ap-decrease" (click)="decrease(armyTypes.Soldiers)">
-            <i class="fas fa-minus"></i>
-          </button>
+      <ng-container *ngIf="armySelectionConfig.currentAction !== actions.Spy">
+        <div class="row no-gutters align-items-center justify-content-center form-row">
+          <div class="col-auto">
+            <button class="ap-decrease" (click)="decrease(armyTypes.Soldiers)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="col-auto ap-img-container">
+            <img class="ap-img" src="/assets/SVG/soldier.svg">
+            <input class="ap-input" type="number" readonly formControlName="soldiers">
+          </div>
+          <div class="col-auto">
+            <button class="ap-increase" (click)="increase(armyTypes.Soldiers)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
-        <div class="col-auto ap-img-container">
-          <img class="ap-img" src="/assets/SVG/soldier.svg">
-          <input class="ap-input" type="number" readonly formControlName="soldiers">
+        <div class="row no-gutters align-items-center justify-content-center form-row">
+          <div class="col-auto">
+            <button class="ap-decrease" (click)="decrease(armyTypes.Horses)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="col-auto ap-img-container">
+            <img class="ap-img" src="/assets/SVG/horse.svg">
+            <input class="ap-input" type="number" readonly formControlName="horses">
+          </div>
+          <div class="col-auto">
+            <button class="ap-increase" (click)="increase(armyTypes.Horses)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
-        <div class="col-auto">
-          <button class="ap-increase" (click)="increase(armyTypes.Soldiers)">
-            <i class="fas fa-plus"></i>
-          </button>
+        <div class="row no-gutters align-items-center justify-content-center form-row">
+          <div class="col-auto">
+            <button class="ap-decrease" (click)="decrease(armyTypes.GatlingGuns)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="col-auto ap-img-container">
+            <img class="ap-img" src="/assets/SVG/gatling-gun.svg">
+            <input class="ap-input" type="number" readonly formControlName="gatlingGuns">
+          </div>
+          <div class="col-auto">
+            <button class="ap-increase" (click)="increase(armyTypes.GatlingGuns)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="row no-gutters align-items-center justify-content-center form-row">
-        <div class="col-auto">
-          <button class="ap-decrease" (click)="decrease(armyTypes.Horses)">
-            <i class="fas fa-minus"></i>
-          </button>
+      </ng-container>
+      <ng-container *ngIf="armySelectionConfig.currentAction !== actions.Attack">
+        <div class="row no-gutters align-items-center justify-content-center form-row">
+          <div class="col-auto">
+            <button class="ap-decrease" (click)="decrease(armyTypes.Spies)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="col-auto ap-img-container">
+            <img class="ap-img" src="/assets/SVG/spy.svg">
+            <input class="ap-input" type="number" readonly formControlName="spies">
+          </div>
+          <div class="col-auto">
+            <button class="ap-increase" (click)="increase(armyTypes.Spies)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
         </div>
-        <div class="col-auto ap-img-container">
-          <img class="ap-img" src="/assets/SVG/horse.svg">
-          <input class="ap-input" type="number" readonly formControlName="horses">
-        </div>
-        <div class="col-auto">
-          <button class="ap-increase" (click)="increase(armyTypes.Horses)">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-      </div>
-      <div class="row no-gutters align-items-center justify-content-center form-row">
-        <div class="col-auto">
-          <button class="ap-decrease" (click)="decrease(armyTypes.GatlingGuns)">
-            <i class="fas fa-minus"></i>
-          </button>
-        </div>
-        <div class="col-auto ap-img-container">
-          <img class="ap-img" src="/assets/SVG/gatling-gun.svg">
-          <input class="ap-input" type="number" readonly formControlName="gatlingGuns">
-        </div>
-        <div class="col-auto">
-          <button class="ap-increase" (click)="increase(armyTypes.GatlingGuns)">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-      </div>
-      <div class="row no-gutters align-items-center justify-content-center form-row">
-        <div class="col-auto">
-          <button class="ap-decrease" (click)="decrease(armyTypes.Spies)">
-            <i class="fas fa-minus"></i>
-          </button>
-        </div>
-        <div class="col-auto ap-img-container">
-          <img class="ap-img" src="/assets/SVG/spy.svg">
-          <input class="ap-input" type="number" readonly formControlName="spies">
-        </div>
-        <div class="col-auto">
-          <button class="ap-increase" (click)="increase(armyTypes.Spies)">
-            <i class="fas fa-plus"></i>
-          </button>
-        </div>
-      </div>
+      </ng-container>
       <div class="row no-gutters">
         <div class="col">
           <button class="btn-primary" type="button" (click)="confirm()">Confirm</button>

@@ -1,0 +1,51 @@
+@import './src/_variables';
+
+.outcome-container {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  animation: animate 2800ms ease;
+  animation-fill-mode: forwards;
+}
+
+// .outcome-inner-container {
+//   opacity: 0;
+//   visibility: hidden;
+//   text-align: center;
+//   animation: animate 2000ms ease;
+//   animation-fill-mode: forwards;
+// }
+
+.outcome-fail-img {
+  width: 30px;
+}
+
+.outcome-success-img {
+  width: 30px;
+}
+
+.outcome-title {
+  color: darkred;
+}
+
+.outcome-subtitle {
+  color: darkred;
+}
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 20px;
+  }
+  60%, 90% {
+    opacity: 1;
+    visibility: visible;
+    margin-top: -20px;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 20px;
+  }
+}

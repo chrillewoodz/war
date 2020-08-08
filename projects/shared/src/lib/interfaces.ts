@@ -43,7 +43,7 @@ export enum ArmyType {
 export interface Army {
   type: ArmyType;
   power: number;
-  amount?: number | '?';
+  amount?: number;
 }
 
 export interface Areas {
@@ -62,11 +62,21 @@ export interface SpiedOnBy {
   [k: string]: Player;
 }
 
+export interface AnchorPoint {
+  x: number;
+  y: number;
+}
+
+export interface AnchorPoints {
+  main: AnchorPoint;
+}
+
 export interface Area {
   areaId: string;
   isStartingArea: boolean;
   points: string;
   name: string;
+  anchorPoints: AnchorPoints;
   state: {
     occupiedBy?: Player;
     armies: Armies;

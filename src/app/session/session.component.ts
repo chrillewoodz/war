@@ -1,5 +1,6 @@
 import { environment } from '../../environments/environment';
-import { Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener, ElementRef, TemplateRef } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription, merge, of, interval, Observable } from 'rxjs';
 import { takeUntil, map, tap, switchMap, first, finalize, filter } from 'rxjs/operators';
@@ -14,6 +15,7 @@ import {
   SocketApi,
   PipeResult,
   isMyTurn,
+  OutcomeDirective,
   TimerResponse,
 } from 'shared';
 
@@ -23,8 +25,9 @@ import {
   styleUrls: ['./session.component.scss']
 })
 
-export class SessionComponent implements OnDestroy {
+export class SessionComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapInstance') map: MapEuropeComponent;
+  @ViewChild(OutcomeDirective, {static: true}) ocHost: OutcomeDirective;
 
   @HostListener('window:onbeforeunload')
   onBeforeUnload() {
@@ -156,17 +159,17 @@ export class SessionComponent implements OnDestroy {
             }
           }
         }),
-        filter((result) => !result.session.state.started),
-        map((result) => {
+        // filter((result) => !result.session.state.started),
+        // map((result) => {
 
-          let _result = { ...result };
-              _result = this.gameEngine.setStartingArmies(_result);
+        //   let _result = { ...result };
+        //       _result = this.gameEngine.setStartingArmies(_result);
 
-          return _result;
-        }),
-        tap((result) => {
-          this.updateState(result.session.state);
-        })
+        //   return _result;
+        // }),
+        // tap((result) => {
+        //   this.updateState(result.session.state);
+        // })
       );
     };
 
@@ -223,6 +226,10 @@ export class SessionComponent implements OnDestroy {
     this.subscriptions.add(turnSub);
     // this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
+  }
+
+  ngAfterViewInit() {
+    this.cache.setOutcomeHost(this.ocHost.viewContainerRef);
   }
 
   ngOnDestroy() {

@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
+import { MapEngine } from './map.engine';
+import { OutcomeComponent } from './outcome/outcome.component';
+import { OutcomeApi } from './outcome/outcome.api';
+import { Injectable, ComponentFactoryResolver } from '@angular/core';
 import { ReplaySubject, of, Observable } from 'rxjs';
 
-import { SessionState, PipeResult, ActionEvent, Armies, Area, Session } from './interfaces';
+import { SessionState, PipeResult, ActionEvent, Armies, Area, Session, Army } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
@@ -30,7 +33,9 @@ export class GameEngine {
 
   constructor(
     private cache: GameCache,
-    private socketApi: SocketApi
+    private mapEngine: MapEngine,
+    private socketApi: SocketApi,
+    private outcomeApi: OutcomeApi
   ) {
 
     // for (let i = 0; i < 26; i++) {
@@ -42,32 +47,18 @@ export class GameEngine {
     // }
   }
 
-  setStartingArmies(result: PipeResult) {
+  // setStartingArmies(result: PipeResult) {
 
-    for (const clientId in result.session.state.players) {
+  //   for (const clientId in result.session.state.players) {
+  //     const idle = result.session.state.players[clientId].state.idle;
+  //     idle.soldiers.amount = 10;
+  //     idle.horses.amount = 4;
+  //     idle.gatlingGuns.amount = 2;
+  //     idle.soldiers.amount = 4;
+  //   }
 
-      result.session.state.players[clientId].state.idle = {
-        soldiers: {
-          ...GameConfig.armyTypes.soldier,
-          amount: 10
-        },
-        horses: {
-          ...GameConfig.armyTypes.horse,
-          amount: 4
-        },
-        gatlingGuns: {
-          ...GameConfig.armyTypes.gatlingGun,
-          amount: 2
-        },
-        spies: {
-          ...GameConfig.armyTypes.spy,
-          amount: 2
-        }
-      }
-    }
-
-    return result;
-  }
+  //   return result;
+  // }
 
   listen(event: GameEngineEvent) {
 
@@ -158,21 +149,69 @@ export class GameEngine {
     this.resetAreaAndConnections(selectedArea, session);
 
     // Add armies to area state
-    (selectedArea.state.armies.soldiers.amount as number) += count.soldiers;
-    (selectedArea.state.armies.horses.amount as number) += count.horses;
-    (selectedArea.state.armies.gatlingGuns.amount as number) += count.gatlingGuns;
-    (selectedArea.state.armies.spies.amount as number) += count.spies;
+    selectedArea.state.armies.soldiers.amount += count.soldiers;
+    selectedArea.state.armies.horses.amount += count.horses;
+    selectedArea.state.armies.gatlingGuns.amount += count.gatlingGuns;
+    selectedArea.state.armies.spies.amount += count.spies;
 
     // Negate armies from idle armies
-    (self.state.idle.soldiers.amount as number) -= count.soldiers;
-    (self.state.idle.horses.amount as number) -= count.horses;
-    (self.state.idle.gatlingGuns.amount as number) -= count.gatlingGuns;
-    (self.state.idle.spies.amount as number) -= count.spies;
+    self.state.idle.soldiers.amount -= count.soldiers;
+    self.state.idle.horses.amount -= count.horses;
+    self.state.idle.gatlingGuns.amount -= count.gatlingGuns;
+    self.state.idle.spies.amount -= count.spies;
 
     const areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
 
     areas[i] = selectedArea;
+
+    return this.updateGame({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
+      }
+    });
+  }
+
+  spyConfirmed(count: Pick<ArmiesToDeploy, 'spies'>) {
+
+    const session = this.cache.session;
+    const self = this.cache.self;
+    const selectedArea = this.cache.getSelectedArea();
+    const selectedConnection = this.cache.getSelectedConnectedArea();
+
+    // Deselect area
+    this.resetAreaAndConnections(selectedArea, session);
+
+    // TODO: Calculate success rate based on army value in selectedConnection
+    // If win - add spiedOnBy in selectedConnection
+    // If lose - do not add spiedOnBy in selectedConnection and negate the spy from selectedArea
+
+    const successRate = this.getSpySuccessRate(selectedConnection.state.armies);
+    const roll = Math.floor(Math.random() * 100);
+    console.log(successRate);
+
+    // if (roll <= successRate) {
+    //   console.log('successful!')
+    //   // Negate armies from the owned selected area
+    //   selectedConnection.state.spiedOnBy[self.clientId] = self;
+    // }
+    // else {
+      console.log('dead!')
+      // this.outcomeApi.show({});
+      this.mapEngine.loadOutcome();
+      // Set area as spied on by self
+      // selectedArea.state.armies.spies.amount -= count.spies;
+    // }
+
+    // Update the selectedArea and selectedConnection with the changes
+    const areas = session.state.areas;
+    const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
+    const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+
+    areas[i] = selectedArea;
+    areas[j] = selectedConnection;
 
     return this.updateGame({
       areas,
@@ -206,6 +245,21 @@ export class GameEngine {
       case 0: return GameConfig.negativeFightModifier;
       default: return 0;
     }
+  }
+
+  private getSpySuccessRate(troopsInArea: Armies) {
+
+    const base = 95;
+    const negatorPerArmy = 7.5;
+
+    const totalArmies = Object.keys(troopsInArea)
+      .filter((k) => k !== 'spies') // Do not take spies into consideration
+      .map((k) => troopsInArea[k] as Army)
+      .reduce((total, armyType) => {
+        return total += armyType.amount;
+      }, 0);
+
+    return base - (totalArmies * negatorPerArmy);
   }
 
   /**

@@ -1,3 +1,4 @@
+import { GameCache } from './../game.cache';
 import { filter, tap, first } from 'rxjs/operators';
 import { AreaPopupService } from './area-popup.service';
 import { ArmyType, Armies } from './../interfaces';
@@ -48,6 +49,7 @@ export class AreaPopupComponent {
   constructor(
     private aps: AreaPopupService,
     private apApi: ActionPointsApi,
+    private cache: GameCache,
     private fb: FormBuilder,
     private gameEngine: GameEngine
   ) {
@@ -141,7 +143,16 @@ export class AreaPopupComponent {
 
     const control = this.counts.get(type);
     const newValue = control.value + 1;
-    const ownedArmiesOfType = this.armySelectionConfig.armies[type].amount;
+    let ownedArmiesOfType;
+
+    switch (this.armySelectionConfig.currentAction) {
+      case Action.Spy:
+        ownedArmiesOfType = this.cache.getSelectedArea().state.armies.spies.amount;
+        break;
+      default:
+        ownedArmiesOfType = this.armySelectionConfig.armies[type].amount;
+        break;
+    }
 
     if (newValue > ownedArmiesOfType) {
       return;
@@ -155,7 +166,14 @@ export class AreaPopupComponent {
     // TODO: Do stuff
     console.log(this.armySelectionConfig.currentAction);
     switch (this.armySelectionConfig.currentAction) {
+
       case Action.Deploy: this.gameEngine.deployConfirmed(this.counts.value).pipe(
+        first(),
+        tap(() => this.close())
+      ).subscribe();
+      break;
+
+      case Action.Spy: this.gameEngine.spyConfirmed(this.counts.value).pipe(
         first(),
         tap(() => this.close())
       ).subscribe(); break;
