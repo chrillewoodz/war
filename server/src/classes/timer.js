@@ -3,7 +3,6 @@ const NanoTimer = require('nanotimer');
 class Timer {
 
   constructor(props = {}) {
-    console.log(Math.random() * 100)
     this.timer = new NanoTimer();
     this.elapsed = props.elapsed || 0;
     this.interval = props.interval || 1000;

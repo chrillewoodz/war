@@ -161,13 +161,17 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         // filter((result) => !result.session.state.started),
         // map((result) => {
 
-        //   let _result = { ...result };
-        //       _result = this.gameEngine.setStartingArmies(_result);
+        //   result.session.state.areas = result.session.state.areas.map((area) => {
 
-        //   return _result;
-        // }),
-        // tap((result) => {
-        //   this.updateState(result.session.state);
+        //     if (!area.state.__ui) {
+        //       area.state.__ui = {};
+        //       console.log(area);
+        //     }
+
+        //     return area;
+        //   });
+
+        //   return result;
         // })
       );
     };
@@ -200,6 +204,16 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         return true;
       }),
       map((result) => {
+
+        // Each time a new result is fetched we need to re-initalize the __ui state
+        result.session.state.areas = result.session.state.areas.map((area) => {
+
+          if (!area.state.__ui) {
+            area.state.__ui = {};
+          }
+
+          return area;
+        });
 
         if (result.session.state.started) {
           result = this.mapEngine.updateMap(result);

@@ -172,8 +172,6 @@ export class MapEngine {
 
     result.session.state.areas = result.session.state.areas.map((area) => {
 
-      area.state.__ui = {};
-
       if (isOccupiedByMe(result, area) && isMyTurn(result)) {
         area.state.__ui.isOwnedBySelf = true;
         area.state.isActive = true;

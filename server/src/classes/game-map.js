@@ -5,7 +5,7 @@ class GameMap {
   }
 
   prepare(points, config) {
-    console.log(points, config);
+
     this.areas = points.map((points, areaId) => {
 
       return {

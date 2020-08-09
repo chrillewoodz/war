@@ -28,7 +28,7 @@ const fn = async function(io, socket, ev, storage) {
     const session = await storage.find(ev.sessionId);
 
     if (session) {
-      console.log(session);
+
       const { name, colorRGB, colorRGBA } = getUnusedFaction(session);
       const faction = new Faction(name, colorRGB, colorRGBA);
       const extras = ev.extras ? { ...ev.extras, faction } : { faction };

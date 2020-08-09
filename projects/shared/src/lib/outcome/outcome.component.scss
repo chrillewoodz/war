@@ -2,6 +2,7 @@
 
 .outcome-container {
   position: fixed;
+  z-index: 10000;
   transform: translate(-50%, -50%);
   text-align: center;
   animation: animate 2800ms ease;
@@ -25,16 +26,15 @@
   0% {
     opacity: 0;
     visibility: hidden;
-    margin-top: 20px;
+    margin-top: -20px;
   }
   60%, 90% {
     opacity: 1;
     visibility: visible;
-    margin-top: -20px;
   }
   100% {
     opacity: 0;
     visibility: hidden;
-    margin-top: 20px;
+    margin-top: -80px;
   }
 }

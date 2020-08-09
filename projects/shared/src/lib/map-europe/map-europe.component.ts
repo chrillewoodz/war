@@ -29,7 +29,6 @@ export class MapEuropeComponent implements AfterViewInit {
             return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
           }, 0);
 
-          console.log(area.state.armies, totalPower)
         area.state.__ui.power = totalPower;
         area.state.__ui.showPowerOn = area.state.__ui.isOwnedBySelf || !!area.state.spiedOnBy[this.cache.clientId];
 

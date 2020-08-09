@@ -9,6 +9,20 @@ class Player {
       quit: false,
       ready: false,
       defeated: false,
+      idle: {
+        soldiers: {
+          amount: 0
+        },
+        horses: {
+          amount: 0
+        },
+        gatlingGuns: {
+          amount: 0
+        },
+        spies: {
+          amount: 0
+        }
+      }, // idle armies, not idle state of the player
       lastActiveAt: new Date().toISOString()
     };
   }
