@@ -112,14 +112,17 @@
   .ap-confirm {
     padding-left: 20px;
   }
+}
 
-  .btn-close {
-    position: absolute;
-    left: 50%;
-    bottom: -30px;
-    transform: translateX(-50%);
-    padding: 5px 15px;
-    margin-bottom: -11px;
+.btn-close {
+  position: absolute;
+  left: 50%;
+  bottom: -41px;
+  transform: translateX(-50%);
+  padding: 5px 15px;
+
+  &.main-close {
+    bottom: -24px;
   }
 }
 

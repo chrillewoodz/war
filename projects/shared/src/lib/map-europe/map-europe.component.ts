@@ -1,4 +1,6 @@
-import { AfterViewInit, Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { GameConfig } from './../game.config';
+import { Army } from './../interfaces';
+import { AfterViewInit, Component, Input, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MapEngine } from '../map.engine';
 import { GameCache } from '../game.cache';
 import { PipeResult } from '../interfaces';
@@ -6,13 +8,44 @@ import { PipeResult } from '../interfaces';
 @Component({
   selector: 'map-europe',
   templateUrl: './map-europe.component.html',
-  styleUrls: ['./map-europe.component.scss']
+  styleUrls: ['./map-europe.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class MapEuropeComponent implements AfterViewInit {
   @ViewChild('mapElement') map: ElementRef<SVGSVGElement>;
-  @Input() result: PipeResult;
+  @Input() set result(result: PipeResult) {
+
+    if (result) {
+
+      result.session.state.areas = result.session.state.areas.map((area) => {
+
+        area.state.__ui.screenXY = this.mapEngine.mapToScreenCoordinates(this.map.nativeElement, area.anchorPoints.main.x, area.anchorPoints.main.y);
+
+        const totalPower = Object.keys(area.state.armies)
+          .filter((k) => k !== 'spies') // Do not take spies into consideration
+          .map((k) => ({key: k, army: area.state.armies[k]}))
+          .reduce((total, current) => {
+            return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
+          }, 0);
+
+          console.log(area.state.armies, totalPower)
+        area.state.__ui.power = totalPower;
+        area.state.__ui.showPowerOn = area.state.__ui.isOwnedBySelf || !!area.state.spiedOnBy[this.cache.clientId];
+
+        return area;
+      });
+    }
+
+    this._result = result;
+  };
   @Input() isMyTurn: boolean;
+
+  get result() {
+    return this._result;
+  }
+
+  private _result: PipeResult;
 
   constructor(private cache: GameCache, private mapEngine: MapEngine) {}
 

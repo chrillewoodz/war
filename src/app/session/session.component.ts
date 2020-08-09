@@ -1,6 +1,5 @@
 import { environment } from '../../environments/environment';
-import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener, ElementRef, TemplateRef } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, merge, of, interval, Observable } from 'rxjs';
 import { takeUntil, map, tap, switchMap, first, finalize, filter } from 'rxjs/operators';

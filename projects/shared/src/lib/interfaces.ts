@@ -41,8 +41,8 @@ export enum ArmyType {
 }
 
 export interface Army {
-  type: ArmyType;
-  power: number;
+  type?: ArmyType;
+  power?: number;
   amount?: number;
 }
 
@@ -56,6 +56,9 @@ export interface Areas {
 
 export interface AreaUI {
   isOwnedBySelf?: boolean;
+  screenXY?: DOMPoint;
+  power?: number;
+  showPowerOn?: boolean;
 }
 
 export interface SpiedOnBy {

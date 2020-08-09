@@ -4,10 +4,10 @@ interface IGameConfig {
   fightModifier: number;
   negativeFightModifier: number;
   armyTypes: {
-    soldier: Army,
-    horse: Army,
-    gatlingGun: Army,
-    spy: Army
+    soldiers: Army;
+    horses: Army;
+    gatlingGuns: Army;
+    spies: Army;
   }
 }
 
@@ -15,19 +15,19 @@ export const GameConfig: IGameConfig = {
   fightModifier: 1.5,
   negativeFightModifier: -10,
   armyTypes: {
-    soldier: {
+    soldiers: {
       type: ArmyType.Soldiers,
       power: 1
     },
-    horse: {
+    horses: {
       type: ArmyType.Horses,
       power: 2
     },
-    gatlingGun: {
+    gatlingGuns: {
       type: ArmyType.GatlingGuns,
       power: 4
     },
-    spy: {
+    spies: {
       type: ArmyType.Spies,
       power: 0
     }

@@ -223,7 +223,6 @@ export class GameEngine {
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
-    console.log(selectedArea, selectedConnection);
     areas[i] = selectedArea;
     areas[j] = selectedConnection;
 
