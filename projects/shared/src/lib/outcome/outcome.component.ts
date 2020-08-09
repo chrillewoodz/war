@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, ComponentRef } from '@angular/core'
 import { timer } from 'rxjs';
 import { tap, first } from 'rxjs/operators';
 import { GameCache } from './../game.cache';
+import { OutcomeText, OutcomeConfig } from './../interfaces';
 import { MapEngine } from './../map.engine';
 
 @Component({
@@ -13,9 +14,10 @@ import { MapEngine } from './../map.engine';
 
 export class OutcomeComponent {
 
+  public componentRef: ComponentRef<this>;
+  public config: OutcomeConfig;
   public x: number;
   public y: number;
-  public componentRef: ComponentRef<this>;
 
   constructor(
     private cache: GameCache,

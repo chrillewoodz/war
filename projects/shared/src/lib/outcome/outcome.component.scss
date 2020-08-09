@@ -8,28 +8,17 @@
   animation-fill-mode: forwards;
 }
 
-// .outcome-inner-container {
-//   opacity: 0;
-//   visibility: hidden;
-//   text-align: center;
-//   animation: animate 2000ms ease;
-//   animation-fill-mode: forwards;
-// }
-
-.outcome-fail-img {
+.outcome-img {
   width: 30px;
-}
-
-.outcome-success-img {
-  width: 30px;
+  margin-bottom: 10px;
 }
 
 .outcome-title {
-  color: darkred;
+  margin-bottom: 5px;
 }
 
-.outcome-subtitle {
-  color: darkred;
+.outcome-message {
+  margin-bottom: 5px;
 }
 
 @keyframes animate {

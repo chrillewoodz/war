@@ -170,3 +170,14 @@ export interface ActionEvent {
   areaId: string;
   armies: Armies;
 }
+
+export interface OutcomeText {
+  color: string;
+  label: string;
+}
+
+export interface OutcomeConfig {
+  image: string;
+  title: OutcomeText;
+  messages?: OutcomeText[];
+}

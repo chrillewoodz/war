@@ -13,6 +13,7 @@ interface Option {
   label: string;
   cost: number;
   action: () => void;
+  disabled?: boolean;
 }
 
 interface ArmySelectionConfig {
@@ -64,6 +65,7 @@ export class AreaPopupComponent {
       .subscribe(({ mouseEvent, area }) => {
 
         const areaId = area.areaId;
+        const selectedArea = this.cache.getSelectedArea();
 
         if (area.state.isActive) {
 
@@ -78,7 +80,23 @@ export class AreaPopupComponent {
           else {
             this.options = [
               { label: 'Attack', cost: 3, action: () => this.optionClicked(Action.Attack, areaId) },
-              { label: 'Send spy', cost: 1, action: () => this.optionClicked(Action.Spy, areaId) }
+              {
+                label: (() => {
+
+                  if (selectedArea.state.armies.spies.amount === 0) {
+                    return 'No spies available'
+                  }
+                  else if (area.state.spiedOnBy[this.cache.clientId]) {
+                    return 'Area intel already aquired'
+                  }
+                  else {
+                    return 'Send spy';
+                  }
+                })(),
+                cost: 1,
+                action: () => this.optionClicked(Action.Spy, areaId),
+                disabled: selectedArea.state.armies.spies.amount === 0 || !!area.state.spiedOnBy[this.cache.clientId]
+              }
             ];
           }
 
@@ -105,7 +123,7 @@ export class AreaPopupComponent {
             soldiers: 0,
             horses: 0,
             gatlingGuns: 0,
-            spies: 0
+            spies: action === Action.Spy ? 1 : 0
           });
         })
       )
@@ -131,8 +149,9 @@ export class AreaPopupComponent {
 
     const control = this.counts.get(type);
     const newValue = control.value - 1;
+    const min = this.armySelectionConfig.currentAction === Action.Spy ? 1 : 0;
 
-    if (newValue < 0) {
+    if (newValue < min) {
       return;
     }
 

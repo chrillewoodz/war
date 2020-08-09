@@ -45,14 +45,14 @@ export class MapEuropeComponent implements AfterViewInit {
           selectedConnection: area.state.isConnectedToSelected ? area : null,
           emitUpdateEvent: true
         });
-
-        // DO NOT REMOVE
-        // Calculates x and y in the SVG itself, useful for finding anchor points
-        // VERY IMPORTANT: See https://stackoverflow.com/questions/6073505/what-is-the-difference-between-screenx-y-clientx-y-and-pagex-y
-        // why we must use clientX/Y instead of screenX/Y.
-        const areaCoords = this.mapEngine.screenToSVGCoordinates(this.map.nativeElement, event.clientX, event.clientY);
-        console.log('AREA_COORDS', areaCoords);
       }
+
+      // DO NOT REMOVE
+      // Calculates x and y in the SVG itself, useful for finding anchor points
+      // VERY IMPORTANT: See https://stackoverflow.com/questions/6073505/what-is-the-difference-between-screenx-y-clientx-y-and-pagex-y
+      // why we must use clientX/Y instead of screenX/Y.
+      // const areaCoords = this.mapEngine.screenToSVGCoordinates(this.map.nativeElement, event.clientX, event.clientY);
+      // console.log('AREA_NAME', area?.name, 'AREA_COORDS', areaCoords);
     }
   }
 }

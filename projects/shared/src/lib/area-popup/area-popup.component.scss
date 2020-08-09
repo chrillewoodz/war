@@ -37,6 +37,15 @@
   &:hover {
     background-color: darken(rgb(152, 133, 89), 10);
   }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+
+    &:hover {
+      background-color: initial;
+    }
+  }
 }
 
 .army-selection-menu {

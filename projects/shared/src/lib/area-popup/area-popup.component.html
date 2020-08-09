@@ -1,7 +1,7 @@
 <div class="common-container ap-container" [ngClass]="{visible: isOpen}" [ngStyle]="{left: x + 'px', top: y + 'px'}">
   <div (click)="$event.stopPropagation()">
     <ul #menu class="ap-menu">
-      <li class="ap-menu-item" *ngFor="let option of options" (mouseover)="showCost(option.cost)" (mouseout)="hideCost()" (click)="option.action()">{{option.label}}</li>
+      <li class="ap-menu-item" [ngClass]="{disabled: option.disabled}" *ngFor="let option of options" (mouseover)="!option.disabled && showCost(option.cost)" (mouseout)="!option.disabled && hideCost()" (click)="!option.disabled && option.action()">{{option.label}}</li>
     </ul>
     <div class="common-container army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts" (clickOutside)="closeArmySelectionMenu()" [exceptions]=[menu]>
       <h4>{{armySelectionConfig.currentAction}}</h4>

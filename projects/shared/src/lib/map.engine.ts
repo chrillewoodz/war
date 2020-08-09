@@ -4,7 +4,7 @@ import { Injectable, Renderer2, RendererFactory2, ComponentFactoryResolver } fro
 import { ReplaySubject, Subject, merge, Observable, of } from 'rxjs';
 import { tap, map, startWith, switchMap, first } from 'rxjs/operators';
 
-import { PipeResult, Area, SelectedEvent, SessionState, Army } from './interfaces';
+import { PipeResult, Area, SelectedEvent, SessionState, Army, OutcomeConfig } from './interfaces';
 import { isMyTurn, isOccupiedByMe } from './helpers';
 import { SocketApi } from './socket.api';
 import { AreaPopupService } from './area-popup/area-popup.service';
@@ -209,7 +209,7 @@ export class MapEngine {
      return p.matrixTransform(mapElement.getScreenCTM().inverse());
   }
 
-  loadOutcome() {
+  loadOutcome(config: OutcomeConfig) {
 
     const outcomeComponent = new DynamicComponent(OutcomeComponent);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(outcomeComponent.component);
@@ -219,5 +219,6 @@ export class MapEngine {
 
     // Pass componentRef so we can self destruct the component
     componentRef.instance.componentRef = componentRef;
+    componentRef.instance.config = config;
   }
 }

@@ -1,10 +1,8 @@
 import { MapEngine } from './map.engine';
-import { OutcomeComponent } from './outcome/outcome.component';
-import { OutcomeApi } from './outcome/outcome.api';
-import { Injectable, ComponentFactoryResolver } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ReplaySubject, of, Observable } from 'rxjs';
 
-import { SessionState, PipeResult, ActionEvent, Armies, Area, Session, Army } from './interfaces';
+import { SessionState, ActionEvent, Armies, Area, Session, Army, Areas } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
@@ -34,8 +32,7 @@ export class GameEngine {
   constructor(
     private cache: GameCache,
     private mapEngine: MapEngine,
-    private socketApi: SocketApi,
-    private outcomeApi: OutcomeApi
+    private socketApi: SocketApi
   ) {
 
     // for (let i = 0; i < 26; i++) {
@@ -145,9 +142,6 @@ export class GameEngine {
     const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
 
-    // Deselect area
-    this.resetAreaAndConnections(selectedArea, session);
-
     // Add armies to area state
     selectedArea.state.armies.soldiers.amount += count.soldiers;
     selectedArea.state.armies.horses.amount += count.horses;
@@ -165,6 +159,9 @@ export class GameEngine {
 
     areas[i] = selectedArea;
 
+    // Deselect areas
+    this.resetAreaAndConnections(areas, selectedArea);
+
     return this.updateGame({
       areas,
       players: {
@@ -176,42 +173,62 @@ export class GameEngine {
 
   spyConfirmed(count: Pick<ArmiesToDeploy, 'spies'>) {
 
+    if (!count) {
+      throw new Error('Spy count was not defined, this indicates a bug that needs to be fixed.');
+    }
+
     const session = this.cache.session;
     const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
     const selectedConnection = this.cache.getSelectedConnectedArea();
-
-    // Deselect area
-    this.resetAreaAndConnections(selectedArea, session);
-
-    // TODO: Calculate success rate based on army value in selectedConnection
-    // If win - add spiedOnBy in selectedConnection
-    // If lose - do not add spiedOnBy in selectedConnection and negate the spy from selectedArea
-
-    const successRate = this.getSpySuccessRate(selectedConnection.state.armies);
+    const successRate = this.getSpySuccessRate(count.spies, selectedConnection.state.armies);
     const roll = Math.floor(Math.random() * 100);
-    console.log(successRate);
 
-    // if (roll <= successRate) {
-    //   console.log('successful!')
-    //   // Negate armies from the owned selected area
-    //   selectedConnection.state.spiedOnBy[self.clientId] = self;
-    // }
-    // else {
-      console.log('dead!')
-      // this.outcomeApi.show({});
-      this.mapEngine.loadOutcome();
+    if (roll <= successRate) {
+
+      // Negate armies from the owned selected area
+      selectedConnection.state.spiedOnBy[self.clientId] = self;
+
+      this.mapEngine.loadOutcome({
+        image: 'assets/SVG/spy.svg',
+        title: {
+          color: '#08c339',
+          label: 'Success'
+        },
+        messages: [
+          { color: 'white', label: 'Gained area intel' }
+        ]
+      });
+    }
+    else {
+
       // Set area as spied on by self
-      // selectedArea.state.armies.spies.amount -= count.spies;
-    // }
+      selectedArea.state.armies.spies.amount -= count.spies;
+
+      this.mapEngine.loadOutcome({
+        image: 'assets/SVG/human-skull.svg',
+        title: {
+          color: 'red',
+          label: 'Killed'
+        },
+        messages: [
+          { color: 'white', label: 'Spy mission failed' },
+          { color: 'white', label: 'All spies were killed' }
+        ]
+      });
+    }
 
     // Update the selectedArea and selectedConnection with the changes
     const areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
+    console.log(selectedArea, selectedConnection);
     areas[i] = selectedArea;
     areas[j] = selectedConnection;
+
+    // Deselect areas
+    this.resetAreaAndConnections(areas, selectedArea);
 
     return this.updateGame({
       areas,
@@ -222,17 +239,21 @@ export class GameEngine {
     });
   }
 
-  private resetAreaAndConnections(selectedArea: Area, session: Session) {
+  private resetAreaAndConnections(areas: Area[], selectedArea: Area) {
 
     selectedArea.state.isSelected = false;
 
     // Resets all connections
-    session.state.areas.forEach((area) => {
+    return areas.map((area) => {
 
+      // Reset all but the selectedArea
       if (selectedArea.areaId !== area.areaId) {
         area.state.isActive = false;
+        area.state.isSelected = false;
         area.state.isConnectedToSelected = false;
       }
+
+      return area;
     });
   }
 
@@ -247,10 +268,15 @@ export class GameEngine {
     }
   }
 
-  private getSpySuccessRate(troopsInArea: Armies) {
+  /**
+   *
+   * @param spies Number of spies sent to the area
+   * @param troopsInArea Number of armies in the area
+   */
+  private getSpySuccessRate(spies: number, troopsInArea: Armies) {
 
-    const base = 95;
-    const negatorPerArmy = 7.5;
+    const base = spies * 70;
+    const negatorPerArmy = (spies / 2) * 7.5;
 
     const totalArmies = Object.keys(troopsInArea)
       .filter((k) => k !== 'spies') // Do not take spies into consideration
