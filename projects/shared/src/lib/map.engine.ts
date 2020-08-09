@@ -82,7 +82,7 @@ export class MapEngine {
 
                     const state = e.areas[connectionId].state;
                     state.isActive = true;
-                    state.isConnectedToSelected = true;
+                    state.isConnectedToSelected = state.__ui.isOwnedBySelf ? false : true;
                   });
                 }
               }

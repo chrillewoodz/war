@@ -182,9 +182,14 @@ export class AreaPopupComponent {
 
   confirm() {
 
-    // TODO: Do stuff
-    console.log(this.armySelectionConfig.currentAction);
+    // TODO: Relocate
     switch (this.armySelectionConfig.currentAction) {
+
+      case Action.Attack: this.gameEngine.attackConfirmed(this.counts.value).pipe(
+        first(),
+        tap(() => this.close())
+      ).subscribe();
+      break;
 
       case Action.Deploy: this.gameEngine.deployConfirmed(this.counts.value).pipe(
         first(),
@@ -198,6 +203,10 @@ export class AreaPopupComponent {
       ).subscribe(); break;
       // default: exhaust(this.armySelectionConfig.currentAction);
     }
+  }
+
+  deselectConnection() {
+    this.gameEngine.resetConnection();
   }
 
   close() {

@@ -36,11 +36,11 @@ export class GameEngine {
   ) {
 
     // for (let i = 0; i < 26; i++) {
-    //   console.log('greater', `26 vs ${i}`, this.getWinPercentage(26, i));
+    //   console.log('greater', `26 vs ${i}`, this.getArmiesLost(26, i));
     // }
 
     // for (let i = 26; i > 0; i--) {
-    //   console.log('lesser', `${i} vs 26`, this.getWinPercentage(i, 26));
+    //   console.log('lesser', `${i} vs 26`, this.getArmiesLost(i, 26));
     // }
   }
 
@@ -136,6 +136,118 @@ export class GameEngine {
     });
   }
 
+  attackConfirmed(armies: ArmiesToDeploy) {
+
+    const session = this.cache.session;
+    const self = this.cache.self;
+    const selectedArea = this.cache.getSelectedArea();
+    const selectedConnection = this.cache.getSelectedConnectedArea();
+
+    const attackerPower = Object.keys(armies)
+      .filter((k) => k !== 'spies') // Do not take spies into consideration
+      .map((k) => ({key: k, army: selectedArea.state.armies[k]}))
+      .reduce((total, current) => {
+        return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
+      }, 0);
+
+    const defenderPower = Object.keys(selectedConnection.state.armies)
+      .filter((k) => k !== 'spies') // Do not take spies into consideration
+      .map((k) => ({key: k, army: selectedConnection.state.armies[k]}))
+      .reduce((total, current) => {
+        return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
+      }, 0);
+
+    const successRate = this.getWinRate(attackerPower, defenderPower);
+    const roll = Math.floor(Math.random() * 100);
+
+    if (roll <= successRate) {
+
+      const lostArmies = this.getArmiesLost(armies, attackerPower, defenderPower);
+
+      // Negate armies from the owned selected area
+      selectedArea.state.armies.soldiers.amount -= armies.soldiers;
+      selectedArea.state.armies.horses.amount -= armies.horses;
+      selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
+
+      this.mapEngine.loadOutcome({
+        image: 'assets/SVG/rifles-crossed.svg',
+        title: {
+          color: '#08c339',
+          label: 'Success'
+        },
+        messages: [
+          { color: 'white', label: 'Attack succeeded, at a cost..' },
+          { color: 'red', label: `-${lostArmies.soldiers} soldiers` },
+          { color: 'red', label: `-${lostArmies.horses} horses` },
+          { color: 'red', label: `-${lostArmies.gatlingGuns} gatlingGuns` }
+        ]
+      });
+
+      // Set a new area owner
+      selectedConnection.state.occupiedBy = selectedArea.state.occupiedBy;
+
+      // Set the remaining attacking armies as the armies in the conquered area.
+      // If no armies were left after the attack, the attacker will "recruit" 1 soldier army
+      // in the new area, leaving the area with at least 1 army. (hence the +1)
+      const soldiersLeft = armies.soldiers - lostArmies.soldiers + 1;
+      const horsesLeft = armies.horses - lostArmies.horses;
+      const gatlingGunsLeft = armies.gatlingGuns - lostArmies.gatlingGuns;
+
+      selectedConnection.state.armies = {
+        soldiers: {
+          amount: soldiersLeft || 0
+        },
+        horses: {
+          amount: horsesLeft || 0
+        },
+        gatlingGuns: {
+          amount: gatlingGunsLeft || 0
+        },
+        spies: {
+          amount: 0
+        }
+      }
+    }
+    else {
+
+      // Negate armies from the attacking area
+      selectedArea.state.armies.soldiers.amount -= armies.soldiers;
+      selectedArea.state.armies.horses.amount -= armies.horses;
+      selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
+
+      this.mapEngine.loadOutcome({
+        image: 'assets/SVG/human-skull.svg',
+        title: {
+          color: 'red',
+          label: 'Killed'
+        },
+        messages: [
+          { color: 'white', label: 'Attack failed' },
+          { color: 'white', label: 'All armies were defeated' }
+        ]
+      });
+    }
+
+    // Update the selectedArea and selectedConnection with the changes
+    const areas = session.state.areas;
+    const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
+    const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+
+    areas[i] = selectedArea;
+    areas[j] = selectedConnection;
+
+    // Deselect areas
+    this.resetAreaAndConnections(areas, selectedArea);
+
+    return this.updateGame({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
+      }
+    });
+  }
+
   deployConfirmed(count: ArmiesToDeploy) {
 
     const session = this.cache.session;
@@ -186,7 +298,7 @@ export class GameEngine {
 
     if (roll <= successRate) {
 
-      // Negate armies from the owned selected area
+      // Set area as spied on by self
       selectedConnection.state.spiedOnBy[self.clientId] = self;
 
       this.mapEngine.loadOutcome({
@@ -202,7 +314,7 @@ export class GameEngine {
     }
     else {
 
-      // Set area as spied on by self
+      // Negate armies from the owned selected area
       selectedArea.state.armies.spies.amount -= count.spies;
 
       this.mapEngine.loadOutcome({
@@ -235,6 +347,28 @@ export class GameEngine {
         ...session.state.players,
         [self.clientId]: self
       }
+    });
+  }
+
+  public resetConnection() {
+
+    const areas = this.cache.session.state.areas;
+    const selectedConnection = this.cache.getSelectedConnectedArea();
+
+    // If no connection is selected, do nothing to prevent unnecessary call to the backend
+    if (!selectedConnection) {
+      return;
+    }
+
+    // Deselect the area
+    selectedConnection.state.isSelected = false;
+
+    const i = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+
+    areas[i] = selectedConnection;
+
+    this.updateGame({
+      areas
     });
   }
 
@@ -295,9 +429,9 @@ export class GameEngine {
    * @param attackerTroops
    * @param defenderTroops
    */
-  private getWinPercentage(attackerTroops: number, defenderTroops: number) {
+  private getWinRate(attackerPower: number, defenderPower: number) {
 
-    const diff = attackerTroops - defenderTroops;
+    const diff = attackerPower - defenderPower;
     const base = (() => {
 
       const b = 50;
@@ -314,12 +448,58 @@ export class GameEngine {
     const diffAsPercentage = (() => {
 
       if (diff >= 0) {
-        return 100 - ((defenderTroops / attackerTroops) * 100);
+        return 100 - ((defenderPower / attackerPower) * 100);
       }
 
-      return -(100 - ((attackerTroops / defenderTroops) * 100));
+      return -(100 - ((attackerPower / defenderPower) * 100));
     })() / 2;
 
     return base + diffAsPercentage + this.winModifier;
+  }
+
+  /**
+   * Calculates how many armies that should be lost in the attacking force
+   * @param armies The number of armies that were sent to the attacked area
+   * @param attackerPower The total power value of the attacker
+   * @param defenderPower The total power value of the defender
+   */
+  private getArmiesLost(armies: ArmiesToDeploy, attackerPower: number, defenderPower: number) {
+
+    const base = 50;
+    const diff = attackerPower - defenderPower;
+    const diffAsPercentage = (() => {
+
+      if (diff >= 0) {
+        return 100 - ((defenderPower / attackerPower) * 100);
+      }
+
+      return -(100 - ((attackerPower / defenderPower) * 100));
+    })() / 2;
+
+    const chance = base + diffAsPercentage;
+    let percentOfArmies;
+
+    if (chance > 80) {
+      percentOfArmies = 20;
+    }
+    else if (chance > 40) {
+      percentOfArmies = 40;
+    }
+    else if (chance > 20) {
+      percentOfArmies = 60;
+    }
+    else if (chance > 0) {
+      percentOfArmies = 90;
+    }
+
+    const soldiersLost = Math.ceil(armies.soldiers / percentOfArmies);
+    const horsesLost = Math.ceil(armies.horses / percentOfArmies);
+    const gatlingGunsLost = Math.ceil(armies.gatlingGuns / percentOfArmies);
+
+    return {
+      soldiers: soldiersLost,
+      horses: horsesLost,
+      gatlingGuns: gatlingGunsLost
+    }
   }
 }

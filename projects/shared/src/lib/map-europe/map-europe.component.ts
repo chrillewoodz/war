@@ -54,8 +54,6 @@ export class MapEuropeComponent implements AfterViewInit {
 
   mapClicked(event: MouseEvent) {
 
-    console.log(event.screenX, event.screenY);
-
     if (!this.isMyTurn) {
       return;
     }
