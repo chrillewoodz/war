@@ -177,6 +177,7 @@ export class GameEngine {
         },
         messages: [
           { color: 'white', label: 'Attack succeeded, at a cost..' },
+          { color: '#08c339', label: `+1 soldiers recruited in new area` },
           { color: 'red', label: `-${lostArmies.soldiers} soldiers` },
           { color: 'red', label: `-${lostArmies.horses} horses` },
           { color: 'red', label: `-${lostArmies.gatlingGuns} gatlingGuns` }
@@ -206,7 +207,10 @@ export class GameEngine {
         spies: {
           amount: 0
         }
-      }
+      };
+
+      // Reset spiedOnBy since area has a new owner and armies
+      selectedConnection.state.spiedOnBy = {};
     }
     else {
 
@@ -240,11 +244,7 @@ export class GameEngine {
     this.resetAreaAndConnections(areas, selectedArea);
 
     return this.updateGame({
-      areas,
-      players: {
-        ...session.state.players,
-        [self.clientId]: self
-      }
+      areas
     });
   }
 
@@ -280,6 +280,40 @@ export class GameEngine {
         ...session.state.players,
         [self.clientId]: self
       }
+    });
+  }
+
+  relocateConfirmed(count: ArmiesToDeploy) {
+
+    const session = this.cache.session;
+    const self = this.cache.self;
+    const selectedArea = this.cache.getSelectedArea();
+    const selectedConnection = this.cache.getSelectedConnectedArea();
+
+    // Negate armies from selected area armies
+    selectedArea.state.armies.soldiers.amount -= count.soldiers;
+    selectedArea.state.armies.horses.amount -= count.horses;
+    selectedArea.state.armies.gatlingGuns.amount -= count.gatlingGuns;
+    selectedArea.state.armies.spies.amount -= count.spies;
+
+    // Add armies to selected connection
+    selectedConnection.state.armies.soldiers.amount += count.soldiers;
+    selectedConnection.state.armies.horses.amount += count.horses;
+    selectedConnection.state.armies.gatlingGuns.amount += count.gatlingGuns;
+    selectedConnection.state.armies.spies.amount += count.spies;
+
+    const areas = session.state.areas;
+    const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
+    const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+
+    areas[i] = selectedArea;
+    areas[j] = selectedConnection;
+
+    // Deselect areas
+    this.resetAreaAndConnections(areas, selectedArea);
+
+    return this.updateGame({
+      areas
     });
   }
 
@@ -342,11 +376,7 @@ export class GameEngine {
     this.resetAreaAndConnections(areas, selectedArea);
 
     return this.updateGame({
-      areas,
-      players: {
-        ...session.state.players,
-        [self.clientId]: self
-      }
+      areas
     });
   }
 
@@ -372,7 +402,7 @@ export class GameEngine {
     });
   }
 
-  private resetAreaAndConnections(areas: Area[], selectedArea: Area) {
+  resetAreaAndConnections(areas: Area[], selectedArea: Area) {
 
     selectedArea.state.isSelected = false;
 

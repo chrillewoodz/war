@@ -1,6 +1,23 @@
-import { Injectable, TemplateRef, ViewContainerRef } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
+import { Injectable, ViewContainerRef } from '@angular/core';
 import { Session } from './interfaces';
-import { OutcomeDirective } from './outcome/outcome.directive';
+
+export enum CacheKey {
+  ClientID = 'clientId',
+  SessionID = 'sessionId',
+  Session = 'session',
+  InitDone = 'initDone'
+}
+
+export enum CacheAction {
+  Set = 'set',
+  Remove = 'remove'
+}
+
+interface StoredEvent {
+  key: CacheKey;
+  action: CacheAction;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -8,34 +25,35 @@ import { OutcomeDirective } from './outcome/outcome.directive';
 
 export class GameCache {
 
-  private readonly clientIdKey = 'clientId';
-  private readonly sessionIdKey = 'sessionId';
-  private readonly sessionKey = 'session';
-  private readonly initDoneKey = 'initDone';
+  private emitter = new ReplaySubject<StoredEvent>(1);
+
+  public emitter$ = this.emitter.asObservable();
 
   private _mapElement: SVGSVGElement;
   private _outcomeViewContainerRef: ViewContainerRef;
 
   constructor() {}
 
+
+
   get clientId() {
-    return sessionStorage.getItem(this.clientIdKey);
+    return sessionStorage.getItem(CacheKey.ClientID);
   }
 
   get sessionId() {
-    return sessionStorage.getItem(this.sessionIdKey);
+    return sessionStorage.getItem(CacheKey.SessionID);
   }
 
   get session(): Session {
-    return JSON.parse(sessionStorage.getItem(this.sessionKey));
+    return JSON.parse(sessionStorage.getItem(CacheKey.Session));
   }
 
   get initDone(): boolean {
-    return JSON.parse(sessionStorage.getItem(this.initDoneKey));
+    return JSON.parse(sessionStorage.getItem(CacheKey.InitDone));
   }
 
   get self() {
-    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    const session: Session = JSON.parse(sessionStorage.getItem(CacheKey.Session));
     return session.state.players[this.clientId];
   }
 
@@ -48,34 +66,38 @@ export class GameCache {
   }
 
   getAreaById(areaId: string) {
-    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    const session: Session = JSON.parse(sessionStorage.getItem(CacheKey.Session));
     return session.state.areas.find((area) => area.areaId === areaId);
   }
 
   getSelectedArea() {
-    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    const session: Session = JSON.parse(sessionStorage.getItem(CacheKey.Session));
     return session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === false);
   }
 
   getSelectedConnectedArea() {
-    const session: Session = JSON.parse(sessionStorage.getItem(this.sessionKey));
+    const session: Session = JSON.parse(sessionStorage.getItem(CacheKey.Session));
     return session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === true);
   }
 
   setClientId(id: string) {
-    sessionStorage.setItem(this.clientIdKey, id);
+    sessionStorage.setItem(CacheKey.ClientID, id);
+    this.emitter.next({ key: CacheKey.ClientID, action: CacheAction.Set });
   }
 
   setSessionId(id: string) {
-    sessionStorage.setItem(this.sessionIdKey, id);
+    sessionStorage.setItem(CacheKey.SessionID, id);
+    this.emitter.next({ key: CacheKey.SessionID, action: CacheAction.Set });
   }
 
   setSession(session: Session) {
-    sessionStorage.setItem(this.sessionKey, JSON.stringify(session));
+    sessionStorage.setItem(CacheKey.Session, JSON.stringify(session));
+    this.emitter.next({ key: CacheKey.Session, action: CacheAction.Set });
   }
 
   setInitDone() {
-    sessionStorage.setItem(this.initDoneKey, JSON.stringify(true));
+    sessionStorage.setItem(CacheKey.InitDone, JSON.stringify(true));
+    this.emitter.next({ key: CacheKey.InitDone, action: CacheAction.Set });
   }
 
   setMapElement(mapElement: SVGSVGElement) {
@@ -87,14 +109,17 @@ export class GameCache {
   }
 
   removeSessionId() {
-    sessionStorage.removeItem(this.sessionIdKey);
+    sessionStorage.removeItem(CacheKey.SessionID);
+    this.emitter.next({ key: CacheKey.SessionID, action: CacheAction.Remove });
   }
 
   removeSession() {
-    sessionStorage.removeItem(this.sessionKey);
+    sessionStorage.removeItem(CacheKey.Session);
+    this.emitter.next({ key: CacheKey.Session, action: CacheAction.Remove });
   }
 
   removeInitDone() {
-    sessionStorage.removeItem(this.initDoneKey);
+    sessionStorage.removeItem(CacheKey.InitDone);
+    this.emitter.next({ key: CacheKey.InitDone, action: CacheAction.Remove });
   }
 }

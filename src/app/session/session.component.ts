@@ -157,22 +157,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
               this.socketApi.timer<TimerResponse>(true);
             }
           }
-        }),
-        // filter((result) => !result.session.state.started),
-        // map((result) => {
-
-        //   result.session.state.areas = result.session.state.areas.map((area) => {
-
-        //     if (!area.state.__ui) {
-        //       area.state.__ui = {};
-        //       console.log(area);
-        //     }
-
-        //     return area;
-        //   });
-
-        //   return result;
-        // })
+        })
       );
     };
 
@@ -207,11 +192,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
         // Each time a new result is fetched we need to re-initalize the __ui state
         result.session.state.areas = result.session.state.areas.map((area) => {
-
-          if (!area.state.__ui) {
-            area.state.__ui = {};
-          }
-
+          area.state.__ui = {};
           return area;
         });
 
@@ -228,16 +209,14 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     )
     .subscribe((result) => {
       this.result = result;
-      console.log(this.result);
+      // console.log(this.result);
     }, (err) => {
       console.error(err);
       this.onError();
     });
 
-    // this.subscriptions.add(areasSub);
     this.subscriptions.add(activeEmitter);
     this.subscriptions.add(turnSub);
-    // this.subscriptions.add(activeAreasSub);
     this.subscriptions.add(sessionSub);
   }
 

@@ -1,4 +1,5 @@
-import { SocketResponse, Session, PipeResult, Area } from './interfaces';
+import { GameConfig } from './game.config';
+import { SocketResponse, Session, PipeResult, Area, Army } from './interfaces';
 import { throwError, Observable, ObservableInput } from 'rxjs';
 
 export function exhaust(p: never) {};
@@ -25,4 +26,24 @@ export function isMyTurn(result: PipeResult) {
 
 export function isOccupiedByMe(result: PipeResult, area: Area) {
   return area.state.occupiedBy?.clientId === result.self.clientId;
+}
+
+export function getSelectedAreaFromResult(result: PipeResult): Area {
+  return result.session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === false);
+}
+
+export function getSelectedConnectionFromResult(result: PipeResult): Area {
+  return result.session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === true);
+}
+
+export function getTotalPowerOfArea(area: Area) {
+
+  const totalPower = Object.keys(area.state.armies)
+    .filter((k) => k !== 'spies') // Do not take spies into consideration
+    .map((k) => ({key: k, army: area.state.armies[k]}))
+    .reduce((total, current) => {
+      return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
+    }, 0);
+
+  return totalPower;
 }

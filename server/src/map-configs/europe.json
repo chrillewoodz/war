@@ -844,7 +844,7 @@
   },
   "35": {
     "name": "Norway",
-    "connections": [14, 20, 22, 30, 36],
+    "connections": [1, 14, 20, 22, 30, 36, 37],
     "armies": {
       "soldiers": {
         "amount": 2

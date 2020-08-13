@@ -16,25 +16,25 @@ export class MapEuropeComponent implements AfterViewInit {
   @ViewChild('mapElement') map: ElementRef<SVGSVGElement>;
   @Input() set result(result: PipeResult) {
 
-    if (result) {
+    // if (result) {
 
-      result.session.state.areas = result.session.state.areas.map((area) => {
+    //   result.session.state.areas = result.session.state.areas.map((area) => {
 
-        area.state.__ui.screenXY = this.mapEngine.mapToScreenCoordinates(this.map.nativeElement, area.anchorPoints.main.x, area.anchorPoints.main.y);
+    //     area.state.__ui.screenXY = this.mapEngine.mapToScreenCoordinates(this.map.nativeElement, area.anchorPoints.main.x, area.anchorPoints.main.y);
 
-        const totalPower = Object.keys(area.state.armies)
-          .filter((k) => k !== 'spies') // Do not take spies into consideration
-          .map((k) => ({key: k, army: area.state.armies[k]}))
-          .reduce((total, current) => {
-            return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
-          }, 0);
+    //     const totalPower = Object.keys(area.state.armies)
+    //       .filter((k) => k !== 'spies') // Do not take spies into consideration
+    //       .map((k) => ({key: k, army: area.state.armies[k]}))
+    //       .reduce((total, current) => {
+    //         return total += current.army.amount * (GameConfig.armyTypes[current.key] as Army).power;
+    //       }, 0);
 
-        area.state.__ui.power = totalPower;
-        area.state.__ui.showPowerOn = area.state.__ui.isOwnedBySelf || !!area.state.spiedOnBy[this.cache.clientId];
-
-        return area;
-      });
-    }
+    //     area.state.__ui.power = totalPower;
+    //     area.state.__ui.showPowerOn = area.state.__ui.isOwnedBySelf || !!area.state.spiedOnBy[this.cache.clientId];
+    //     // console.log(area.state.__ui.showPowerOn, area.state.__ui.isOwnedBySelf, area.state.spiedOnBy, area.name);
+    //     return area;
+    //   });
+    // }
 
     this._result = result;
   };

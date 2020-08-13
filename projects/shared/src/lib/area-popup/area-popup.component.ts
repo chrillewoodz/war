@@ -1,17 +1,18 @@
-import { GameCache } from './../game.cache';
-import { filter, tap, first } from 'rxjs/operators';
+import { GameCache, CacheKey, CacheAction } from './../game.cache';
+import { tap, first, filter, switchMap, map } from 'rxjs/operators';
 import { AreaPopupService } from './area-popup.service';
-import { ArmyType, Armies } from './../interfaces';
+import { ArmyType, Armies, Army } from './../interfaces';
 import { FormBuilder } from '@angular/forms';
 import { Component } from '@angular/core';
 
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
+import { exhaust } from '../helpers';
 
 interface Option {
   label: string;
-  cost: number;
+  cost?: number;
   action: () => void;
   disabled?: boolean;
 }
@@ -60,21 +61,53 @@ export class AreaPopupComponent {
         filter((e) => !!e.area),
         tap(() => {
           this.closeArmySelectionMenu();
+        }),
+        switchMap((e) => {
+
+          return this.cache.emitter$.pipe(
+            first(),
+            filter((cacheEvent) => cacheEvent.key === CacheKey.Session && cacheEvent.action === CacheAction.Set),
+            map(() => e)
+          );
         })
       )
-      .subscribe(({ mouseEvent, area }) => {
+      .subscribe((e) => {
 
-        const areaId = area.areaId;
-        const selectedArea = this.cache.getSelectedArea();
+        if (e.area.state.isActive) {
 
-        if (area.state.isActive) {
+          const areaId = e.area.areaId;
+          const self = this.cache.self;
+          const selectedArea = this.cache.getSelectedArea();
 
           this.options = [];
 
-          if (area.state.__ui.isOwnedBySelf) {
+          const idleArmies = Object.keys(self.state.idle)
+            .reduce((total, armyType) => {
+              return total + (((self.state.idle[armyType] as Army).amount as number) || 0);
+            }, 0);
+
+          const armiesInSelectedArea = Object.keys(selectedArea.state.armies)
+            .filter((k) => k !== 'spies')
+            .reduce((total, armyType) => {
+              return total + (((selectedArea.state.armies[armyType] as Army).amount as number) || 0);
+            }, 0);
+
+          if (e.area.state.__ui.isOwnedBySelf) {
             this.options = [
-              { label: 'Deploy troops', cost: 1, action: () => this.optionClicked(Action.Deploy, areaId) },
-              { label: 'Relocate troops', cost: 1, action: () => this.optionClicked(Action.Relocate, areaId) }
+              {
+                label: (() => {
+
+                  if (idleArmies === 0) {
+                    return 'No idle armies available'
+                  }
+                  else {
+                    return 'Deploy troops';
+                  }
+                })(),
+                cost: 1,
+                action: () => this.optionClicked(Action.Deploy, areaId),
+                disabled: idleArmies === 0
+              }
             ];
           }
           else {
@@ -86,7 +119,7 @@ export class AreaPopupComponent {
                   if (selectedArea.state.armies.spies.amount === 0) {
                     return 'No spies available'
                   }
-                  else if (area.state.spiedOnBy[this.cache.clientId]) {
+                  else if (e.area.state.spiedOnBy[this.cache.clientId]) {
                     return 'Area intel already aquired'
                   }
                   else {
@@ -95,14 +128,47 @@ export class AreaPopupComponent {
                 })(),
                 cost: 1,
                 action: () => this.optionClicked(Action.Spy, areaId),
-                disabled: selectedArea.state.armies.spies.amount === 0 || !!area.state.spiedOnBy[this.cache.clientId]
+                disabled: selectedArea.state.armies.spies.amount === 0 || !!e.area.state.spiedOnBy[this.cache.clientId]
               }
             ];
           }
 
-          if (mouseEvent) {
-            this.x = mouseEvent.clientX + 15;
-            this.y = mouseEvent.clientY + 15;
+          if (e.area.state.__ui.isOwnedBySelf && e.area.state.isConnectedToSelected) {
+
+            this.options.push({
+              label: (() => {
+
+                if (armiesInSelectedArea === 0) {
+                  return 'No armies to move'
+                }
+                else {
+                  return 'Move troops to area';
+                }
+              })(),
+              cost: 1,
+              action: () => this.optionClicked(Action.Relocate, areaId),
+              disabled: armiesInSelectedArea === 0
+            });
+          }
+
+          this.options.unshift({
+            label: 'Deselect area',
+            action: () => {
+
+              const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas, this.cache.getSelectedArea());
+
+              this.gameEngine.updateGame({
+                areas
+              });
+
+              this.close();
+            }
+          });
+
+          // Add +15 to offset it a bit to the southeast of where you clicked
+          if (e.mouseEvent) {
+            this.x = e.mouseEvent.clientX + 15;
+            this.y = e.mouseEvent.clientY + 15;
             this.isOpen = true;
           }
         }
@@ -197,11 +263,17 @@ export class AreaPopupComponent {
       ).subscribe();
       break;
 
+      case Action.Relocate: this.gameEngine.relocateConfirmed(this.counts.value).pipe(
+        first(),
+        tap(() => this.close())
+      ).subscribe();
+      break;
+
       case Action.Spy: this.gameEngine.spyConfirmed(this.counts.value).pipe(
         first(),
         tap(() => this.close())
       ).subscribe(); break;
-      // default: exhaust(this.armySelectionConfig.currentAction);
+      default: exhaust(this.armySelectionConfig.currentAction);
     }
   }
 
