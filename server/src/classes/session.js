@@ -40,12 +40,12 @@ class Session {
 
       switch (currentIndex) {
         case 0: newIndex = 1; break;
-        case 1: newIndex = 2; break;
-        case 2: newIndex = 3; break;
+        case 1: newIndex = players.length > 2 ? 2 : 0; break;
+        case 2: newIndex = players.length > 3 ? 3 : 0; break;
         case 3: newIndex = 0; break;
       }
 
-      if (!newIndex) {
+      if (newIndex === undefined) {
         throw new Error('Could not determine next player turn');
       }
 

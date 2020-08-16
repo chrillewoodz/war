@@ -1,0 +1,84 @@
+<div class="common-container hud-actions-container">
+  <div class="hud-actions-top-container">
+    <ng-container *ngFor="let option of options">
+      <button class="btn hud-actions-btn hud-actions-action-btn hud-actions-{{option.actionType}}-btn" type="button" [disabled]="option.disabled" (click)="option.action(option)">{{option.label}}</button>
+    </ng-container>
+    <action-points></action-points>
+  </div>
+  <div class="hud-actions-bottom-container">
+    <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn">Deselect</button>
+    <button class="btn btn-danger hud-actions-btn hud-actions-end-turn-btn" type="button" (click)="endTurn()" [disabled]="!isMyTurn">End turn</button>
+  </div>
+  <div class="hud-actions-areas" [ngClass]="{'hud-actions-single-area': !selectedConnection}">
+    <div class="hud-actions-area-wrapper hud-actions-no-selection" *ngIf="!selectedArea && !selectedConnection">
+      <div class="hud-actions-area">
+        <h5>No area(s) selected</h5>
+      </div>
+    </div>
+    <div
+      class="hud-actions-area-wrapper hud-actions-area-selected-area"
+      [ngStyle]="{'background-color': selectedArea?.state.occupiedBy?.extras.faction.colorRGB}"
+      *ngIf="selectedArea">
+      <div class="hud-actions-area">
+        <h6>{{selectedConnection ? 'Selected:' : 'Perform action on:'}}</h6>
+        <div class="hud-actions-area-name-wrapper">
+          <span class="hud-actions-area-power">{{selectedAreaPower}}</span>
+          <h2>{{selectedArea?.name}}</h2>
+        </div>
+      </div>
+    </div>
+    <img class="hud-actions-arrow" *ngIf="selectedConnection" src="assets/SVG/arrow1.svg" alt="Arrow">
+    <div
+      class="hud-actions-area-wrapper hud-actions-area-connection"
+      [ngClass]="{owned: selectedConnection?.state.__ui.isOwnedBySelf}"
+      [ngStyle]="{'background-color': selectedConnection?.state.occupiedBy?.extras.faction.colorRGB}"
+      *ngIf="selectedConnection"
+    >
+      <div class="hud-actions-area">
+        <h6>Perform action on:</h6>
+        <div class="hud-actions-area-name-wrapper">
+          <span class="hud-actions-area-power">{{selectedConnectionPower}}</span>
+          <h2>{{selectedConnection?.name}}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="common-container army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts">
+  <button class="btn-neutral hud-actions-btn-close" (click)="closeArmySelectionMenu()">
+    <i class="fas fa-times"></i>
+  </button>
+  <div class="row">
+    <div class="col-12">
+      <h4>{{armySelectionConfig.currentAction}}</h4>
+    </div>
+  </div>
+  <div class="row no-gutters">
+    <ng-container *ngFor="let army of armies">
+      <div class="col" *ngIf="army.shouldShow">
+        <div class="row no-gutters align-items-center justify-content-center">
+          <div class="col-12">
+            <button class="hud-actions-increase" (click)="increase(army.type)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="col-12 hud-actions-img-container">
+            <img class="hud-actions-img" [src]="army.image">
+            <input class="hud-actions-input" type="number" readonly [formControl]="army.formControl">
+          </div>
+          <div class="col-12">
+            <button class="hud-actions-decrease" (click)="decrease(army.type)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="row no-gutters hud-actions-bottom-row">
+    <div class="col">
+      <button class="btn-primary" type="button" (click)="confirm()">Confirm</button>
+    </div>
+  </div>
+</div>

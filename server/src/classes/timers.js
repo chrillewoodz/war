@@ -1,18 +1,10 @@
-const AppStorage = require('./app-storage');
+// const AppStorage = require('./app-storage');
 const Timer = require('./timer');
 
 class Timers {
 
   constructor() {
     this.timers = {};
-  }
-
-  /**
-   * Retrieves and sets any stored timers from the app storage
-   * @param {AppStorage} storage
-   */
-  async init(storage) {
-    this.timers = await storage.getTimers();
   }
 
   getTimer(sessionId) {
@@ -24,15 +16,15 @@ class Timers {
   }
 
   startTimer(sessionId, onInterval, onFinished) {
-    this.getTimer(sessionId).start(onInterval, onFinished, false);
-  }
 
-  resumeTimer(sessionId, onInterval, onFinished) {
-    this.getTimer(sessionId).start(onInterval, onFinished, true);
-  }
+    let timer = this.getTimer(sessionId);
 
-  pauseTimer(sessionId) {
-    this.getTimer(sessionId).pause();
+    if (!timer) {
+      this.addTimer(sessionId);
+      timer = this.getTimer(sessionId);
+    }
+
+    timer.start(onInterval, onFinished);
   }
 
   resetTimer(sessionId) {
@@ -41,12 +33,6 @@ class Timers {
 
   removeTimer(sessionId) {
     delete this.timers[sessionId];
-  }
-
-  toJSON() {
-    return {
-      timers: this.timers
-    };
   }
 }
 

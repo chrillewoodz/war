@@ -80,6 +80,7 @@ export interface Area {
   points: string;
   name: string;
   anchorPoints: AnchorPoints;
+  connections: number[];
   state: {
     occupiedBy?: Player;
     armies: Armies;
@@ -149,8 +150,6 @@ export interface SelectedEvent {
   selectedConnection: Area;
   areas: Area[];
   area?: Area;
-  mouseEvent?: MouseEvent | Partial<MouseEvent>;
-  emitUpdateEvent: boolean;
 }
 
 export interface AreaPopupEvent {
@@ -170,7 +169,6 @@ export interface AreaStatsInformation {
 }
 
 export interface ActionEvent {
-  areaId: string;
   armies: Armies;
 }
 
@@ -183,4 +181,6 @@ export interface OutcomeConfig {
   image: string;
   title: OutcomeText;
   messages?: OutcomeText[];
+  x?: number;
+  y?: number;
 }

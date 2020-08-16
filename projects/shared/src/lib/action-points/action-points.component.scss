@@ -1,22 +1,56 @@
-.action-points {
+@import './src/_variables';
 
-  .action-point {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+.action-points-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: darken($bgPrimaryRGB, 10%);
+
+  &:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 8px solid green;
     border-radius: 50%;
-    box-shadow: 0 2px darkgray;
-    background-color: lightgray;
-
-    &.available {
-      background-color: green;
-      box-shadow: 1px 2px darkgreen;
-    }
-
-    &.cost {
-      background-color: red;
-      box-shadow: 1px 2px darkred;
-    }
+    z-index: 2;
   }
+}
+
+.action-points-inner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  background-color: darken(green, 5%);
+}
+
+.action-points-text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.action-points-title {
+  margin-bottom: 5px;
+  border-bottom: 2px solid white;
+  color: white;
+}
+
+.action-points-left {
+  position: relative;
+  margin: 0;
+  z-index: 1;
+  color: white;
 }

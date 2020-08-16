@@ -3,6 +3,7 @@ import { Army, ArmyType } from './interfaces';
 interface IGameConfig {
   fightModifier: number;
   negativeFightModifier: number;
+  outcomeAnimationLength: number;
   armyTypes: {
     soldiers: Army;
     horses: Army;
@@ -14,6 +15,7 @@ interface IGameConfig {
 export const GameConfig: IGameConfig = {
   fightModifier: 1.5,
   negativeFightModifier: -10,
+  outcomeAnimationLength: 2800,
   armyTypes: {
     soldiers: {
       type: ArmyType.Soldiers,

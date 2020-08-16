@@ -4,28 +4,22 @@
 
   <timer [percent]="elapsedTime"></timer>
 
-  <div class="game-hud">
-    <players [result]="result"></players>
+  <game-cards *ngIf="result?.session?.state.started" [cards]="cards"></game-cards>
+  <game-settings></game-settings>
+
+  <div class="game-hud game-hud-left">
     <!-- <area-information *ngIf="result?.session?.state.started && isMyTurn"></area-information> -->
+    <game-stats *ngIf="result?.session?.state.started" [result]="result"></game-stats>
+  </div>
+
+  <div class="game-hud game-hud-right">
+    <players [result]="result"></players>
     <game-logger [result]="result" (onNewLog)="updateState($event)"></game-logger>
   </div>
 
   <div class="map-container" [ngSwitch]="mapType">
     <map-europe #mapInstance *ngSwitchCase="'europe'" [result]="result" [isMyTurn]="isMyTurn"></map-europe>
-    <area-popup *ngIf="isMyTurn"></area-popup>
+    <hud-actions [result]="result" [isMyTurn]="isMyTurn"></hud-actions>
   </div>
-
-  <div class="screens">
-    <screen-fight *ngIf="isFightActive" [info]="currentFight" (completed)="fightCompleted($event)"></screen-fight>
-  </div>
-
-  <footer class="bottom-bar">
-    <div class="right-bar">
-      <!-- <action-points *ngIf="result?.session?.state.started" [config]="config"></action-points> -->
-      <game-stats *ngIf="result?.session?.state.started" [result]="result"></game-stats>
-    </div>
-    <game-cards *ngIf="result?.session?.state.started" [cards]="cards"></game-cards>
-    <game-settings></game-settings>
-  </footer>
 
 </div>

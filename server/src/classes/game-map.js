@@ -14,6 +14,7 @@ class GameMap {
         name: config[areaId].name,
         isStartingArea: config[areaId].isStartingArea,
         anchorPoints: config[areaId].anchorPoints,
+        connections: config[areaId].connections,
         state: {
           occupiedBy: null,
           armies: config[areaId].armies,

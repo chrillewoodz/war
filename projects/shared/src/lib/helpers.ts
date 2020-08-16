@@ -1,5 +1,6 @@
+import { GameCache } from './game.cache';
 import { GameConfig } from './game.config';
-import { SocketResponse, Session, PipeResult, Area, Army } from './interfaces';
+import { SocketResponse, Session, PipeResult, Area, Army, Armies } from './interfaces';
 import { throwError, Observable, ObservableInput } from 'rxjs';
 
 export function exhaust(p: never) {};
@@ -24,6 +25,10 @@ export function isMyTurn(result: PipeResult) {
   return result.self?.clientId === result.session?.state.currentTurn?.clientId;
 }
 
+export function isMyTurnFromCache(cache: GameCache) {
+  return cache.clientId === cache.session?.state.currentTurn?.clientId;
+}
+
 export function isOccupiedByMe(result: PipeResult, area: Area) {
   return area.state.occupiedBy?.clientId === result.self.clientId;
 }
@@ -38,6 +43,10 @@ export function getSelectedConnectionFromResult(result: PipeResult): Area {
 
 export function getTotalPowerOfArea(area: Area) {
 
+  if (!area) {
+    return null;
+  }
+
   const totalPower = Object.keys(area.state.armies)
     .filter((k) => k !== 'spies') // Do not take spies into consideration
     .map((k) => ({key: k, army: area.state.armies[k]}))
@@ -46,4 +55,26 @@ export function getTotalPowerOfArea(area: Area) {
     }, 0);
 
   return totalPower;
+}
+
+export function getTotalArmiesInArea(area: Area) {
+
+  const totalAmount = Object.keys(area?.state.armies)
+    .map((k) => ({key: k, army: area.state.armies[k]}))
+    .reduce((total, current) => {
+      return total += current.army.amount;
+    }, 0);
+
+  return totalAmount;
+}
+
+export function getTotalArmiesFromState(armies: Armies) {
+
+  const totalAmount = Object.keys(armies)
+    .map((k) => ({key: k, army: armies[k]}))
+    .reduce((total, current) => {
+      return total += current.army.amount;
+    }, 0);
+
+  return totalAmount;
 }

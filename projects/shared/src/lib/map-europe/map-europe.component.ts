@@ -69,11 +69,11 @@ export class MapEuropeComponent implements AfterViewInit {
       if (area.state.isActive) {
 
         this.mapEngine.areaClicked({
-          mouseEvent: event,
+          // mouseEvent: event,
           areas,
           selected: area.state.__ui.isOwnedBySelf ? area : null,
           selectedConnection: area.state.isConnectedToSelected ? area : null,
-          emitUpdateEvent: true
+          // emitUpdateEvent: true
         });
       }
 

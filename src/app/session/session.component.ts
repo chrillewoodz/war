@@ -115,6 +115,18 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     private socketApi: SocketApi
   ) {
 
+    document.addEventListener('click', (e) => {
+
+      if (this.gameEngine.isBlocked) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    const mapInitSub = this.mapEngine.init().subscribe((event) => {
+      this.socketApi.update(true, { areas: event.areas });
+    });
+
     // Used to remove dead games, couldn't make it happen with a simple window refresh/close
     // since it's really difficult to detect that whilst covering all cases and browsers.
     // We just indicate to the backend that we're still active as long as this runs.
@@ -128,7 +140,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     );
 
     // Don't restart on refresh/load in production
-    const turnSub = this.socketApi.timer<TimerResponse>(false)
+    const turnSub = this.socketApi.timer<TimerResponse>()
       .subscribe((result) => {
         this.elapsedTime = result.percent;
       }, (err) => {
@@ -136,46 +148,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       }
     );
 
-    // NOTE: This cannot be used with function keyword
-    // or the timer call throws type error.
-    const init = (forwardedResult: PipeResult) => {
-
-      return new Observable((observer) => {
-        return observer.next();
-      })
-      .pipe(
-        first(),
-        map(() => forwardedResult),
-        tap((result) => {
-
-          if (!environment.production) {
-
-            // NOTE: Decided against populating the percent of the timer
-            // in dev mode since it doesn't matter at all and won't be a
-            // problem in production since a refresh will cause you to leave the game
-            if (isMyTurn(result)) {
-              this.socketApi.timer<TimerResponse>(true);
-            }
-          }
-        })
-      );
-    };
-
     const sessionSub = merge(
-      this.socketApi.get(true).pipe(
-        switchMap((result) => {
-
-          if (this.cache.initDone) {
-            return of(result);
-          }
-
-          return init(result).pipe(
-            finalize(() => {
-              this.cache.setInitDone();
-            })
-          );
-        })
-      ),
+      this.socketApi.get(true),
       this.socketApi.update(false)
     )
     .pipe(
@@ -215,6 +189,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.onError();
     });
 
+    this.subscriptions.add(mapInitSub);
     this.subscriptions.add(activeEmitter);
     this.subscriptions.add(turnSub);
     this.subscriptions.add(sessionSub);
@@ -233,21 +208,13 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  initFight() {
-    this.isFightActive = true;
-  }
-
-  fightCompleted(e) {
-    this.isFightActive = false;
-  }
-
   onMapReady(e) {
     this.areas = e.areas;
     this.cd.detectChanges();
   }
 
   updateState(state = this.result.session.state) {
-    this.gameEngine.updateGame(state);
+    this.socketApi.update(true, state);
   }
 
   onEnded() {

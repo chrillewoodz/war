@@ -1,13 +1,13 @@
 const Sweden = {
   name: 'Sweden',
-  colorRGB: 'rgb(242, 248, 81)',
-  colorRGBA: 'rgba(242, 248, 81, 0.6)'
+  colorRGB: 'rgb(19, 91, 199)',
+  colorRGBA: 'rgba(19, 91, 199, 0.6)'
 };
 
 const China = {
   name: 'China',
-  colorRGB: 'rgb(40, 110, 53)',
-  colorRGBA: 'rgba(40, 110, 53, 0.6)'
+  colorRGB: 'rgb(177, 9, 48)',
+  colorRGBA: 'rgba(177, 9, 48, 0.6)'
 };
 
 const Somalia = {
@@ -18,8 +18,8 @@ const Somalia = {
 
 const Germany = {
   name: 'Germany',
-  colorRGB: 'rgb(226, 47, 142)',
-  colorRGBA: 'rgba(226, 47, 142, 0.6)'
+  colorRGB: 'rgb(42, 127, 84)',
+  colorRGBA: 'rgba(42, 127, 84, 0.6)'
 };
 
 const asArray = [Sweden, China, Somalia, Germany];

@@ -1,23 +1,14 @@
 const storage = require('node-persist');
 const Session = require('./session');
-const Timers = require('./timers');
 
 class AppStorage {
 
-  /**
-   *
-   * @param {Timers} timers
-   */
-  constructor(timers) {
-    this.timers = timers;
-  }
+  timers = [];
+
+  constructor() {}
 
   async getTimers() {
     return await storage.getItem('timers') || {};
-  }
-
-  async setTimers(timers) {
-    return await storage.setItem('timers', timers);
   }
 
   async init() {

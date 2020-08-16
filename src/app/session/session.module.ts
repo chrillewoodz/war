@@ -7,8 +7,7 @@ import { SessionComponent } from './session.component';
 import {
   DirectivesModule,
   ActionPointsModule,
-  AreaInformationModule,
-  AreaPopupModule,
+  HUDActionsModule,
   GameCardsModule,
   GameLoggerModule,
   GameSettingsModule,
@@ -16,7 +15,6 @@ import {
   MapEuropeModule,
   OutcomeModule,
   PlayersModule,
-  ScreenFightModule,
   TimerModule
 } from 'shared';
 
@@ -29,8 +27,7 @@ import {
      // Shared
      DirectivesModule,
      ActionPointsModule,
-     AreaInformationModule,
-     AreaPopupModule,
+     HUDActionsModule,
      GameCardsModule,
      GameLoggerModule,
      GameSettingsModule,
@@ -38,7 +35,6 @@ import {
      MapEuropeModule,
      OutcomeModule,
      PlayersModule,
-     ScreenFightModule,
      TimerModule
   ]
 })

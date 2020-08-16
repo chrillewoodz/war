@@ -19,17 +19,14 @@
   &.nb-type-power {
 
     &:before {
-      background-color: rgb(139, 0, 0, 0.7);
-      background-image: url('/assets/SVG/rifles-crossed.svg');
-      background-size: 90% 90%;
-      background-position: 50% 50%;
+      background-color: #9e0101;
     }
   }
 
   &.nb-type-amount {
 
     &:before {
-      // TODO: Insert some form of image here like power has
+      // TODO: Insert some form of image here like power had
       background-color: rgba(3, 83, 90, 0.7);
     }
   }

@@ -1,5 +1,5 @@
+import { SocketApi } from './../socket.api';
 import { Component, Input } from '@angular/core';
-import { GameEngine } from '../game.engine';
 import { PipeResult, Player } from '../interfaces';
 
 @Component({
@@ -31,9 +31,9 @@ export class PlayersComponent {
 
   private _result: PipeResult;
 
-  constructor(private gameEngine: GameEngine) {}
+  constructor(private socketApi: SocketApi) {}
 
   ready() {
-    this.gameEngine.setReadyState();
+    this.socketApi.ready(true);
   }
 }

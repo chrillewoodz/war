@@ -4,8 +4,10 @@ import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { ObservableInput, merge, throwError } from 'rxjs';
 import { SocketEvents } from './socket-events';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, first, switchMap, filter } from 'rxjs/operators';
 import { Bound } from './decorators';
+import { isMyTurnFromCache } from './helpers';
+import { GameEngine } from './game.engine';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class SocketApi {
 
   constructor(
     private cache: GameCache,
+    private gameEngine: GameEngine,
     private socket: Socket
   ) {}
 
@@ -138,60 +141,26 @@ export class SocketApi {
     );
   }
 
-  timer<T>(emitToServer: boolean) {
-
-    if (emitToServer) {
-      this.socket.emit(this.socketEvents.TIMER_RESTART, {
-        sessionId: this.cache.sessionId,
-        clientId: this.cache.clientId
-      });
-    }
+  timer<T>() {
 
     // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
     // when compared to session-specific ones
     return merge(
       this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
-      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
-    ).pipe(
-      map(this.onSocketResponse),
-      catchError(this.onSocketError)
-    );
-  }
+      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED).pipe(
+        filter(() => isMyTurnFromCache(this.cache)),
+        switchMap((timerFinishedEvent) => {
 
-  pauseTimer<T>(emitToServer: boolean) {
+          const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
 
-    if (emitToServer) {
-      this.socket.emit(this.socketEvents.TIMER_PAUSE, {
-        sessionId: this.cache.sessionId,
-        clientId: this.cache.clientId
-      });
-    }
-
-    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
-    // when compared to session-specific ones
-    return merge(
-      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
-      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
-    ).pipe(
-      map(this.onSocketResponse),
-      catchError(this.onSocketError)
-    );
-  }
-
-  resumeTimer<T>(emitToServer: boolean) {
-
-    if (emitToServer) {
-      this.socket.emit(this.socketEvents.TIMER_RESUME, {
-        sessionId: this.cache.sessionId,
-        clientId: this.cache.clientId
-      });
-    }
-
-    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
-    // when compared to session-specific ones
-    return merge(
-      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_UPDATED),
-      this.socket.fromEvent<SocketResponse<T>>(this.socketEvents.TIMER_FINISHED)
+          return this.update(true, { areas })
+            .pipe(
+              first(),
+              switchMap(() => this.changeTurn(true)),
+              map(() => timerFinishedEvent) // VERY IMPORTANT: Return the original event here or the timer will glitch out
+            )
+        })
+      )
     ).pipe(
       map(this.onSocketResponse),
       catchError(this.onSocketError)

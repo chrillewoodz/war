@@ -1,13 +1,15 @@
+import { first, switchMap } from 'rxjs/operators';
 import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
-import { ReplaySubject, of, Observable } from 'rxjs';
+import { ReplaySubject, of, Observable, timer } from 'rxjs';
 
-import { SessionState, ActionEvent, Armies, Area, Session, Army, Areas } from './interfaces';
+import { SessionState, ActionEvent, Armies, Area, Army } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
 import { GameConfig } from './game.config';
 import { SocketApi } from './socket.api';
+import { Bound } from './decorators';
 
 export enum GameEngineEvent {
   Stop
@@ -26,13 +28,15 @@ interface ArmiesToDeploy {
 
 export class GameEngine {
 
+  public isBlocked = false;
+
   private stop = new ReplaySubject<boolean>(1);
   private stop$ = this.stop.asObservable();
 
   constructor(
     private cache: GameCache,
     private mapEngine: MapEngine,
-    private socketApi: SocketApi
+    // private socketApi: SocketApi
   ) {
 
     // for (let i = 0; i < 26; i++) {
@@ -43,19 +47,6 @@ export class GameEngine {
     //   console.log('lesser', `${i} vs 26`, this.getArmiesLost(i, 26));
     // }
   }
-
-  // setStartingArmies(result: PipeResult) {
-
-  //   for (const clientId in result.session.state.players) {
-  //     const idle = result.session.state.players[clientId].state.idle;
-  //     idle.soldiers.amount = 10;
-  //     idle.horses.amount = 4;
-  //     idle.gatlingGuns.amount = 2;
-  //     idle.soldiers.amount = 4;
-  //   }
-
-  //   return result;
-  // }
 
   listen(event: GameEngineEvent) {
 
@@ -69,77 +60,53 @@ export class GameEngine {
     this.stop.next(true);
   }
 
-  setReadyState() {
-    this.socketApi.ready(true);
-  }
-
-  updateGame(state: Partial<SessionState>) {
-    return this.socketApi.update(true, state);
-  }
-
   gameEnded() {
     this.stop.next(true);
   }
 
-  doAction(action: Action, areaId: string): Observable<ActionEvent> {
+  doAction(action: Action): Observable<ActionEvent> {
 
     switch (action) {
-      case Action.Attack: return this.attack(areaId);
-      case Action.Deploy: return this.deploy(areaId);
-      case Action.Relocate: return this.relocate(areaId);
-      case Action.Spy: return this.spy(areaId);
+      case Action.Attack: return this.attack();
+      case Action.Deploy: return this.deploy();
+      case Action.Move: return this.move();
+      case Action.Spy: return this.spy();
       default: exhaust(action);
     }
   }
 
-  private attack(areaId: string) {
-
-    // const updatedAreas = this.cache.session.state.areas.map((area) => {
-
-    //   if (area.areaId === areaId) {
-
-    //     if (area.state.occupiedBy === null || area.state.occupiedBy === undefined) {
-    //       area.state.occupiedBy = this.cache.session.state.players[this.cache.clientId];
-    //     }
-    //   }
-
-    //   return area;
-    // })
+  private attack() {
 
     return of({
-      areaId,
       armies: this.cache.getSelectedArea().state.armies as Armies
     });
   }
 
-  private deploy(areaId: string) {
+  private deploy() {
 
     return of({
-      areaId,
       armies: this.cache.self.state.idle
     });
   }
 
-  private relocate(areaId: string) {
+  private move() {
 
     return of({
-      areaId,
       armies: this.cache.getSelectedArea().state.armies as Armies
     });
   }
 
-  private spy(areaId: string) {
+  private spy() {
 
     return of({
-      areaId,
       armies: this.cache.self.state.idle
     });
   }
 
+  @Bound
   attackConfirmed(armies: ArmiesToDeploy) {
 
     const session = this.cache.session;
-    const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
     const selectedConnection = this.cache.getSelectedConnectedArea();
 
@@ -233,7 +200,7 @@ export class GameEngine {
     }
 
     // Update the selectedArea and selectedConnection with the changes
-    const areas = session.state.areas;
+    let areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
@@ -241,13 +208,15 @@ export class GameEngine {
     areas[j] = selectedConnection;
 
     // Deselect areas
-    this.resetAreaAndConnections(areas, selectedArea);
+    areas = this.resetAreaAndConnections(areas);
 
-    return this.updateGame({
-      areas
-    });
+    return of(areas);
+    // return this.updateGame({
+    //   areas
+    // });
   }
 
+  @Bound
   deployConfirmed(count: ArmiesToDeploy) {
 
     const session = this.cache.session;
@@ -266,27 +235,42 @@ export class GameEngine {
     self.state.idle.gatlingGuns.amount -= count.gatlingGuns;
     self.state.idle.spies.amount -= count.spies;
 
-    const areas = session.state.areas;
+    this.mapEngine.loadOutcome({
+      image: 'assets/SVG/soldiers.svg',
+      title: {
+        color: '#08c339',
+        label: 'Deployed'
+      },
+      messages: [
+        { color: '#08c339', label: `+${count.soldiers} soldiers deployed` },
+        { color: '#08c339', label: `+${count.horses} horses deployed` },
+        { color: '#08c339', label: `+${count.gatlingGuns} gatling guns deployed` },
+        { color: '#08c339', label: `+${count.spies} spies deployed` }
+      ]
+    });
+
+    let areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
 
     areas[i] = selectedArea;
 
     // Deselect areas
-    this.resetAreaAndConnections(areas, selectedArea);
+    areas = this.resetAreaAndConnections(areas);
 
-    return this.updateGame({
-      areas,
-      players: {
-        ...session.state.players,
-        [self.clientId]: self
-      }
-    });
+    return of(areas);
+    // return this.updateGame({
+    //   areas,
+    //   players: {
+    //     ...session.state.players,
+    //     [self.clientId]: self
+    //   }
+    // });
   }
 
-  relocateConfirmed(count: ArmiesToDeploy) {
+  @Bound
+  moveConfirmed(count: ArmiesToDeploy) {
 
     const session = this.cache.session;
-    const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
     const selectedConnection = this.cache.getSelectedConnectedArea();
 
@@ -302,21 +286,66 @@ export class GameEngine {
     selectedConnection.state.armies.gatlingGuns.amount += count.gatlingGuns;
     selectedConnection.state.armies.spies.amount += count.spies;
 
-    const areas = session.state.areas;
-    const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
-    const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+    const messages = [];
 
-    areas[i] = selectedArea;
-    areas[j] = selectedConnection;
+    count.soldiers > 0 && messages.push({ color: 'white', label: `-${count.soldiers} soldiers` });
+    count.horses > 0 && messages.push({ color: 'white', label: `-${count.horses} horses` });
+    count.gatlingGuns > 0 && messages.push({ color: 'white', label: `-${count.gatlingGuns} gatling guns` });
+    count.spies > 0 && messages.push({ color: 'white', label: `-${count.spies} spies` });
 
-    // Deselect areas
-    this.resetAreaAndConnections(areas, selectedArea);
+    const selectedAreaAnchorPoint = this.mapEngine.mapToScreenCoordinates(this.cache.mapElement, selectedArea.anchorPoints.main.x, selectedArea.anchorPoints.main.y);
 
-    return this.updateGame({
-      areas
+    this.mapEngine.loadOutcome({
+      image: 'assets/SVG/soldiers.svg',
+      title: {
+        color: '#08c339',
+        label: `Armies moving to ${selectedConnection.name}...`
+      },
+      messages,
+      x: selectedAreaAnchorPoint.x,
+      y: selectedAreaAnchorPoint.y
     });
+
+    return timer(GameConfig.outcomeAnimationLength)
+      .pipe(
+        first(),
+        switchMap(() => {
+
+          const messages = [];
+
+          count.soldiers > 0 && messages.push({ color: 'white', label: `+${count.soldiers} soldiers` });
+          count.horses > 0 && messages.push({ color: 'white', label: `+${count.horses} horses` });
+          count.gatlingGuns > 0 && messages.push({ color: 'white', label: `+${count.gatlingGuns} gatling guns` });
+          count.spies > 0 && messages.push({ color: 'white', label: `+${count.spies} spies` });
+
+          this.mapEngine.loadOutcome({
+            image: 'assets/SVG/soldiers.svg',
+            title: {
+              color: '#08c339',
+              label: `Armies arrived from ${selectedArea.name}`
+            },
+            messages
+          });
+
+          let areas = session.state.areas;
+          const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
+          const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
+
+          areas[i] = selectedArea;
+          areas[j] = selectedConnection;
+
+          // Deselect areas
+          areas = this.resetAreaAndConnections(areas);
+
+          return of(areas);
+          // return this.updateGame({
+          //   areas
+          // });
+      })
+    );
   }
 
+  @Bound
   spyConfirmed(count: Pick<ArmiesToDeploy, 'spies'>) {
 
     if (!count) {
@@ -336,7 +365,7 @@ export class GameEngine {
       selectedConnection.state.spiedOnBy[self.clientId] = self;
 
       this.mapEngine.loadOutcome({
-        image: 'assets/SVG/spy.svg',
+        image: 'assets/SVG/spies.svg',
         title: {
           color: '#08c339',
           label: 'Success'
@@ -365,7 +394,7 @@ export class GameEngine {
     }
 
     // Update the selectedArea and selectedConnection with the changes
-    const areas = session.state.areas;
+    let areas = session.state.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
@@ -373,14 +402,15 @@ export class GameEngine {
     areas[j] = selectedConnection;
 
     // Deselect areas
-    this.resetAreaAndConnections(areas, selectedArea);
+    areas = this.resetAreaAndConnections(areas);
 
-    return this.updateGame({
-      areas
-    });
+    return of(areas);
+    // return this.updateGame({
+    //   areas
+    // });
   }
 
-  public resetConnection() {
+  resetConnection() {
 
     const areas = this.cache.session.state.areas;
     const selectedConnection = this.cache.getSelectedConnectedArea();
@@ -397,27 +427,37 @@ export class GameEngine {
 
     areas[i] = selectedConnection;
 
-    this.updateGame({
-      areas
-    });
+    return areas;
+    // this.updateGame({
+    //   areas
+    // });
   }
 
-  resetAreaAndConnections(areas: Area[], selectedArea: Area) {
+  preventActions() {
+    this.isBlocked = true;
+  }
 
-    selectedArea.state.isSelected = false;
+  allowActions() {
+    this.isBlocked = false;
+  }
+
+  resetAreaAndConnections(areas: Area[]) {
 
     // Resets all connections
-    return areas.map((area) => {
+    const _areas = areas.map((area) => {
 
-      // Reset all but the selectedArea
-      if (selectedArea.areaId !== area.areaId) {
+      area.state.isSelected = false;
+      area.state.isConnectedToSelected = false;
+
+      // Set connections to inactivated
+      if (!area.state.__ui.isOwnedBySelf) {
         area.state.isActive = false;
-        area.state.isSelected = false;
-        area.state.isConnectedToSelected = false;
       }
 
       return area;
     });
+
+    return _areas;
   }
 
   private get winModifier() {

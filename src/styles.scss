@@ -129,6 +129,11 @@ button {
     background-color: darken($bgPrimaryRGB, 10%);
   }
 
+  &.btn-danger {
+    background-color: darkred;
+    color: white;
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: default;

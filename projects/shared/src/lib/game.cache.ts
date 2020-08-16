@@ -5,8 +5,7 @@ import { Session } from './interfaces';
 export enum CacheKey {
   ClientID = 'clientId',
   SessionID = 'sessionId',
-  Session = 'session',
-  InitDone = 'initDone'
+  Session = 'session'
 }
 
 export enum CacheAction {
@@ -34,8 +33,6 @@ export class GameCache {
 
   constructor() {}
 
-
-
   get clientId() {
     return sessionStorage.getItem(CacheKey.ClientID);
   }
@@ -46,10 +43,6 @@ export class GameCache {
 
   get session(): Session {
     return JSON.parse(sessionStorage.getItem(CacheKey.Session));
-  }
-
-  get initDone(): boolean {
-    return JSON.parse(sessionStorage.getItem(CacheKey.InitDone));
   }
 
   get self() {
@@ -95,11 +88,6 @@ export class GameCache {
     this.emitter.next({ key: CacheKey.Session, action: CacheAction.Set });
   }
 
-  setInitDone() {
-    sessionStorage.setItem(CacheKey.InitDone, JSON.stringify(true));
-    this.emitter.next({ key: CacheKey.InitDone, action: CacheAction.Set });
-  }
-
   setMapElement(mapElement: SVGSVGElement) {
     this._mapElement = mapElement;
   }
@@ -116,10 +104,5 @@ export class GameCache {
   removeSession() {
     sessionStorage.removeItem(CacheKey.Session);
     this.emitter.next({ key: CacheKey.Session, action: CacheAction.Remove });
-  }
-
-  removeInitDone() {
-    sessionStorage.removeItem(CacheKey.InitDone);
-    this.emitter.next({ key: CacheKey.InitDone, action: CacheAction.Remove });
   }
 }

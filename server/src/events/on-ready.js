@@ -37,22 +37,18 @@ const fn = async function(io, socket, ev, storage, timers) {
           // Start game
           session.start();
 
-          timers.addTimer(session.sessionId);
+          timers.addTimer(ev.sessionId);
 
-          await storage.setTimers(timers);
-
-          timers.startTimer(session.sessionId, async (e) => {
-            io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
-            await storage.setTimers(timers);
-            await storage.set(session);
+          timers.startTimer(ev.sessionId, async (e) => {
+            io.to(ev.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
           }, (e) => {
-            io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
+            io.to(ev.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
           });
         });
 
         await storage.set(session);
 
-        io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+        io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
       }
       else {
         throw new Error('Game has already started');

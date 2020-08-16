@@ -12,16 +12,15 @@
 
     .cls-1 {
 
-      &.active {
-        opacity: 1;
-        cursor: pointer;
+      &.owned,
+      &.connection {
 
-        &:hover {
-          fill: darkred !important;
-        }
+        &.active {
+          cursor: pointer;
 
-        &.owned.selected {
-          stroke: rgb(59, 125, 121)
+          &:hover {
+            opacity: 1;
+          }
         }
       }
     }
@@ -30,22 +29,14 @@
 
 .cls-1 {
   stroke-width: 0.75px;
-  opacity: 0.6;
+  opacity: 0.4;
   cursor: default;
 
   &.active {
-    opacity: 0.8;
+    opacity: 0.7;
 
-    &.owned.selected {
-      fill: rgb(52, 81, 79) !important;
-    }
-
-    &.connection {
-      stroke: white;
-    }
-
-    &.connection.selected {
-      fill: darkred !important;
+    &.selected {
+      opacity: 1;
     }
   }
 }
@@ -59,10 +50,7 @@
   height: 30px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgb(139, 0, 0, 0.7);
-  background-image: url('/assets/SVG/rifles-crossed.svg');
-  background-size: 90% 90%;
-  background-position: 50% 50%;
+  background-color: #9e0101;
   color: white;
   pointer-events: none;
 }

@@ -1,5 +1,12 @@
-<div class="action-points-container">
+<!-- <div class="action-points-container">
   <ul class="action-points">
     <li class="action-point" *ngFor="let point of points" [ngClass]="{available: point?.available, cost: point?.cost}"></li>
   </ul>
+</div> -->
+<div class="action-points-container">
+  <div class="action-points-text">
+    <h6 class="action-points-title">AP</h6>
+    <h3 class="action-points-left">21</h3>
+  </div>
+  <div class="action-points-inner" [ngStyle]="{height: '80%'}"></div>
 </div>

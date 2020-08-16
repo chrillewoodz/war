@@ -6,7 +6,7 @@ class Timer {
     this.timer = new NanoTimer();
     this.elapsed = props.elapsed || 0;
     this.interval = props.interval || 1000;
-    this.total = props.total || 10000;
+    this.total = props.total || 90000;
     this.percent = props.percent || 0;
   }
 
@@ -14,13 +14,15 @@ class Timer {
    *
    * @param {() => void} onInterval
    * @param {() => void} onFinished
-   * @param {boolean} isResume
    */
-  start(onInterval, onFinished, isResume) {
+  start(onInterval, onFinished) {
 
     if (!onInterval || !onFinished) {
       throw new Error('Both callbacks [onInterval, onFinished] must be provided');
     }
+
+    this.stop();
+    this.reset();
 
     this.timer.setInterval(() => {
       this.elapsed += this.interval;
@@ -32,10 +34,10 @@ class Timer {
       this.timer.clearInterval();
       this.timer.clearTimeout();
       onFinished(this.getResponse());
-    }, [this.timer], `${isResume ? this.total - this.elapsed : this.total}m`);
+    }, [this.timer], `${this.total}m`);
   }
 
-  pause() {
+  stop() {
     this.timer.clearInterval();
     this.timer.clearTimeout();
   }
@@ -52,15 +54,6 @@ class Timer {
       milliseconds: this.elapsed,
       total: this.total
     }
-  }
-
-  toJSON() {
-    return {
-      percent: this.percent,
-      elapsed: this.elapsed,
-      interval: this.interval,
-      total: this.total
-    };
   }
 }
 

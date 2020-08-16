@@ -1,6 +1,7 @@
 const SocketError = require('../classes/socket-error');
 const SocketResponse = require('../classes/socket-response');
 const Session = require('../classes/session');
+const Timers = require('../classes/timers');
 const AppStorage = require('../classes/app-storage');
 const SocketEvents = require('../classes/socket-events');
 
@@ -13,9 +14,10 @@ const SocketEvents = require('../classes/socket-events');
  *   newState: *
  * }} ev
  * @param {AppStorage} storage
+ * @param {Timers} timers
  */
-const fn = async function(io, socket, ev, storage) {
-
+const fn = async function(io, socket, ev, storage, timers) {
+  console.log('ON_CHANGE_TURN', ev);
   try {
 
     /**
@@ -30,7 +32,7 @@ const fn = async function(io, socket, ev, storage) {
 
       session.changeTurn();
 
-      session.startTurnTimer((e) => {
+      timers.startTimer(session.sessionId, async (e) => {
         io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
       }, (e) => {
         io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
@@ -38,7 +40,7 @@ const fn = async function(io, socket, ev, storage) {
 
       await storage.set(session);
 
-      io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+      io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
     }
   }
   catch(err) {
