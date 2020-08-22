@@ -1,3 +1,6 @@
+import { GameCache } from './game.cache';
+import { Observable } from 'rxjs';
+
 export interface Extras {
   faction: Faction;
 }
@@ -16,6 +19,15 @@ export interface Armies {
   spies: Army;
 }
 
+export interface Card {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  cost: number;
+  isDisabled?: boolean;
+}
+
 export interface PlayerState {
   connected: boolean;
   resigned: boolean;
@@ -23,6 +35,7 @@ export interface PlayerState {
   ready: boolean;
   defeated: boolean;
   idle: Armies;
+  cards: Card[];
 }
 
 export interface Player {
@@ -152,12 +165,6 @@ export interface SelectedEvent {
   area?: Area;
 }
 
-export interface AreaPopupEvent {
-  mouseEvent?: MouseEvent | Partial<MouseEvent>;
-  area?: Area;
-  shouldOpen: boolean;
-}
-
 export interface AreaInformationEvent {
   stats: AreaStatsInformation;
 }
@@ -178,6 +185,7 @@ export interface OutcomeText {
 }
 
 export interface OutcomeConfig {
+  area?: Area;
   image: string;
   title: OutcomeText;
   messages?: OutcomeText[];

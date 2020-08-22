@@ -2,7 +2,7 @@ import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Ext
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
-import { ObservableInput, merge, throwError } from 'rxjs';
+import { merge, throwError } from 'rxjs';
 import { SocketEvents } from './socket-events';
 import { map, catchError, tap, first, switchMap, filter } from 'rxjs/operators';
 import { Bound } from './decorators';
@@ -151,14 +151,21 @@ export class SocketApi {
         filter(() => isMyTurnFromCache(this.cache)),
         switchMap((timerFinishedEvent) => {
 
+          const self = this.gameEngine.giveCardToSelf();
           const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
 
-          return this.update(true, { areas })
-            .pipe(
-              first(),
-              switchMap(() => this.changeTurn(true)),
-              map(() => timerFinishedEvent) // VERY IMPORTANT: Return the original event here or the timer will glitch out
-            )
+          return this.update(true, {
+            areas,
+            players: {
+              ...this.cache.session.state.players,
+              [this.cache.clientId]: self
+            }
+          })
+          .pipe(
+            first(),
+            switchMap(() => this.changeTurn(true)),
+            map(() => timerFinishedEvent) // VERY IMPORTANT: Return the original event here or the timer will glitch out
+          )
         })
       )
     ).pipe(

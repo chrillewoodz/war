@@ -1,14 +1,14 @@
+import { CardsService } from './game-cards/cards.service';
 import { first, switchMap } from 'rxjs/operators';
 import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, of, Observable, timer } from 'rxjs';
 
-import { SessionState, ActionEvent, Armies, Area, Army } from './interfaces';
+import { ActionEvent, Armies, Area, Army } from './interfaces';
 import { GameCache } from './game.cache';
 import { Action } from './enums';
 import { exhaust } from './helpers';
 import { GameConfig } from './game.config';
-import { SocketApi } from './socket.api';
 import { Bound } from './decorators';
 
 export enum GameEngineEvent {
@@ -36,7 +36,7 @@ export class GameEngine {
   constructor(
     private cache: GameCache,
     private mapEngine: MapEngine,
-    // private socketApi: SocketApi
+    private cardsService: CardsService
   ) {
 
     // for (let i = 0; i < 26; i++) {
@@ -62,6 +62,20 @@ export class GameEngine {
 
   gameEnded() {
     this.stop.next(true);
+  }
+
+  giveCardToSelf() {
+
+    if (this.cache.self.state.cards.length >= 5) {
+      return this.cache.self;
+    }
+
+    const self = {...this.cache.self};
+    const card = this.cardsService.getRandomCard();
+
+    self.state.cards.push(card);
+
+    return self;
   }
 
   doAction(action: Action): Observable<ActionEvent> {
@@ -137,6 +151,7 @@ export class GameEngine {
       selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
 
       this.mapEngine.loadOutcome({
+        area: selectedConnection,
         image: 'assets/SVG/rifles-crossed.svg',
         title: {
           color: '#08c339',
@@ -187,6 +202,7 @@ export class GameEngine {
       selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
 
       this.mapEngine.loadOutcome({
+        area:  selectedConnection,
         image: 'assets/SVG/human-skull.svg',
         title: {
           color: 'red',
@@ -211,9 +227,6 @@ export class GameEngine {
     areas = this.resetAreaAndConnections(areas);
 
     return of(areas);
-    // return this.updateGame({
-    //   areas
-    // });
   }
 
   @Bound
@@ -236,6 +249,7 @@ export class GameEngine {
     self.state.idle.spies.amount -= count.spies;
 
     this.mapEngine.loadOutcome({
+      area: selectedArea,
       image: 'assets/SVG/soldiers.svg',
       title: {
         color: '#08c339',
@@ -258,13 +272,6 @@ export class GameEngine {
     areas = this.resetAreaAndConnections(areas);
 
     return of(areas);
-    // return this.updateGame({
-    //   areas,
-    //   players: {
-    //     ...session.state.players,
-    //     [self.clientId]: self
-    //   }
-    // });
   }
 
   @Bound
@@ -293,17 +300,14 @@ export class GameEngine {
     count.gatlingGuns > 0 && messages.push({ color: 'white', label: `-${count.gatlingGuns} gatling guns` });
     count.spies > 0 && messages.push({ color: 'white', label: `-${count.spies} spies` });
 
-    const selectedAreaAnchorPoint = this.mapEngine.mapToScreenCoordinates(this.cache.mapElement, selectedArea.anchorPoints.main.x, selectedArea.anchorPoints.main.y);
-
     this.mapEngine.loadOutcome({
+      area: selectedArea,
       image: 'assets/SVG/soldiers.svg',
       title: {
         color: '#08c339',
         label: `Armies moving to ${selectedConnection.name}...`
       },
-      messages,
-      x: selectedAreaAnchorPoint.x,
-      y: selectedAreaAnchorPoint.y
+      messages
     });
 
     return timer(GameConfig.outcomeAnimationLength)
@@ -319,6 +323,7 @@ export class GameEngine {
           count.spies > 0 && messages.push({ color: 'white', label: `+${count.spies} spies` });
 
           this.mapEngine.loadOutcome({
+            area: selectedConnection,
             image: 'assets/SVG/soldiers.svg',
             title: {
               color: '#08c339',
@@ -338,9 +343,6 @@ export class GameEngine {
           areas = this.resetAreaAndConnections(areas);
 
           return of(areas);
-          // return this.updateGame({
-          //   areas
-          // });
       })
     );
   }
@@ -365,6 +367,7 @@ export class GameEngine {
       selectedConnection.state.spiedOnBy[self.clientId] = self;
 
       this.mapEngine.loadOutcome({
+        area: selectedConnection,
         image: 'assets/SVG/spies.svg',
         title: {
           color: '#08c339',
@@ -381,6 +384,7 @@ export class GameEngine {
       selectedArea.state.armies.spies.amount -= count.spies;
 
       this.mapEngine.loadOutcome({
+        area: selectedConnection,
         image: 'assets/SVG/human-skull.svg',
         title: {
           color: 'red',
@@ -405,9 +409,6 @@ export class GameEngine {
     areas = this.resetAreaAndConnections(areas);
 
     return of(areas);
-    // return this.updateGame({
-    //   areas
-    // });
   }
 
   resetConnection() {
@@ -428,9 +429,6 @@ export class GameEngine {
     areas[i] = selectedConnection;
 
     return areas;
-    // this.updateGame({
-    //   areas
-    // });
   }
 
   preventActions() {

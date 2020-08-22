@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, ComponentRef } from '@angular/core'
 import { timer } from 'rxjs';
 import { tap, first } from 'rxjs/operators';
 import { GameCache } from './../game.cache';
-import { OutcomeConfig } from './../interfaces';
+import { OutcomeConfig, Area } from './../interfaces';
 import { MapEngine } from './../map.engine';
 
 @Component({
@@ -26,12 +26,25 @@ export class OutcomeComponent {
 
   init() {
 
-    // Show the outcome at the predefined anchor point for the area
-    const selectedConnection = this.cache.getSelectedConnectedArea();
-    const anchorPoint = this.mapEngine.mapToScreenCoordinates(this.cache.mapElement, selectedConnection.anchorPoints.main.x, selectedConnection.anchorPoints.main.y);
+    if (this.config.x && !this.config.y) {
+      throw new Error('x was defined but not y');
+    }
+    else if (this.config.y && !this.config.x) {
+      throw new Error('y was defined but not x');
+    }
 
-    this.x = this.config.x || anchorPoint.x;
-    this.y = this.config.y || anchorPoint.y;
+    if (this.config.x && this.config.y) {
+      this.x = this.config.x;
+      this.y = this.config.y;
+    }
+    else {
+
+      // Show the outcome at the predefined anchor point for the area
+      const anchorPoint = this.mapEngine.mapToScreenCoordinates(this.cache.mapElement, this.config.area.anchorPoints.main.x, this.config.area.anchorPoints.main.y);
+
+      this.x = anchorPoint.x;
+      this.y = anchorPoint.y;
+    }
 
     timer(2800)
       .pipe(

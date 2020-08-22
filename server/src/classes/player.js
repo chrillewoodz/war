@@ -9,6 +9,7 @@ class Player {
       quit: false,
       ready: false,
       defeated: false,
+      cards: [],
       idle: {
         soldiers: {
           amount: 0

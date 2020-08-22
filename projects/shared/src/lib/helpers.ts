@@ -78,3 +78,10 @@ export function getTotalArmiesFromState(armies: Armies) {
 
   return totalAmount;
 }
+
+export function findAndReplace(areas: Area[], areaToReplaceWith: Area) {
+  const _areas = [...areas];
+  const i = _areas.findIndex((area) => area.areaId === areaToReplaceWith.areaId);
+  _areas[i] = areaToReplaceWith;
+  return _areas;
+}

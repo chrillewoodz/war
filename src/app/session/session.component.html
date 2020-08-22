@@ -4,7 +4,7 @@
 
   <timer [percent]="elapsedTime"></timer>
 
-  <game-cards *ngIf="result?.session?.state.started" [cards]="cards"></game-cards>
+  <game-cards *ngIf="result?.session?.state.started" [cards]="result?.self.state.cards" [disabled]="!isMyTurn"></game-cards>
   <game-settings></game-settings>
 
   <div class="game-hud game-hud-left">

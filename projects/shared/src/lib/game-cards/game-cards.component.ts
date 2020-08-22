@@ -1,3 +1,5 @@
+import { Card } from './../interfaces';
+import { CardsService } from './cards.service';
 import { Component, Input } from '@angular/core';
 
 @Component({
@@ -6,7 +8,24 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./game-cards.component.scss']
 })
 export class GameCardsComponent {
-  @Input() cards: any[];
+  @Input() set cards(cards: Card[]) {
 
-  constructor() {}
+    cards = cards.map((card) => {
+      card.isDisabled = this.cardsService.checkDisabledState(card.id)();
+      return card;
+    });
+
+    console.log(cards);
+
+    this._cards = cards;
+  };
+  @Input() disabled: boolean;
+
+  get cards() {
+    return this._cards;
+  }
+
+  private _cards: any[];
+
+  constructor(private cardsService: CardsService) {}
 }

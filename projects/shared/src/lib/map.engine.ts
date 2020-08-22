@@ -5,7 +5,6 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { PipeResult, SelectedEvent, Army, OutcomeConfig } from './interfaces';
 import { isMyTurn, isOccupiedByMe, getTotalPowerOfArea } from './helpers';
 import { GameCache } from './game.cache';
-import MapEuropeConfig from './map-configs/europe.json';
 import { DynamicComponent } from './dynamic-component';
 import { OutcomeComponent } from './outcome/outcome.component';
 

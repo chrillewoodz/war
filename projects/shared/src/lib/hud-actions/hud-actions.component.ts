@@ -1,10 +1,11 @@
+import { CardsService } from './../game-cards/cards.service';
 import { SocketApi } from '../socket.api';
 import { Component, Input } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { tap, first, switchMap } from 'rxjs/operators';
 
 import { GameCache } from '../game.cache';
-import { ArmyType, Armies, PipeResult, Area } from '../interfaces';
+import { ArmyType, Armies, PipeResult, Area, SessionState } from '../interfaces';
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
@@ -169,6 +170,7 @@ export class HUDActionsComponent {
   constructor(
     private apApi: ActionPointsApi,
     private cache: GameCache,
+    private cardsService: CardsService,
     private fb: FormBuilder,
     private gameEngine: GameEngine,
     private socketApi: SocketApi
@@ -293,7 +295,30 @@ export class HUDActionsComponent {
       first(),
       switchMap((areas) => {
 
-        return this.socketApi.update(true, { areas }).pipe(
+        let newState: Partial<SessionState>;
+
+        switch (this.armySelectionConfig.currentAction) {
+
+          case Action.Attack:
+          case Action.Move:
+          case Action.Spy:
+            newState = { areas };
+            break;
+
+          case Action.Deploy:
+            newState = {
+              areas,
+              players: {
+                ...this.cache.session.state.players,
+                [this.cache.clientId]: this.cache.self
+              }
+            };
+            break;
+
+          default: exhaust(this.armySelectionConfig.currentAction);
+        }
+
+        return this.socketApi.update(true, newState).pipe(
           first(),
           tap(() => this.actionComplete())
         );
@@ -319,9 +344,16 @@ export class HUDActionsComponent {
 
   endTurn() {
 
+    const self = this.gameEngine.giveCardToSelf();
     const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
 
-    this.socketApi.update(true, { areas }).pipe(
+    this.socketApi.update(true, {
+      areas,
+      players: {
+        ...this.cache.session.state.players,
+        [this.cache.clientId]: self
+      }
+    }).pipe(
       first(),
       switchMap(() => this.socketApi.changeTurn(true)),
       first()
