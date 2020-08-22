@@ -55,7 +55,6 @@ export class MapEuropeComponent implements AfterViewInit {
     if (!this.isMyTurn) {
       return;
     }
-
     const target = event.target as HTMLElement;
     const areaId = target.dataset.areaId; // NOTE: Don't parse to Number here or if check will fail for 0
 
@@ -63,6 +62,7 @@ export class MapEuropeComponent implements AfterViewInit {
 
       const areas = this.cache.session.state.areas;
       const area = areas.find((area) => area.areaId === areaId);
+      console.log(area);
 
       if (area.state.isActive) {
 

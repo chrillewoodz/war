@@ -20,6 +20,6 @@ matches = matches.map((match) => {
   return match.split('points="')[1];
 });
 
-fs.writeFile('../server/src/map-points/test.js', `module.exports = ${JSON.stringify(matches)};`, () => {
+fs.writeFile('../server/src/map-points/europe.js', `module.exports = ${JSON.stringify(matches)};`, () => {
   console.log('success');
 });
