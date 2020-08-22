@@ -5,7 +5,7 @@
   background-size: cover;
 }
 
-.game-hud {
+.hud {
   position: fixed;
   padding-top: 35px;
 
@@ -15,48 +15,84 @@
   }
 }
 
-.game-hud-left {
+.hud-left {
   top: 0;
   left: 0;
   width: 110px;
   padding-left: 20px;
+  animation: from-left 1500ms ease;
+  animation-fill-mode: forwards;
 }
 
-.game-hud-right {
+.hud-right {
   top: 0;
   right: 0;
   width: 300px;
   padding-right: 20px;
+  animation: from-right 1500ms ease;
+  animation-fill-mode: forwards;
 }
 
 hud-actions {
   position: fixed;
   bottom: 20px;
   left: 20px;
+  animation: from-bottom 1500ms ease;
+  animation-fill-mode: forwards;
 }
 
-// .bottom-bar {
-//   position: fixed;
-//   bottom: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100px;
+hud-timer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: from-top 1500ms ease;
+  animation-fill-mode: forwards;
+}
 
-//   action-points {
-//     position: fixed;
-//     bottom: 20px;
-//     left: 320px;
-//   }
-// }
-
-game-cards {
+hud-cards {
   position: fixed;
   left: 1100px;
   bottom: 160px;
 }
 
-game-settings {
+hud-settings {
   position: fixed;
   right: 20px;
   bottom: 20px;
+}
+
+@keyframes from-left {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-right {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-bottom {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-top {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
 }

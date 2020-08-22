@@ -74,7 +74,7 @@
   },
   "3": {
     "name": "Latvia",
-    "connections": [1, 3, 4, 44],
+    "connections": [1, 2, 4, 44],
     "armies": {
       "soldiers": {
         "amount": 2
@@ -362,7 +362,7 @@
   },
   "15": {
     "name": "Ireland",
-    "connections": [16, 21],
+    "connections": [14, 16, 21],
     "armies": {
       "soldiers": {
         "amount": 2
@@ -386,7 +386,7 @@
   },
   "16": {
     "name": "Northern Ireland",
-    "connections": [15, 21, 22],
+    "connections": [14, 15, 21, 22],
     "armies": {
       "soldiers": {
         "amount": 2
@@ -844,7 +844,7 @@
   },
   "35": {
     "name": "Norway",
-    "connections": [1, 14, 20, 22, 30, 36, 37],
+    "connections": [1, 14, 20, 22, 30, 36],
     "armies": {
       "soldiers": {
         "amount": 2

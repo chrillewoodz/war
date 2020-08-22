@@ -1,4 +1,4 @@
-import { CardsService } from './game-cards/cards.service';
+import { HUDCardsService } from './hud-cards/hud-cards.service';
 import { first, switchMap } from 'rxjs/operators';
 import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
@@ -29,7 +29,7 @@ export class GameEngine {
   constructor(
     private cache: GameCache,
     private mapEngine: MapEngine,
-    private cardsService: CardsService
+    private cardsService: HUDCardsService
   ) {
 
     // for (let i = 0; i < 26; i++) {
@@ -156,7 +156,8 @@ export class GameEngine {
           { color: '#08c339', label: `+1 soldiers recruited in new area` },
           { color: 'red', label: `-${lostArmies.soldiers} soldiers` },
           { color: 'red', label: `-${lostArmies.horses} horses` },
-          { color: 'red', label: `-${lostArmies.gatlingGuns} gatlingGuns` }
+          { color: 'red', label: `-${lostArmies.gatlingGuns} gatlingGuns` },
+          { color: 'white', label: 'Spies in the area were killed trying to flee' }
         ]
       });
 
@@ -393,14 +394,12 @@ export class GameEngine {
           label: 'Success'
         },
         messages: [
+          { color: 'white', label: 'Infiltrated enemy area' },
           { color: 'white', label: 'Gained area intel' }
         ]
       });
     }
     else {
-
-      // Negate armies from the owned selected area
-      selectedArea.state.armies.spies.amount -= count.spies;
 
       this.mapEngine.loadOutcome({
         area: selectedConnection,
@@ -415,6 +414,9 @@ export class GameEngine {
         ]
       });
     }
+
+    // Negate armies from the owned selected area
+    selectedArea.state.armies.spies.amount -= count.spies;
 
     // Update the selectedArea and selectedConnection with the changes
     let areas = session.state.areas;
@@ -600,5 +602,17 @@ export class GameEngine {
 
   canPerformAction(self: Player, action: Action) {
     return self.state.actionPoints.left - ActionCost[action] >= 0;
+  }
+
+  getRandomIdleArmies(self: Player) {
+
+    const _self = {...self};
+
+    _self.state.idle.soldiers.amount += Math.floor(Math.random() * 2);
+    _self.state.idle.horses.amount += Math.floor(Math.random() * 2);
+    _self.state.idle.gatlingGuns.amount += Math.floor(Math.random() * 2);
+    _self.state.idle.spies.amount += Math.floor(Math.random() * 2);
+
+    return _self;
   }
 }

@@ -9,6 +9,7 @@ export class SocketEvents {
   readonly END = 'end';
   readonly STATS = 'stats';
   readonly CHANGE_TURN = 'change_turn';
+  readonly LOG_MESSAGE = 'log_message';
   readonly IS_ACTIVE = 'is_active';
   readonly INTERNAL_ERROR = 'internal_error';
 

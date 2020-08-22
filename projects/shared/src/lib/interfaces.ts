@@ -121,6 +121,12 @@ export interface SessionSettings {
   readonly maxPlayers: number;
 }
 
+export interface LogMessage {
+  color?: string;
+  message: string;
+  from?: string;
+}
+
 export interface SessionState {
   started: boolean;
   paused: boolean;
@@ -128,7 +134,7 @@ export interface SessionState {
   players: {
     [clientId: string]: Player
   };
-  logs: any[];
+  logs: LogMessage[];
   areas: Area[];
   areasReady: boolean;
   lastPopupCoordinates: Pick<MouseEvent, 'clientX' | 'clientY'>;

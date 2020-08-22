@@ -2,23 +2,25 @@
 
   <ng-template outcomeHost></ng-template>
 
-  <timer [percent]="elapsedTime"></timer>
+  <ng-container *ngIf="result?.session?.state.started">
 
-  <game-cards *ngIf="result?.session?.state.started" [cards]="result?.self.state.cards" [disabled]="!isMyTurn"></game-cards>
-  <game-settings></game-settings>
+    <hud-timer [percent]="elapsedTime"></hud-timer>
+    <hud-cards [cards]="result?.self.state.cards" [disabled]="!isMyTurn"></hud-cards>
+    <hud-settings></hud-settings>
+    <hud-actions [result]="result" [isMyTurn]="isMyTurn"></hud-actions>
 
-  <div class="game-hud game-hud-left">
-    <game-stats *ngIf="result?.session?.state.started" [result]="result"></game-stats>
-  </div>
+    <div class="hud hud-left">
+      <hud-stats [result]="result"></hud-stats>
+    </div>
+  </ng-container>
 
-  <div class="game-hud game-hud-right">
-    <players [result]="result"></players>
-    <game-logger [result]="result" (onNewLog)="updateState($event)"></game-logger>
+  <div class="hud hud-right">
+    <hud-players [result]="result"></hud-players>
+    <hud-logger [result]="result"></hud-logger>
   </div>
 
   <div class="map-container" [ngSwitch]="mapType">
     <map-europe #mapInstance *ngSwitchCase="'europe'" [result]="result" [isMyTurn]="isMyTurn"></map-europe>
-    <hud-actions [result]="result" [isMyTurn]="isMyTurn"></hud-actions>
   </div>
 
 </div>

@@ -1,4 +1,4 @@
-import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras, TimerResponse } from './interfaces';
+import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras, TimerResponse, LogMessage } from './interfaces';
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
@@ -102,6 +102,20 @@ export class SocketApi {
     return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
+  logMessage(emitToServer: boolean, message: LogMessage) {
+
+    if (emitToServer) {
+
+      this.socket.emit(this.socketEvents.LOG_MESSAGE, {
+        sessionId: this.cache.sessionId,
+        clientId: this.cache.clientId,
+        message
+      });
+    }
+
+    return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
+  }
+
   update(emitToServer: boolean, newState?: Partial<SessionState>) {
 
     if (emitToServer) {
@@ -151,8 +165,10 @@ export class SocketApi {
         filter(() => isMyTurnFromCache(this.cache)),
         switchMap((timerFinishedEvent) => {
 
-          const self = this.gameEngine.giveCardToSelf();
+          let self = this.gameEngine.giveCardToSelf();
           const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
+
+          self = this.gameEngine.getRandomIdleArmies(self);
 
           return this.update(true, {
             areas,

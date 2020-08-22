@@ -1,0 +1,32 @@
+<div class="common-container">
+  <button *ngIf="!result?.session.state.players[result?.self.clientId]?.state.ready" class="btn-ready" type="button" (click)="ready()">I'm ready! <span class="ready-icon"><i class="fas fa-check"></i></span></button>
+  <ul>
+    <ng-container *ngFor="let player of players">
+      <li class="player" [ngClass]="{
+        self: player.clientId === result?.self.clientId,
+        quit: player.state.quit,
+        'current-turn': result?.session.state.currentTurn?.clientId === player?.clientId
+      }" [ngStyle]="{color: player.extras.faction.colorRGB}">
+        <img class="player-img" src="assets/SVG/{{player.extras.faction.name}}.svg" alt="Flag">
+        <span>{{player.extras.faction.name}}</span>
+        <div class="player-status">
+          <img *ngIf="player.state.quit" class="status-quit" src="assets/SVG/human-skull.svg" alt="Human skull">
+          <span *ngIf="player.state.ready && !result?.session.state?.started" class="status-ready">
+            <i class="fas fa-check"></i>
+          </span>
+        </div>
+      </li>
+    </ng-container>
+    <ng-container *ngIf="!result?.session.state.started">
+      <li *ngIf="players.length < 2" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+      <li *ngIf="players.length < 3" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+      <li *ngIf="players.length < 4" class="player empty-player">
+        <span>Waiting for player...</span>
+      </li>
+    </ng-container>
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 <div class="action-points-container">
   <div class="action-points-text">
     <h6 class="action-points-title">AP</h6>
-    <h3 class="action-points-left" [ngClass]="{cost: cost}">{{cost !== undefined ? ('-' + cost) : actionPointsLeft}}</h3>
+    <h3 class="action-points-left" [ngClass]="{cost: cost}">{{actionPointsLeft - (cost || 0)}}</h3>
   </div>
   <div class="action-points-inner" [ngStyle]="{height: height + '%'}"></div>
 </div>

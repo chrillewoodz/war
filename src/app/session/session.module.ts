@@ -8,14 +8,14 @@ import {
   DirectivesModule,
   ActionPointsModule,
   HUDActionsModule,
-  GameCardsModule,
-  GameLoggerModule,
-  GameSettingsModule,
-  GameStatsModule,
+  HUDPlayersModule,
+  HUDTimerModule,
+  HUDCardsModule,
+  HUDLoggerModule,
+  HUDSettingsModule,
+  HUDStatsModule,
   MapEuropeModule,
-  OutcomeModule,
-  PlayersModule,
-  TimerModule
+  OutcomeModule
 } from 'shared';
 
 @NgModule({
@@ -28,14 +28,14 @@ import {
      DirectivesModule,
      ActionPointsModule,
      HUDActionsModule,
-     GameCardsModule,
-     GameLoggerModule,
-     GameSettingsModule,
-     GameStatsModule,
+     HUDPlayersModule,
+     HUDTimerModule,
+     HUDCardsModule,
+     HUDLoggerModule,
+     HUDSettingsModule,
+     HUDStatsModule,
      MapEuropeModule,
-     OutcomeModule,
-     PlayersModule,
-     TimerModule
+     OutcomeModule
   ]
 })
 

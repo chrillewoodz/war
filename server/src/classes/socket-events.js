@@ -9,6 +9,7 @@ class SocketEvents {
   END = 'end';
   STATS = 'stats';
   CHANGE_TURN = 'change_turn';
+  LOG_MESSAGE = 'log_message';
   IS_ACTIVE = 'is_active';
   INTERNAL_ERROR = 'internal_error';
 

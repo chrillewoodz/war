@@ -1,8 +1,8 @@
-
-import { Component, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { HUDLoggerService } from './../hud-logger/hud-logger.service';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { tap, first, switchMap } from 'rxjs/operators';
+import { tap, first, switchMap, map } from 'rxjs/operators';
 
 import { ActionCost } from './../enums';
 import { SocketApi } from '../socket.api';
@@ -184,7 +184,7 @@ export class HUDActionsComponent {
   constructor(
     private apApi: ActionPointsApi,
     private cache: GameCache,
-    private cd: ChangeDetectorRef,
+    private logger: HUDLoggerService,
     private fb: FormBuilder,
     private gameEngine: GameEngine,
     private socketApi: SocketApi
@@ -203,7 +203,7 @@ export class HUDActionsComponent {
         }
       }
       else if (army.type === ArmyType.Spies) {
-        if (action === Action.Spy || action === Action.Move) {
+        if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
           army.shouldShow = true;
         }
         else {
@@ -307,7 +307,46 @@ export class HUDActionsComponent {
 
     fn(this.counts.value).pipe(
       first(),
-      switchMap((newState: Partial<SessionState>) => {
+      switchMap((newState) => {
+
+        const self = this.result.self;
+
+        switch (this.armySelectionConfig.currentAction) {
+          case Action.Attack:
+            return this.logger.log({
+              message: `${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB, this.selectedConnection.name)} !`
+            })
+            .pipe(
+              first(),
+              map(() => newState)
+            );
+          case Action.Deploy:
+            return this.logger.log({
+              message: `Reports say reinforcements for ${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} arrived near ${this.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`,
+            })
+            .pipe(
+              first(),
+              map(() => newState)
+            );
+          case Action.Move:
+            return this.logger.log({
+              message: `Reports say there was movement of troops around ${this.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`
+            })
+            .pipe(
+              first(),
+              map(() => newState)
+            );
+          case Action.Spy:
+            return this.logger.log({
+              message: `Rumours around ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} are saying that spies might have infiltrated their territory ...`
+            })
+            .pipe(
+              first(),
+              map(() => newState)
+            );
+        }
+      }),
+      switchMap((newState) => {
 
         return this.socketApi.update(true, newState).pipe(
           first(),
@@ -316,6 +355,10 @@ export class HUDActionsComponent {
       })
     )
     .subscribe();
+  }
+
+  private getColoredString(color: string, content: string) {
+    return `<span style="color: ${color};">${content}</span>`
   }
 
   actionComplete() {
@@ -335,8 +378,10 @@ export class HUDActionsComponent {
 
   endTurn() {
 
-    const self = this.gameEngine.giveCardToSelf();
+    let self = this.gameEngine.giveCardToSelf();
     const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
+
+    self = this.gameEngine.getRandomIdleArmies(self);
 
     this.socketApi.update(true, {
       areas,
@@ -356,9 +401,11 @@ export class HUDActionsComponent {
 
     switch (this.armySelectionConfig.currentAction) {
       case Action.Attack:
+        return !this.counts.get('soldiers').value && !this.counts.get('horses').value && !this.counts.get('gatlingGuns').value;
+
       case Action.Deploy:
       case Action.Move:
-        return !this.counts.get('soldiers').value && !this.counts.get('horses').value && !this.counts.get('gatlingGuns').value;
+        return !this.counts.get('soldiers').value && !this.counts.get('horses').value && !this.counts.get('gatlingGuns').value && !this.counts.get('spies').value;
 
       case Action.Spy:
         return !this.counts.get('spies').value;

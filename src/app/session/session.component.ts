@@ -1,8 +1,8 @@
 import { environment } from '../../environments/environment';
 import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, merge, of, interval, Observable } from 'rxjs';
-import { takeUntil, map, tap, switchMap, first, finalize, filter } from 'rxjs/operators';
+import { Subscription, merge, interval } from 'rxjs';
+import { takeUntil, map, tap, first, filter } from 'rxjs/operators';
 
 import {
   MapEngine,
@@ -43,55 +43,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     total: 25,
     actionsLeft: 12,
     actionCost: 3
-  }
-
-  // public stats = {
-  //   totalTerritories: 32,
-  //   ownedTerritories: 3,
-  //   ownedArmies: {
-  //     soldiers: 12,
-  //     horses: 7,
-  //     gatlingGuns: 2,
-  //     spies: 3,
-  //     idleArmies: 8
-  //   }
-  // }
-
-  public cards = [
-    { img: 'soldier', title: 'An unexpected ally', action: () => {
-      console.log('reinforcements coming!');
-    }},
-    { img: 'horse', title: 'Call in the cavalry', action: () => {
-      console.log('Cavalry incoming!');
-    }},
-    { img: 'spy', title: 'Espionage', action: () => {
-      console.log('Spies deployed!');
-    }},
-    { img: 'gatling-gun', title: 'Unleash hell', action: () => {
-      console.log('Unleasing hell...');
-    }},
-    { img: 'soldier', title: 'Convert workers', action: () => {
-      console.log('Workers converted to soliders!');
-    }}
-  ];
-
-  public currentFight = {
-    attacker: {
-      name: 'Josef Stalin',
-      troops: {
-        soldiers: 5,
-        horses: 2,
-        gatlingGuns: 1
-      }
-    },
-    defender: {
-      name: 'Benjamin Franklin',
-      troops: {
-        soldiers: 3,
-        horses: 1,
-        gatlingGuns: 0
-      }
-    }
   }
 
   public mapType = 'europe';
@@ -211,10 +162,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   onMapReady(e) {
     this.areas = e.areas;
     this.cd.detectChanges();
-  }
-
-  updateState(state = this.result.session.state) {
-    this.socketApi.update(true, state);
   }
 
   onEnded() {
