@@ -1,9 +1,9 @@
 <div class="common-container hud-actions-container">
   <div class="hud-actions-top-container">
     <ng-container *ngFor="let option of options">
-      <button class="btn hud-actions-btn hud-actions-action-btn hud-actions-{{option.actionType}}-btn" type="button" [disabled]="option.disabled" (click)="option.action(option)">{{option.label}}</button>
+      <button class="btn hud-actions-btn hud-actions-action-btn hud-actions-{{option.actionType}}-btn" type="button" [disabled]="option.disabled" (mouseover)="showCost(option.cost)" (mouseleave)="hideCost()" (click)="option.action(option)">{{option.label}}</button>
     </ng-container>
-    <action-points></action-points>
+    <action-points [total]="result?.self.state.actionPoints.total" [actionPointsLeft]="result?.self.state.actionPoints.left"></action-points>
   </div>
   <div class="hud-actions-bottom-container">
     <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn">Deselect</button>
@@ -78,7 +78,7 @@
   </div>
   <div class="row no-gutters hud-actions-bottom-row">
     <div class="col">
-      <button class="btn-primary" type="button" (click)="confirm()">Confirm</button>
+      <button class="btn-primary" type="button" [disabled]="isConfirmBtnDisabled()" (click)="confirm()">Confirm</button>
     </div>
   </div>
 </div>

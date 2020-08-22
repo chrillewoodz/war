@@ -8,7 +8,6 @@
   <game-settings></game-settings>
 
   <div class="game-hud game-hud-left">
-    <!-- <area-information *ngIf="result?.session?.state.started && isMyTurn"></area-information> -->
     <game-stats *ngIf="result?.session?.state.started" [result]="result"></game-stats>
   </div>
 

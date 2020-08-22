@@ -9,7 +9,7 @@
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: darken($bgPrimaryRGB, 10%);
+  background-color: darkred;
 
   &:after {
     position: absolute;
@@ -34,6 +34,7 @@
   border-bottom-left-radius: 50%;
   border-bottom-right-radius: 50%;
   background-color: darken(green, 5%);
+  transition: height 500ms ease;
 }
 
 .action-points-text {
@@ -53,4 +54,9 @@
   margin: 0;
   z-index: 1;
   color: white;
+  transition: color 500ms ease;
+
+  &.cost {
+    color: red;
+  }
 }

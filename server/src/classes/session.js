@@ -50,6 +50,11 @@ class Session {
       }
 
       this.state.currentTurn = this.state.players[players[newIndex]];
+
+      // Also reset the action points
+      players.forEach((playerId) => {
+        this.state.players[playerId].state.actionPoints.left = 20;
+      });
     }
   }
 

@@ -23,7 +23,11 @@ class Player {
         spies: {
           amount: 0
         }
-      }, // idle armies, not idle state of the player
+      },
+      actionPoints: {
+        total: 20,
+        left: 20
+      },
       lastActiveAt: new Date().toISOString()
     };
   }

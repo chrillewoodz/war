@@ -1,15 +1,16 @@
 import { GameEngine } from './../game.engine';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { GameCache } from '../game.cache';
 import { Socket } from 'ngx-socket-io';
 import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'game-settings',
   templateUrl: './game-settings.component.html',
-  styleUrls: ['./game-settings.component.scss']
+  styleUrls: ['./game-settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class GameSettingsComponent  {
 
   public sessionId = this.cache.sessionId;

@@ -1,12 +1,14 @@
 import { Card } from './../interfaces';
 import { CardsService } from './cards.service';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'game-cards',
   templateUrl: './game-cards.component.html',
-  styleUrls: ['./game-cards.component.scss']
+  styleUrls: ['./game-cards.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class GameCardsComponent {
   @Input() set cards(cards: Card[]) {
 
@@ -14,8 +16,6 @@ export class GameCardsComponent {
       card.isDisabled = this.cardsService.checkDisabledState(card.id)();
       return card;
     });
-
-    console.log(cards);
 
     this._cards = cards;
   };

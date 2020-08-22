@@ -1,5 +1,3 @@
-import { GameConfig } from './../game.config';
-import { Army } from './../interfaces';
 import { AfterViewInit, Component, Input, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MapEngine } from '../map.engine';
 import { GameCache } from '../game.cache';
@@ -69,11 +67,9 @@ export class MapEuropeComponent implements AfterViewInit {
       if (area.state.isActive) {
 
         this.mapEngine.areaClicked({
-          // mouseEvent: event,
           areas,
           selected: area.state.__ui.isOwnedBySelf ? area : null,
-          selectedConnection: area.state.isConnectedToSelected ? area : null,
-          // emitUpdateEvent: true
+          selectedConnection: area.state.isConnectedToSelected ? area : null
         });
       }
 

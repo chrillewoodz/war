@@ -1,5 +1,9 @@
-import { GameCache } from './game.cache';
-import { Observable } from 'rxjs';
+export interface ArmiesToDeploy {
+  soldiers: number;
+  horses: number;
+  gatlingGuns: number;
+  spies: number;
+}
 
 export interface Extras {
   faction: Faction;
@@ -28,6 +32,11 @@ export interface Card {
   isDisabled?: boolean;
 }
 
+export interface ActionPoints {
+  total: number;
+  left: number;
+}
+
 export interface PlayerState {
   connected: boolean;
   resigned: boolean;
@@ -35,6 +44,7 @@ export interface PlayerState {
   ready: boolean;
   defeated: boolean;
   idle: Armies;
+  actionPoints: ActionPoints;
   cards: Card[];
 }
 

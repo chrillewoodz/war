@@ -1,7 +1,7 @@
 <li class="card" [ngStyle]="{
   left: (deckIndex * 100) + 'px',
   'z-index': '-' + deckIndex
-}">
+}" (mouseover)="showCost()" (mouseleave)="hideCost()">
   <img class="card-img" [src]="config.image">
   <div class="card-stars">
     <span class="card-star filled">
@@ -17,6 +17,6 @@
   <div class="card-content">
     <h4 class="card-title">{{config.title}}</h4>
     <p class="card-description">{{config.description}}</p>
-    <button class="btn btn-primary" *ngIf="!disabled" [disabled]="config.isDisabled" type="button" (click)="use()">Use</button>
+    <button class="btn btn-primary" *ngIf="!disabled" [disabled]="config.isDisabled" type="button" (click)="play()">Play</button>
   </div>
 </li>

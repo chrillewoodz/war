@@ -1,22 +1,24 @@
-import { CardsService } from './../game-cards/cards.service';
-import { SocketApi } from '../socket.api';
-import { Component, Input } from '@angular/core';
+
+import { Component, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { tap, first, switchMap } from 'rxjs/operators';
 
+import { ActionCost } from './../enums';
+import { SocketApi } from '../socket.api';
 import { GameCache } from '../game.cache';
-import { ArmyType, Armies, PipeResult, Area, SessionState } from '../interfaces';
+import { ArmyType, Armies, PipeResult, Area, SessionState, ArmiesToDeploy } from '../interfaces';
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
 import { exhaust, getSelectedAreaFromResult, getSelectedConnectionFromResult, getTotalArmiesFromState, getTotalArmiesInArea, getTotalPowerOfArea } from '../helpers';
-import { Observable } from 'rxjs';
 
 interface Option {
   label: string;
   actionType: Action;
   action: () => void;
   disabled?: boolean;
+  cost: number;
 }
 
 interface ArmySelectionConfig {
@@ -28,7 +30,8 @@ interface ArmySelectionConfig {
 @Component({
   selector: 'hud-actions',
   templateUrl: './hud-actions.component.html',
-  styleUrls: ['./hud-actions.component.scss']
+  styleUrls: ['./hud-actions.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class HUDActionsComponent {
@@ -52,6 +55,13 @@ export class HUDActionsComponent {
       const isConnectionOwnedBySelf = this.selectedConnection?.state.__ui.isOwnedBySelf;
 
       this.options = this.options.map((option) => {
+
+        const canPerformAction = this.gameEngine.canPerformAction(result.self, option.actionType);
+
+        if (!canPerformAction) {
+          option.disabled = true;
+          return option;
+        }
 
         if (!this.selectedArea) {
           option.disabled = true;
@@ -91,7 +101,7 @@ export class HUDActionsComponent {
         }
 
         return option;
-      })
+      });
     }
   }
 
@@ -122,25 +132,29 @@ export class HUDActionsComponent {
       label: 'Attack',
       actionType: Action.Attack,
       action: () => this.optionClicked(Action.Attack),
-      disabled: true
+      disabled: true,
+      cost: ActionCost.Attack
     },
     {
       label: 'Deploy',
       actionType: Action.Deploy,
       action: () => this.optionClicked(Action.Deploy),
-      disabled: true
+      disabled: true,
+      cost: ActionCost.Deploy
     },
     {
       label: 'Move',
       actionType: Action.Move,
       action: () => this.optionClicked(Action.Move),
-      disabled: true
+      disabled: true,
+      cost: ActionCost.Move
     },
     {
       label: 'Spy',
       actionType: Action.Spy,
       action: () => this.optionClicked(Action.Spy),
-      disabled: true
+      disabled: true,
+      cost: ActionCost.Spy
     }
   ];
 
@@ -170,7 +184,7 @@ export class HUDActionsComponent {
   constructor(
     private apApi: ActionPointsApi,
     private cache: GameCache,
-    private cardsService: CardsService,
+    private cd: ChangeDetectorRef,
     private fb: FormBuilder,
     private gameEngine: GameEngine,
     private socketApi: SocketApi
@@ -268,7 +282,7 @@ export class HUDActionsComponent {
   confirm() {
 
     this.gameEngine.preventActions();
-    let fn: (Armies) => Observable<Area[]>;
+    let fn: (armies: ArmiesToDeploy) => Observable<Partial<SessionState>>;
 
     switch (this.armySelectionConfig.currentAction) {
 
@@ -293,30 +307,7 @@ export class HUDActionsComponent {
 
     fn(this.counts.value).pipe(
       first(),
-      switchMap((areas) => {
-
-        let newState: Partial<SessionState>;
-
-        switch (this.armySelectionConfig.currentAction) {
-
-          case Action.Attack:
-          case Action.Move:
-          case Action.Spy:
-            newState = { areas };
-            break;
-
-          case Action.Deploy:
-            newState = {
-              areas,
-              players: {
-                ...this.cache.session.state.players,
-                [this.cache.clientId]: this.cache.self
-              }
-            };
-            break;
-
-          default: exhaust(this.armySelectionConfig.currentAction);
-        }
+      switchMap((newState: Partial<SessionState>) => {
 
         return this.socketApi.update(true, newState).pipe(
           first(),
@@ -359,5 +350,20 @@ export class HUDActionsComponent {
       first()
     )
     .subscribe();
+  }
+
+  isConfirmBtnDisabled() {
+
+    switch (this.armySelectionConfig.currentAction) {
+      case Action.Attack:
+      case Action.Deploy:
+      case Action.Move:
+        return !this.counts.get('soldiers').value && !this.counts.get('horses').value && !this.counts.get('gatlingGuns').value;
+
+      case Action.Spy:
+        return !this.counts.get('spies').value;
+
+      default: exhaust(this.armySelectionConfig.currentAction);
+    }
   }
 }

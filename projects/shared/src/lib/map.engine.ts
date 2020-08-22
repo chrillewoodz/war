@@ -103,7 +103,7 @@ export class MapEngine {
   }
 
   areaClicked(e: SelectedEvent) {
-    console.log(e);
+
     if (e.selectedConnection) {
       this.connection.next(e);
     }

@@ -1,12 +1,14 @@
 import { GameConfig } from './../game.config';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PipeResult, PlayerState } from '../interfaces';
 
 @Component({
   selector: 'game-stats',
   templateUrl: './game-stats.component.html',
-  styleUrls: ['./game-stats.component.scss']
+  styleUrls: ['./game-stats.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class GameStatsComponent {
   @Input() set result(result: PipeResult) {
 

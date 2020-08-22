@@ -57,7 +57,7 @@ export class CardsService {
       image: 'assets/SVG/gatlingGuns.svg',
       title: 'Unleash hell',
       description: 'Gain +6 gatling guns in the selected area',
-      cost: 10
+      cost: 12
     },
     {
       id: CardIDs.recruitSpies,
@@ -289,7 +289,7 @@ export class CardsService {
     // and return either any state properties that changed.
     const newState = this.cardActions[cardId]();
 
-    const updatedPlayer = this.removeCardFromPlayer((newState.players && newState.players[this.cache.clientId]) || this.cache.self, cardId);
+    let updatedPlayer = this.afterUse((newState.players && newState.players[this.cache.clientId]) || this.cache.self, cardId);
 
     if (newState.players) {
       newState.players[this.cache.clientId] = updatedPlayer;
@@ -308,12 +308,13 @@ export class CardsService {
     return this.cardDisabledChecks[cardId];
   }
 
-  removeCardFromPlayer(player: Player, cardId: string) {
+  private afterUse(player: Player, cardId: string) {
 
     const _player = {...player};
     const cardIndex = _player.state.cards.findIndex((card) => card.id === cardId);
 
     _player.state.cards.splice(cardIndex, 1);
+    _player.state.actionPoints.left -= this.getCard(cardId).cost;
 
     return _player;
   }

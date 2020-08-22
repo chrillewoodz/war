@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, ComponentRef } from '@angular/core'
 import { timer } from 'rxjs';
 import { tap, first } from 'rxjs/operators';
 import { GameCache } from './../game.cache';
-import { OutcomeConfig, Area } from './../interfaces';
+import { OutcomeConfig } from './../interfaces';
 import { MapEngine } from './../map.engine';
 
 @Component({

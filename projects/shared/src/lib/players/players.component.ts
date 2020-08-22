@@ -1,11 +1,12 @@
 import { SocketApi } from './../socket.api';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PipeResult, Player } from '../interfaces';
 
 @Component({
   selector: 'players',
   templateUrl: './players.component.html',
-  styleUrls: ['./players.component.scss']
+  styleUrls: ['./players.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class PlayersComponent {

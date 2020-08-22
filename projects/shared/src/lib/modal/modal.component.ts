@@ -1,12 +1,14 @@
 import { ModalApi } from './modal.service';
-import { Component, OnDestroy, Input, QueryList } from '@angular/core';
+import { Component, OnDestroy, Input, QueryList, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'modal',
   templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.scss']
+  styleUrls: ['./modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class ModalComponent implements OnDestroy {
   @Input() id: string;
   @Input() exceptions: QueryList<HTMLElement> | HTMLElement[];

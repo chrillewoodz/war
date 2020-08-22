@@ -1,14 +1,14 @@
 import { PipeResult } from './../interfaces';
 import { GameLoggerService } from './game-logger.service';
-import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import { AfterViewInit, Component, OnDestroy, ViewChild, ElementRef, QueryList, ViewChildren, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormControl, Validators } from '@angular/forms';
-import { Player, Session } from '../interfaces';
 
 @Component({
   selector: 'game-logger',
   templateUrl: './game-logger.component.html',
-  styleUrls: ['./game-logger.component.scss']
+  styleUrls: ['./game-logger.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class GameLoggerComponent implements AfterViewInit, OnDestroy {
@@ -18,8 +18,6 @@ export class GameLoggerComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('messageRef') messagesRef: QueryList<HTMLLIElement>;
 
   public message = new FormControl('', [Validators.maxLength(60)]);
-  // tmp only
-  public colors = ['rgb(73, 59, 50)', 'rgb(40, 110, 53)', 'gb(219, 132, 10)', 'rgb(33, 63, 156)'];
 
   private sub: Subscription;
 

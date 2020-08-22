@@ -4,22 +4,15 @@ import { MapEngine } from './map.engine';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, of, Observable, timer } from 'rxjs';
 
-import { ActionEvent, Armies, Area, Army } from './interfaces';
+import { ActionEvent, Armies, Area, Army, ArmiesToDeploy, SessionState, Player } from './interfaces';
 import { GameCache } from './game.cache';
-import { Action } from './enums';
+import { Action, ActionCost } from './enums';
 import { exhaust } from './helpers';
 import { GameConfig } from './game.config';
 import { Bound } from './decorators';
 
 export enum GameEngineEvent {
   Stop
-}
-
-interface ArmiesToDeploy {
-  soldiers: number;
-  horses: number;
-  gatlingGuns: number;
-  spies: number;
 }
 
 @Injectable({
@@ -118,9 +111,10 @@ export class GameEngine {
   }
 
   @Bound
-  attackConfirmed(armies: ArmiesToDeploy) {
+  attackConfirmed(armies: ArmiesToDeploy): Observable<Partial<SessionState>>  {
 
     const session = this.cache.session;
+    const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
     const selectedConnection = this.cache.getSelectedConnectedArea();
 
@@ -226,11 +220,19 @@ export class GameEngine {
     // Deselect areas
     areas = this.resetAreaAndConnections(areas);
 
-    return of(areas);
+    self.state.actionPoints.left -= ActionCost.Attack;
+
+    return of({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
+      }
+    });
   }
 
   @Bound
-  deployConfirmed(count: ArmiesToDeploy) {
+  deployConfirmed(count: ArmiesToDeploy): Observable<Partial<SessionState>> {
 
     const session = this.cache.session;
     const self = this.cache.self;
@@ -271,13 +273,22 @@ export class GameEngine {
     // Deselect areas
     areas = this.resetAreaAndConnections(areas);
 
-    return of(areas);
+    self.state.actionPoints.left -= ActionCost.Deploy;
+
+    return of({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
+      }
+    });
   }
 
   @Bound
-  moveConfirmed(count: ArmiesToDeploy) {
+  moveConfirmed(count: ArmiesToDeploy): Observable<Partial<SessionState>>  {
 
     const session = this.cache.session;
+    const self = this.cache.self;
     const selectedArea = this.cache.getSelectedArea();
     const selectedConnection = this.cache.getSelectedConnectedArea();
 
@@ -342,13 +353,21 @@ export class GameEngine {
           // Deselect areas
           areas = this.resetAreaAndConnections(areas);
 
-          return of(areas);
+          self.state.actionPoints.left -= ActionCost.Move;
+
+          return of({
+            areas,
+            players: {
+              ...session.state.players,
+              [self.clientId]: self
+            }
+          });
       })
     );
   }
 
   @Bound
-  spyConfirmed(count: Pick<ArmiesToDeploy, 'spies'>) {
+  spyConfirmed(count: Pick<ArmiesToDeploy, 'spies'>): Observable<Partial<SessionState>>  {
 
     if (!count) {
       throw new Error('Spy count was not defined, this indicates a bug that needs to be fixed.');
@@ -408,7 +427,15 @@ export class GameEngine {
     // Deselect areas
     areas = this.resetAreaAndConnections(areas);
 
-    return of(areas);
+    self.state.actionPoints.left -= ActionCost.Spy;
+
+    return of({
+      areas,
+      players: {
+        ...session.state.players,
+        [self.clientId]: self
+      }
+    });
   }
 
   resetConnection() {
@@ -569,5 +596,9 @@ export class GameEngine {
       horses: horsesLost,
       gatlingGuns: gatlingGunsLost
     }
+  }
+
+  canPerformAction(self: Player, action: Action) {
+    return self.state.actionPoints.left - ActionCost[action] >= 0;
   }
 }
