@@ -17,7 +17,7 @@ const SocketEvents = require('../classes/socket-events');
  * @param {Timers} timers
  */
 const fn = async function(io, socket, ev, storage, timers) {
-  console.log('ON_CHANGE_TURN', ev);
+
   try {
 
     /**
@@ -41,6 +41,12 @@ const fn = async function(io, socket, ev, storage, timers) {
       await storage.set(session);
 
       io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+      io.to(session.sessionId).emit(SocketEvents.GAME_EVENT, new SocketResponse(200, {
+        eventName: 'season',
+        data: {
+          session: session
+        }
+      }));
     }
   }
   catch(err) {

@@ -10,6 +10,7 @@ export class SocketEvents {
   readonly STATS = 'stats';
   readonly CHANGE_TURN = 'change_turn';
   readonly LOG_MESSAGE = 'log_message';
+  readonly GAME_EVENT = 'game_event';
   readonly IS_ACTIVE = 'is_active';
   readonly INTERNAL_ERROR = 'internal_error';
 

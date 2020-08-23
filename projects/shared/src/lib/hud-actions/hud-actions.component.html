@@ -8,6 +8,12 @@
   <div class="hud-actions-bottom-container">
     <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn">Deselect</button>
     <button class="btn btn-danger hud-actions-btn hud-actions-end-turn-btn" type="button" (click)="endTurn()" [disabled]="!isMyTurn">End turn</button>
+    <div class="hud-actions-btn hud-current-season hud-season-{{result?.session.state.currentSeason}}" [ngSwitch]="result?.session.state.currentSeason">
+      <img class="hud-season-img" src="assets/SVG/winter.svg" *ngSwitchCase="0">
+      <img class="hud-season-img" src="assets/SVG/spring.svg" *ngSwitchCase="1">
+      <img class="hud-season-img" src="assets/SVG/summer.svg" *ngSwitchCase="2">
+      <img class="hud-season-img" src="assets/SVG/autumn.svg" *ngSwitchCase="3">
+    </div>
   </div>
   <div class="hud-actions-areas" [ngClass]="{'hud-actions-single-area': !selectedConnection}">
     <div class="hud-actions-area-wrapper hud-actions-no-selection" *ngIf="!selectedArea && !selectedConnection">

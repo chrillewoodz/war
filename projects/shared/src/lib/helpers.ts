@@ -29,8 +29,16 @@ export function isMyTurnFromCache(cache: GameCache) {
   return cache.clientId === cache.session?.state.currentTurn?.clientId;
 }
 
+export function isMyTurnFromSession(session: Session, clientId: string) {
+  return clientId === session?.state.currentTurn?.clientId;
+}
+
 export function isOccupiedByMe(result: PipeResult, area: Area) {
   return area.state.occupiedBy?.clientId === result.self.clientId;
+}
+
+export function isAreaOwnedByMe(clientId: string, area: Area) {
+  return area.state.occupiedBy?.clientId === clientId;
 }
 
 export function getSelectedAreaFromResult(result: PipeResult): Area {

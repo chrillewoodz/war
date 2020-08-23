@@ -1,8 +1,8 @@
 import { environment } from '../../environments/environment';
 import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, merge, interval } from 'rxjs';
-import { takeUntil, map, tap, first, filter } from 'rxjs/operators';
+import { Subscription, merge, interval, EMPTY, NEVER } from 'rxjs';
+import { takeUntil, map, tap, first, filter, switchMap } from 'rxjs/operators';
 
 import {
   MapEngine,
@@ -11,11 +11,17 @@ import {
   Area,
   GameEngine,
   GameEngineEvent,
+  GameEvent,
   SocketApi,
   PipeResult,
   isMyTurn,
   OutcomeDirective,
   TimerResponse,
+  GameEvents,
+  exhaust,
+  SeasonEvent,
+  SeasonEventData,
+  SeasonOutcomeData,
 } from 'shared';
 
 @Component({
@@ -61,9 +67,10 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private cache: GameCache,
     private gameEngine: GameEngine,
+    private gameEvents: GameEvents,
     private mapEngine: MapEngine,
     private router: Router,
-    private socketApi: SocketApi
+    private socketApi: SocketApi,
   ) {
 
     document.addEventListener('click', (e) => {
@@ -99,6 +106,86 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       }
     );
 
+    const eventSub = this.socketApi.event(false)
+      .pipe(
+        switchMap((e) => {
+
+          switch (e.eventName) {
+            case GameEvent.Season:
+              return this.gameEvents.season((e.data as SeasonEventData).session).pipe(
+                first(),
+                filter((seasonEvent) => !!seasonEvent), // Spring is null atm so won't fire an event
+                switchMap((seasonEvent) => this.socketApi.update(true, seasonEvent.session.state).pipe(
+                  first(),
+                  tap(() => {
+
+                    // Emit to server which will then emit to all clients
+                    // and trigger outcomes for each one
+                    this.socketApi.event(true, seasonEvent.emitEvent, {
+                      affectedAreas: seasonEvent.affectedAreas
+                    })
+                  })
+                ))
+              );
+            case GameEvent.WinterOutcome:
+
+              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+
+                this.mapEngine.loadOutcome({
+                  area: area,
+                  image: 'assets/SVG/winter.svg',
+                  title: {
+                    color: '#82D0D3',
+                    label: 'Winter'
+                  },
+                  messages: [
+                    { color: 'white', label: 'The freezing cold ravages the area' }
+                  ]
+                });
+              });
+              return EMPTY;
+            case GameEvent.SummerOutcome:
+
+              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+
+                this.mapEngine.loadOutcome({
+                  area: area,
+                  image: 'assets/SVG/summer.svg',
+                  title: {
+                    color: '#82D0D3',
+                    label: 'Summer'
+                  },
+                  messages: [
+                    { color: 'white', label: 'The scorching sun leaves water supplies very low' }
+                  ]
+                });
+              });
+              return EMPTY;
+            case GameEvent.AutumnOutcome:
+
+              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+
+                this.mapEngine.loadOutcome({
+                  area: area,
+                  image: 'assets/SVG/autumn.svg',
+                  title: {
+                    color: '#82D0D3',
+                    label: 'Autumn'
+                  },
+                  messages: [
+                    { color: 'white', label: 'Heavy rainfall causes mass floodings' }
+                  ]
+                });
+              });
+              return EMPTY;
+            default:
+              exhaust(e.eventName);
+              return EMPTY;
+          }
+        })
+      )
+      .subscribe();
+
     const sessionSub = merge(
       this.socketApi.get(true),
       this.socketApi.update(false)
@@ -122,6 +209,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         });
 
         if (result.session.state.started) {
+          console.log(2)
           result = this.mapEngine.updateMap(result);
         }
 
@@ -143,6 +231,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     this.subscriptions.add(mapInitSub);
     this.subscriptions.add(activeEmitter);
     this.subscriptions.add(turnSub);
+    this.subscriptions.add(eventSub);
     this.subscriptions.add(sessionSub);
   }
 

@@ -19,8 +19,9 @@ class Session {
       logs: [],
       areas: null,
       areasReady: false,
-      lastPopupCoordinates: null,
-      currentTurn: null
+      currentTurn: null,
+      currentSeason: 0, // winter is 0, spring 1, summer 2, autumn 3
+      currentRound: 0 // should be increased when all players have played a turn
     };
 
     this.convertPlayersToClasses();
@@ -50,6 +51,23 @@ class Session {
       }
 
       this.state.currentTurn = this.state.players[players[newIndex]];
+
+      // When all players have played their turn, increase the round tracker
+      if (newIndex === 0) {
+        this.state.currentRound += 1;
+
+        // Every 3 rounds change the season
+        if (this.state.currentRound % 3 === 0 && this.state.currentRound !== 0) {
+
+          switch (this.state.currentSeason) {
+            case 0: this.state.currentSeason = 1; break;
+            case 1: this.state.currentSeason = 2; break;
+            case 2: this.state.currentSeason = 3; break;
+            case 3: this.state.currentSeason = 0; break;
+          }
+        }
+      }
+
 
       // Also reset the action points
       players.forEach((playerId) => {

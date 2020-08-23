@@ -24,7 +24,7 @@ export class CardComponent {
   ) {}
 
   play() {
-    console.log(this.cardsService.canPlayCard(this.config.cost));
+
     if (!this.disabled && this.cardsService.canPlayCard(this.config.cost)) {
       this.hideCost(); // Sometimes it gets stuck showing the cost after the card is used
       const newState = this.cardsService.use(this.config.id);

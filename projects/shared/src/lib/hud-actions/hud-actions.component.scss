@@ -278,3 +278,47 @@ action-points {
   font-size: 24px;
   z-index: 1;
 }
+
+.hud-current-season {
+  bottom: -15px;
+  left: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  box-sizing: content-box;
+  cursor: default;
+
+  &:hover {
+    transform: initial !important;
+  }
+
+  &.hud-season-0 {
+    background-color: #1385c3;
+    border-color: darken(#1385c3, 5%);
+  }
+
+  &.hud-season-1 {
+    background-color: #3E8A00;
+    border-color: darken(#3E8A00, 5%);
+
+    .hud-season-img {
+      width: 30px;
+    }
+  }
+
+  &.hud-season-2 {
+    background-color: #FFBE6A;
+    border-color: darken(#FFBE6A, 10%);
+  }
+
+  &.hud-season-3 {
+    background-color: #B48400;
+    border-color: darken(#B48400, 5%);
+  }
+}
+
+.hud-season-img {
+  width: 40px;
+}

@@ -320,7 +320,6 @@ export class HUDCardsService {
 
   getRandomCard() {
     const randomIndex = Math.floor(Math.random() * this.cards.length);
-    console.log(randomIndex, this.cards[randomIndex], {...this.cards[randomIndex]})
     // Return a copy not the original object to not modify it by accident
     return {...this.cards[randomIndex]};
   }

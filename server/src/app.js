@@ -16,6 +16,7 @@
   const onStats = require('./events/on-stats');
   const onLogMessage = require('./events/on-log-message');
   const onIsActive = require('./events/on-is-active');
+  const onGameEvent = require('./events/on-game-event');
 
   // Classes
   const Session = require('./classes/session');
@@ -109,6 +110,7 @@
     socket.on(SocketEvents.CHANGE_TURN, ev => onChangeTurn(io, socket, ev, storage, timers));
     socket.on(SocketEvents.LOG_MESSAGE, ev => onLogMessage(io, socket, ev, storage));
     socket.on(SocketEvents.IS_ACTIVE, ev => onIsActive(socket, ev, storage));
+    socket.on(SocketEvents.GAME_EVENT, ev => onGameEvent(io, socket, ev));
 
     socket.on('disconnect', () => {
       io.emit(SocketEvents.STATS_SUCCESS);

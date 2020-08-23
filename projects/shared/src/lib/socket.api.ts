@@ -1,4 +1,4 @@
-import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras, TimerResponse, LogMessage } from './interfaces';
+import { SocketResponse, PipeResult, Session, SessionState, SessionSettings, Extras, LogMessage, GameEvent, GameEventResponse } from './interfaces';
 import { GameCache } from './game.cache';
 import { Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
@@ -150,6 +150,26 @@ export class SocketApi {
     // when compared to session-specific ones
     // TODO: Type response
     return this.socket.fromEvent<SocketResponse<any>>(this.socketEvents.STATS_SUCCESS).pipe(
+      map(this.onSocketResponse),
+      catchError(this.onSocketError)
+    );
+  }
+
+  // TODO Type event
+  event(emitToServer: boolean, eventName?: GameEvent, data?: any) {
+
+    if (emitToServer) {
+
+      this.socket.emit(this.socketEvents.GAME_EVENT, {
+        sessionId: this.cache.sessionId,
+        eventName: eventName, // NOTE: Don't do shorthand since event can be undefined
+        data: data // NOTE: Don't do shorthand since event can be undefined
+      });
+    }
+
+    // NOTE: Do not use socketResponse$ since this "endpoint" yields a different response
+    // when compared to session-specific ones
+    return this.socket.fromEvent<SocketResponse<GameEventResponse>>(this.socketEvents.GAME_EVENT).pipe(
       map(this.onSocketResponse),
       catchError(this.onSocketError)
     );

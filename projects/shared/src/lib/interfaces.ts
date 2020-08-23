@@ -97,6 +97,13 @@ export interface AnchorPoints {
   main: AnchorPoint;
 }
 
+export interface AreaEvents {
+  winter: boolean;
+  spring: boolean;
+  summer: boolean;
+  autumn: boolean;
+}
+
 export interface Area {
   areaId: string;
   isStartingArea: boolean;
@@ -104,6 +111,7 @@ export interface Area {
   name: string;
   anchorPoints: AnchorPoints;
   connections: number[];
+  events: AreaEvents;
   state: {
     occupiedBy?: Player;
     armies: Armies;
@@ -137,8 +145,9 @@ export interface SessionState {
   logs: LogMessage[];
   areas: Area[];
   areasReady: boolean;
-  lastPopupCoordinates: Pick<MouseEvent, 'clientX' | 'clientY'>;
   currentTurn?: Player;
+  currentRound: number;
+  currentSeason: number;
   timer?: Timer;
 }
 
@@ -207,4 +216,31 @@ export interface OutcomeConfig {
   messages?: OutcomeText[];
   x?: number;
   y?: number;
+}
+
+export enum GameEvent {
+  Season = 'season',
+  WinterOutcome = 'winter_outcome',
+  SummerOutcome = 'summer_outcome',
+  AutumnOutcome = 'autumn_outcome'
+}
+
+export enum SeasonEvent {
+  Winter = 'winter',
+  Spring = 'spring',
+  Summer = 'summer',
+  Autumn = 'autumn'
+}
+
+export interface SeasonEventData {
+  session: Session;
+}
+
+export interface SeasonOutcomeData {
+  affectedAreas: Area[];
+}
+
+export interface GameEventResponse {
+  eventName: GameEvent;
+  data: SeasonEventData | SeasonOutcomeData;
 }

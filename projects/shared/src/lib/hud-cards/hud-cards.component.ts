@@ -14,7 +14,6 @@ export class HUDCardsComponent {
 
     cards = cards.map((card) => {
       card.isDisabled = this.cardsService.checkDisabledState(card.id)();
-      console.log(card.isDisabled);
       return card;
     });
 

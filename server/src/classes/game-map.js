@@ -15,14 +15,14 @@ class GameMap {
         isStartingArea: config[areaId].isStartingArea,
         anchorPoints: config[areaId].anchorPoints,
         connections: config[areaId].connections,
+        events: config[areaId].events,
         state: {
           occupiedBy: null,
           armies: config[areaId].armies,
           spiedOnBy: {},
           isActive: false,
           isSelected: false,
-          isConnectedToSelected: false,
-          isOwnedBySelf: false
+          isConnectedToSelected: false
         }
       }
     });
