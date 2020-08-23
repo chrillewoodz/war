@@ -139,7 +139,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Winter'
                   },
                   messages: [
-                    { color: 'white', label: 'The freezing cold ravages the area' }
+                    { color: 'white', label: 'People freeze to death' }
                   ]
                 });
               });
@@ -156,7 +156,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Summer'
                   },
                   messages: [
-                    { color: 'white', label: 'The scorching sun leaves water supplies very low' }
+                    { color: 'white', label: 'Dehydration sets in' }
                   ]
                 });
               });
@@ -173,7 +173,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Autumn'
                   },
                   messages: [
-                    { color: 'white', label: 'Heavy rainfall causes mass floodings' }
+                    { color: 'white', label: 'Rain causes floods' }
                   ]
                 });
               });

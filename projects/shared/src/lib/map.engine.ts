@@ -131,6 +131,10 @@ export class MapEngine {
         area.state.__ui.showPowerOn = true;
       }
 
+      if (area.state.spiedOnBy[this.cache.clientId]) {
+        area.state.__ui.isSpiedOnBySelf = true;
+      }
+
       return area;
     });
 

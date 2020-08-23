@@ -28,7 +28,28 @@ class Session {
     this.convertAreasToClass();
   }
 
+  checkWinCondition() {
+
+    for (const playerId in this.state.players) {
+
+      const areAllAreasOwned = this.state.areas.every((area) => {
+        return area.occupiedBy && area.occupiedBy.clientId === playerId;
+      });
+
+      if (areAllAreasOwned) {
+        this.end();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   changeTurn() {
+
+    if (this.checkWinCondition()) {
+      return false;
+    }
 
     const players = Object.keys(this.state.players);
 
@@ -74,6 +95,8 @@ class Session {
         this.state.players[playerId].state.actionPoints.left = 20;
       });
     }
+
+    return true;
   }
 
   setStartingAreas() {

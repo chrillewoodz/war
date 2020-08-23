@@ -47,6 +47,7 @@
 }
 
 .card-title {
+  padding: 0 25px;
   margin-bottom: 10px;
   text-align: center;
   color: gold;
@@ -57,10 +58,30 @@
   color: white;
 }
 
-.card-stars {
+.card-cost {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-cost-bubble {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: green;
+}
+
+.card-cost-label {
+  color: white;
+  font-size: 20px;
+}
+
+.card-info-right {
   position: absolute;
   top: 20px;
   right: 20px;
+  text-align: right;
 }
 
 .card-star {

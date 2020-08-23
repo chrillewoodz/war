@@ -77,15 +77,15 @@
 }
 
 .hud-actions-cancel-btn {
-  bottom: -10px;
-  left: 295px;
-  width: 90px;
-  height: 90px;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
 }
 
 .hud-actions-end-turn-btn {
-  bottom: 0;
-  left: 0;
+  top: -50px;
+  left: -10px;
   width: 100px;
   height: 100px;
   border-color: #9e0101;
@@ -158,6 +158,7 @@
   justify-content: center;
   min-width: 30px;
   height: 30px;
+  margin-right: 10px;
   border-radius: 50%;
   background-color: #9e0101;
   font-size: 20px;
@@ -170,7 +171,6 @@
 
   > h2 {
     margin-bottom: 0;
-    margin-left: 10px;
   }
 }
 
@@ -280,15 +280,15 @@ action-points {
 }
 
 .hud-current-season {
-  bottom: -15px;
-  left: 110px;
+  bottom: -10px;
+  left: 305px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  box-sizing: content-box;
+  width: 100px;
+  height: 100px;
   cursor: default;
+  transition: all 1000ms ease;
 
   &:hover {
     transform: initial !important;
@@ -304,7 +304,7 @@ action-points {
     border-color: darken(#3E8A00, 5%);
 
     .hud-season-img {
-      width: 30px;
+      width: 40px;
     }
   }
 
@@ -320,5 +320,18 @@ action-points {
 }
 
 .hud-season-img {
-  width: 40px;
+  width: 50px;
+  animation: season-img 1000ms ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes season-img {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
 }

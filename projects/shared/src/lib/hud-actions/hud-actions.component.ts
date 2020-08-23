@@ -38,11 +38,12 @@ export class HUDActionsComponent {
   @Input() isMyTurn: boolean;
   @Input() set result(result: PipeResult) {
 
-    if (!result) {
+    this._result = result;
+
+    if (!result || !this.isMyTurn) {
       return;
     }
 
-    this._result = result;
     this.closeArmySelectionMenu();
     // TODO: Get both using 1 function to avoid double loops
     this.selectedArea = getSelectedAreaFromResult(result);
@@ -58,7 +59,7 @@ export class HUDActionsComponent {
 
         const canPerformAction = this.gameEngine.canPerformAction(result.self, option.actionType);
 
-        if (!canPerformAction) {
+        if (!canPerformAction || !this.isMyTurn) {
           option.disabled = true;
           return option;
         }
@@ -192,48 +193,51 @@ export class HUDActionsComponent {
 
   optionClicked(action: Action) {
 
-    this.armies = this.armies.map((army) => {
+    if (this.isMyTurn) {
 
-      if (army.type === ArmyType.Soldiers || army.type === ArmyType.Horses ||army.type === ArmyType.GatlingGuns) {
-        if (action !== Action.Spy) {
-          army.shouldShow = true;
-        }
-        else {
-          army.shouldShow = false;
-        }
-      }
-      else if (army.type === ArmyType.Spies) {
-        if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
-          army.shouldShow = true;
-        }
-        else {
-          army.shouldShow = false;
-        }
-      }
+      this.armies = this.armies.map((army) => {
 
-      return army;
-    });
+        if (army.type === ArmyType.Soldiers || army.type === ArmyType.Horses ||army.type === ArmyType.GatlingGuns) {
+          if (action !== Action.Spy) {
+            army.shouldShow = true;
+          }
+          else {
+            army.shouldShow = false;
+          }
+        }
+        else if (army.type === ArmyType.Spies) {
+          if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
+            army.shouldShow = true;
+          }
+          else {
+            army.shouldShow = false;
+          }
+        }
 
-    this.gameEngine.doAction(action)
-      .pipe(
-        first(),
-        tap(() => {
-          this.counts.reset({
-            soldiers: 0,
-            horses: 0,
-            gatlingGuns: 0,
-            spies: action === Action.Spy ? 1 : 0
-          });
-        })
-      )
-      .subscribe((actionEvent) => {
-
-        this.armySelectionConfig = {
-          isOpen: true,
-          armies: actionEvent.armies,
-          currentAction: action
-        };
+        return army;
       });
+
+      this.gameEngine.doAction(action)
+        .pipe(
+          first(),
+          tap(() => {
+            this.counts.reset({
+              soldiers: 0,
+              horses: 0,
+              gatlingGuns: 0,
+              spies: action === Action.Spy ? 1 : 0
+            });
+          })
+        )
+        .subscribe((actionEvent) => {
+
+          this.armySelectionConfig = {
+            isOpen: true,
+            armies: actionEvent.armies,
+            currentAction: action
+          };
+        });
+    }
   }
 
   showCost(cost: number) {
@@ -314,7 +318,7 @@ export class HUDActionsComponent {
         switch (this.armySelectionConfig.currentAction) {
           case Action.Attack:
             return this.logger.log({
-              message: `${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB, this.selectedConnection.name)} !`
+              message: `${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} !`
             })
             .pipe(
               first(),
@@ -371,30 +375,36 @@ export class HUDActionsComponent {
   }
 
   cancel() {
-    this.closeArmySelectionMenu();
-    const areas = this.gameEngine.resetAreaAndConnections(this.result.session.state.areas);
-    this.socketApi.update(true, { areas });
+
+    if (this.isMyTurn) {
+      this.closeArmySelectionMenu();
+      const areas = this.gameEngine.resetAreaAndConnections(this.result.session.state.areas);
+      this.socketApi.update(true, { areas });
+    }
   }
 
   endTurn() {
 
-    let self = this.gameEngine.giveCardToSelf();
-    const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
+    if (this.isMyTurn) {
 
-    self = this.gameEngine.getRandomIdleArmies(self);
+      let self = this.gameEngine.giveCardToSelf();
+      const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
 
-    this.socketApi.update(true, {
-      areas,
-      players: {
-        ...this.cache.session.state.players,
-        [this.cache.clientId]: self
-      }
-    }).pipe(
-      first(),
-      switchMap(() => this.socketApi.changeTurn(true)),
-      first()
-    )
-    .subscribe();
+      self = this.gameEngine.getRandomIdleArmies(self);
+
+      this.socketApi.update(true, {
+        areas,
+        players: {
+          ...this.cache.session.state.players,
+          [this.cache.clientId]: self
+        }
+      }).pipe(
+        first(),
+        switchMap(() => this.socketApi.changeTurn(true)),
+        first()
+      )
+      .subscribe();
+    }
   }
 
   isConfirmBtnDisabled() {

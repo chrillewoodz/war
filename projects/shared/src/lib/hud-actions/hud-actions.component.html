@@ -6,7 +6,7 @@
     <action-points [total]="result?.self.state.actionPoints.total" [actionPointsLeft]="result?.self.state.actionPoints.left"></action-points>
   </div>
   <div class="hud-actions-bottom-container">
-    <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn">Deselect</button>
+    <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn || !selectedArea">Cancel</button>
     <button class="btn btn-danger hud-actions-btn hud-actions-end-turn-btn" type="button" (click)="endTurn()" [disabled]="!isMyTurn">End turn</button>
     <div class="hud-actions-btn hud-current-season hud-season-{{result?.session.state.currentSeason}}" [ngSwitch]="result?.session.state.currentSeason">
       <img class="hud-season-img" src="assets/SVG/winter.svg" *ngSwitchCase="0">
@@ -43,7 +43,7 @@
       <div class="hud-actions-area">
         <h6>Perform action on:</h6>
         <div class="hud-actions-area-name-wrapper">
-          <span class="hud-actions-area-power">{{selectedConnectionPower}}</span>
+          <span class="hud-actions-area-power" *ngIf="selectedConnection?.state.__ui.isSpiedOnBySelf">{{selectedConnectionPower}}</span>
           <h2>{{selectedConnection?.name}}</h2>
         </div>
       </div>

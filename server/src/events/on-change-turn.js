@@ -30,23 +30,30 @@ const fn = async function(io, socket, ev, storage, timers) {
     }
     else {
 
-      session.changeTurn();
+      const hasWinner = session.changeTurn();
 
-      timers.startTimer(session.sessionId, async (e) => {
-        io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
-      }, (e) => {
-        io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
-      });
+      if (hasWinner) {
+        await storage.set(session);
+        io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+      }
+      else {
 
-      await storage.set(session);
+        timers.startTimer(session.sessionId, async (e) => {
+          io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
+        }, (e) => {
+          io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
+        });
 
-      io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
-      io.to(session.sessionId).emit(SocketEvents.GAME_EVENT, new SocketResponse(200, {
-        eventName: 'season',
-        data: {
-          session: session
-        }
-      }));
+        await storage.set(session);
+
+        io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+        io.to(session.sessionId).emit(SocketEvents.GAME_EVENT, new SocketResponse(200, {
+          eventName: 'season',
+          data: {
+            session: session
+          }
+        }));
+      }
     }
   }
   catch(err) {

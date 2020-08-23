@@ -79,6 +79,7 @@ export interface Areas {
 
 export interface AreaUI {
   isOwnedBySelf?: boolean;
+  isSpiedOnBySelf?: boolean;
   screenXY?: DOMPoint;
   power?: number;
   showPowerOn?: boolean;
