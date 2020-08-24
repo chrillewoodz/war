@@ -16,14 +16,14 @@ const SocketEvents = require('../classes/socket-events');
  * @param {AppStorage} storage
  * @param {Timers} timers
  */
-const fn = async function(io, socket, ev, storage, timers) {
+const fn = function(io, socket, ev, storage, timers) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     if (!session) {
       throw new Error('No game session with that id');
@@ -33,18 +33,18 @@ const fn = async function(io, socket, ev, storage, timers) {
       const hasWinner = session.changeTurn();
 
       if (hasWinner) {
-        await storage.set(session);
+        storage.set(session);
         io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
       }
       else {
 
-        timers.startTimer(session.sessionId, async (e) => {
+        timers.startTimer(session.sessionId, (e) => {
           io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
         }, (e) => {
           io.to(session.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
         });
 
-        await storage.set(session);
+        storage.set(session);
 
         io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
         io.to(session.sessionId).emit(SocketEvents.GAME_EVENT, new SocketResponse(200, {

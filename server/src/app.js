@@ -31,14 +31,6 @@
   const stats = new Stats();
   const storage = new AppStorage();
 
-  // Initiate storage
-  try {
-    await storage.init();
-  }
-  catch (e) {
-    console.error(e);
-  }
-
   // Cron jobs, only used for cleanup of dead sessions
   // This one runs every 2.5 minutes
   // schedule.scheduleJob('*/30 * * * * *', async () => {

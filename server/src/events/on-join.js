@@ -16,7 +16,7 @@ const { getUnusedFaction } = require('../factions');
  * }} ev
  * @param {AppStorage} storage
  */
-const fn = async function(io, socket, ev, storage) {
+const fn = function(io, socket, ev, storage) {
 
   try {
 
@@ -25,7 +25,7 @@ const fn = async function(io, socket, ev, storage) {
     /**
      * @type {Session}
      */
-    const session = await storage.find(ev.sessionId);
+    const session = storage.find(ev.sessionId);
 
     if (session) {
 
@@ -34,7 +34,7 @@ const fn = async function(io, socket, ev, storage) {
       const extras = ev.extras ? { ...ev.extras, faction } : { faction };
       session.addPlayer(ev.clientId, extras);
 
-      await storage.set(session);
+      storage.set(session);
 
       socket.join(session.sessionId, () => {
         io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));

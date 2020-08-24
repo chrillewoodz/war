@@ -82,13 +82,18 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     }, true);
 
     const mapInitSub = this.mapEngine.init().subscribe((event) => {
-      this.socketApi.update(true, { areas: event.areas });
+
+      this.socketApi.update(true, {
+        map: {
+          areas: event.areas
+        }
+      });
     });
 
     // Used to remove dead games, couldn't make it happen with a simple window refresh/close
     // since it's really difficult to detect that whilst covering all cases and browsers.
     // We just indicate to the backend that we're still active as long as this runs.
-    const activeEmitter = interval(30000)
+    const activeEmitter = interval(10000)
       .pipe(
         takeUntil(this.gameEngine.listen(GameEngineEvent.Stop))
       )
@@ -139,7 +144,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Winter'
                   },
                   messages: [
-                    { color: 'white', label: 'People freeze to death' }
+                    { color: 'white', label: 'Frostbite sets in' }
                   ]
                 });
               });
@@ -203,7 +208,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       map((result) => {
 
         // Each time a new result is fetched we need to re-initalize the __ui state
-        result.session.state.areas = result.session.state.areas.map((area) => {
+        result.session.state.map.areas = result.session.state.map.areas.map((area) => {
           area.state.__ui = {};
           return area;
         });

@@ -14,14 +14,14 @@ const SocketEvents = require('../classes/socket-events');
  * }} ev
  * @param {AppStorage} storage
  */
-const fn = async function(io, socket, ev, storage) {
+const fn = function(io, socket, ev, storage) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     if (session) {
 
@@ -32,10 +32,10 @@ const fn = async function(io, socket, ev, storage) {
 
       if (activePlayersLeft === 1) {
         session.end();
-        await storage.set(session);
+        storage.set(session);
       }
       else if (activePlayersLeft === 0) {
-        await storage.remove(session.sessionId);
+        storage.remove(session.sessionId);
       }
 
       io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));

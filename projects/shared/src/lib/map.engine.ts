@@ -30,7 +30,7 @@ export class MapEngine {
   init() {
 
     return of<SelectedEvent>({
-      areas: this.cache.session.state.areas,
+      areas: this.cache.session.state.map.areas,
       selected: this.cache.getSelectedArea(),
       selectedConnection: this.cache.getSelectedConnectedArea()
     })
@@ -114,7 +114,7 @@ export class MapEngine {
 
   updateMap(result: PipeResult) {
 
-    result.session.state.areas = result.session.state.areas.map((area) => {
+    result.session.state.map.areas = result.session.state.map.areas.map((area) => {
 
       area.state.__ui.screenXY = this.mapToScreenCoordinates(this.cache.mapElement, area.anchorPoints.main.x, area.anchorPoints.main.y);
 

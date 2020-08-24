@@ -243,6 +243,21 @@ action-points {
     }
   }
 
+  .hud-actions-max,
+  .hud-actions-min {
+    padding: 3px 10px;
+  }
+
+  .hud-actions-max {
+    margin-bottom: 5px;
+    background-color: #03535a;
+  }
+
+  .hud-actions-min {
+    margin-top: 5px;
+    background-color: #346a9a;
+  }
+
   .hud-actions-increase,
   .hud-actions-decrease {
     padding: 0;
@@ -258,7 +273,7 @@ action-points {
   }
 
   .hud-actions-confirm {
-    padding-left: 20px;
+    margin-top: 10px;
   }
 
   .hud-actions-bottom-row {

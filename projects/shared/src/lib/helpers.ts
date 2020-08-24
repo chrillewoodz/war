@@ -42,11 +42,11 @@ export function isAreaOwnedByMe(clientId: string, area: Area) {
 }
 
 export function getSelectedAreaFromResult(result: PipeResult): Area {
-  return result.session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === false);
+  return result.session.state.map.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === false);
 }
 
 export function getSelectedConnectionFromResult(result: PipeResult): Area {
-  return result.session.state.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === true);
+  return result.session.state.map.areas.find((area) => area.state.isSelected === true && area.state.isConnectedToSelected === true);
 }
 
 export function getTotalPowerOfArea(area: Area) {

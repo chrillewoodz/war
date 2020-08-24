@@ -211,7 +211,7 @@ export class GameEngine {
     }
 
     // Update the selectedArea and selectedConnection with the changes
-    let areas = session.state.areas;
+    let areas = session.state.map.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
@@ -224,7 +224,9 @@ export class GameEngine {
     self.state.actionPoints.left -= ActionCost.Attack;
 
     return of({
-      areas,
+      map: {
+        areas
+      },
       players: {
         ...session.state.players,
         [self.clientId]: self
@@ -266,7 +268,7 @@ export class GameEngine {
       ]
     });
 
-    let areas = session.state.areas;
+    let areas = session.state.map.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
 
     areas[i] = selectedArea;
@@ -277,7 +279,9 @@ export class GameEngine {
     self.state.actionPoints.left -= ActionCost.Deploy;
 
     return of({
-      areas,
+      map: {
+        areas
+      },
       players: {
         ...session.state.players,
         [self.clientId]: self
@@ -344,7 +348,7 @@ export class GameEngine {
             messages
           });
 
-          let areas = session.state.areas;
+          let areas = session.state.map.areas;
           const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
           const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
@@ -357,7 +361,9 @@ export class GameEngine {
           self.state.actionPoints.left -= ActionCost.Move;
 
           return of({
-            areas,
+            map: {
+              areas
+            },
             players: {
               ...session.state.players,
               [self.clientId]: self
@@ -419,7 +425,7 @@ export class GameEngine {
     selectedArea.state.armies.spies.amount -= count.spies;
 
     // Update the selectedArea and selectedConnection with the changes
-    let areas = session.state.areas;
+    let areas = session.state.map.areas;
     const i = areas.findIndex((area) => area.areaId === selectedArea.areaId);
     const j = areas.findIndex((area) => area.areaId === selectedConnection.areaId);
 
@@ -432,7 +438,9 @@ export class GameEngine {
     self.state.actionPoints.left -= ActionCost.Spy;
 
     return of({
-      areas,
+      map: {
+        areas
+      },
       players: {
         ...session.state.players,
         [self.clientId]: self
@@ -442,7 +450,7 @@ export class GameEngine {
 
   resetConnection() {
 
-    const areas = this.cache.session.state.areas;
+    const areas = this.cache.session.state.map.areas;
     const selectedConnection = this.cache.getSelectedConnectedArea();
 
     // If no connection is selected, do nothing to prevent unnecessary call to the backend

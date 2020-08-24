@@ -29,7 +29,9 @@ class GameMap {
   }
 
   toJSON() {
-    return this.areas;
+    return {
+      areas: this.areas
+    };
   }
 }
 

@@ -23,13 +23,21 @@ export interface Armies {
   spies: Army;
 }
 
-export interface Card {
+// NOTE: This is what can be stored on the server
+export interface CardConfig {
   id: string;
   image: string;
   title: string;
   description: string;
   cost: number;
   isDisabled?: boolean;
+}
+
+// NOTE: This is the entire Card object including functions
+export interface Card {
+  config: CardConfig;
+  disabled: () => boolean;
+  action: () => Partial<SessionState>;
 }
 
 export interface ActionPoints {
@@ -45,7 +53,7 @@ export interface PlayerState {
   defeated: boolean;
   idle: Armies;
   actionPoints: ActionPoints;
-  cards: Card[];
+  cards: CardConfig[];
 }
 
 export interface Player {
@@ -144,7 +152,9 @@ export interface SessionState {
     [clientId: string]: Player
   };
   logs: LogMessage[];
-  areas: Area[];
+  map: {
+    areas: Area[];
+  };
   areasReady: boolean;
   currentTurn?: Player;
   currentRound: number;

@@ -10,10 +10,10 @@ const AppStorage = require('../classes/app-storage');
  * @param {Stats} statsInstance
  * @param {AppStorage} storage
  */
-const fn = async function(socket, statsInstance, storage) {
+const fn = function(socket, statsInstance, storage) {
 
   try {
-    const stats = await statsInstance.get(socket, storage);
+    const stats = statsInstance.get(socket, storage);
     socket.emit(SocketEvents.STATS_SUCCESS, new SocketResponse(200, stats));
   }
   catch (err) {

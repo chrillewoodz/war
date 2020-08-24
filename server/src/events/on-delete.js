@@ -9,11 +9,11 @@ const SocketEvents = require('../classes/socket-events');
  * @param {{sessionId: String}} ev
  * @param {AppStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = function(socket, ev, storage) {
 
   try {
 
-    await storage.remove(ev.sessionId);
+    storage.remove(ev.sessionId);
 
     socket.emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, null));
   }

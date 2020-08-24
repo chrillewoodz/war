@@ -12,18 +12,18 @@ const SocketEvents = require('../classes/socket-events');
  * }} ev
  * @param {AppStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = function(socket, ev, storage) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     if (session) {
       session.updatePlayerActiveState(ev.clientId);
-      await storage.set(session);
+      storage.set(session);
     }
     else {
       throw new Error('No game session with that id');

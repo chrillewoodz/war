@@ -31,7 +31,7 @@ export class MapEuropeComponent implements AfterViewInit {
 
     if (areaId) {
 
-      const areas = this.cache.session.state.areas;
+      const areas = this.cache.session.state.map.areas;
       const area = areas.find((area) => area.areaId === areaId);
 
       if (area.state.isActive) {

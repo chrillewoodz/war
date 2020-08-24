@@ -41,7 +41,7 @@
       *ngIf="selectedConnection"
     >
       <div class="hud-actions-area">
-        <h6>Perform action on:</h6>
+        <h6>Perform offensive action on:</h6>
         <div class="hud-actions-area-name-wrapper">
           <span class="hud-actions-area-power" *ngIf="selectedConnection?.state.__ui.isSpiedOnBySelf">{{selectedConnectionPower}}</span>
           <h2>{{selectedConnection?.name}}</h2>
@@ -65,6 +65,9 @@
       <div class="col" *ngIf="army.shouldShow">
         <div class="row no-gutters align-items-center justify-content-center">
           <div class="col-12">
+            <button class="btn btn-primary hud-actions-max" (click)="max(army.type)">Max</button>
+          </div>
+          <div class="col-12">
             <button class="hud-actions-increase" (click)="increase(army.type)">
               <i class="fas fa-plus"></i>
             </button>
@@ -78,13 +81,16 @@
               <i class="fas fa-minus"></i>
             </button>
           </div>
+          <div class="col-12">
+            <button class="btn btn-primary hud-actions-min" (click)="min(army.type)">Min</button>
+          </div>
         </div>
       </div>
     </ng-container>
   </div>
   <div class="row no-gutters hud-actions-bottom-row">
     <div class="col">
-      <button class="btn-primary" type="button" [disabled]="isConfirmBtnDisabled()" (click)="confirm()">Confirm</button>
+      <button class="btn-primary hud-actions-confirm" type="button" [disabled]="isConfirmBtnDisabled()" (click)="confirm()">Confirm</button>
     </div>
   </div>
 </div>

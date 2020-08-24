@@ -10,14 +10,14 @@ const SocketEvents = require('../classes/socket-events');
  * @param {{clientId: String}} ev
  * @param {AppStorage} storage
  */
-const fn = async function(socket, ev, storage) {
+const fn = function(socket, ev, storage) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     socket.join(session.sessionId, () => {
 

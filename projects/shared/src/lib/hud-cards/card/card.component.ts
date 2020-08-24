@@ -2,7 +2,7 @@ import { ActionPointsApi } from './../../action-points/action-points.service';
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { SocketApi } from './../../socket.api';
-import { Card } from './../../interfaces';
+import { CardConfig } from './../../interfaces';
 import { HUDCardsService } from '../hud-cards.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { HUDCardsService } from '../hud-cards.service';
 })
 
 export class CardComponent {
-  @Input() config: Card;
+  @Input() info: CardConfig;
   @Input() deckIndex: number;
   @Input() disabled: boolean;
 
@@ -25,23 +25,23 @@ export class CardComponent {
 
   play() {
 
-    if (!this.disabled && this.cardsService.canPlayCard(this.config.cost)) {
+    if (!this.disabled && this.cardsService.canPlayCard(this.info.cost)) {
       this.hideCost(); // Sometimes it gets stuck showing the cost after the card is used
-      const newState = this.cardsService.use(this.config.id);
+      const newState = this.cardsService.use(this.info.id);
       this.socketApi.update(true, newState);
     }
   }
 
   showCost() {
 
-    if (!this.disabled && !this.config.isDisabled) {
-      this.apa.showCost(this.config.cost);
+    if (!this.disabled && !this.info.isDisabled) {
+      this.apa.showCost(this.info.cost);
     }
   }
 
   hideCost() {
 
-    if (!this.disabled && !this.config.isDisabled) {
+    if (!this.disabled && !this.info.isDisabled) {
       this.apa.hideCost();
     }
   }

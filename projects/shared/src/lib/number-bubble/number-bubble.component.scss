@@ -3,32 +3,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
+  padding: 4px;
+  border-radius: 50%;
   z-index: 0;
-
-  &:before {
-    position: absolute;
-    content: '';
-    width: 34px;
-    height: 34px;
-    z-index: -1;
-    border-radius: 50%;
-  }
+  box-sizing: content-box;
+  color: white;
 
   &.nb-type-power {
-
-    &:before {
-      background-color: #9e0101;
-    }
+    background-color: #9e0101;
   }
 
   &.nb-type-amount {
-
-    &:before {
-      // TODO: Insert some form of image here like power had
-      background-color: rgba(3, 83, 90, 0.7);
-    }
+    background-color: rgb(3, 83, 90);
   }
 
   &.nb-pos-bottom-left {
@@ -40,13 +28,4 @@
     bottom: -10px;
     right: -10px;
   }
-}
-
-.nb-value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: inherit;
-  height: inherit;
-  color: white;
 }

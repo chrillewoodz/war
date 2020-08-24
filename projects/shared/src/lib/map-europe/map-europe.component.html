@@ -9,7 +9,7 @@
           <g id="europe">
             <polygon
               class="cls-1"
-              *ngFor="let area of result?.session.state.areas"
+              *ngFor="let area of result?.session.state.map.areas"
               [ngClass]="{
                 active: area.state.isActive,
                 selected: area.state.isSelected,
@@ -25,7 +25,7 @@
       </g>
     </svg>
 
-    <ng-container *ngFor="let area of result?.session.state.areas">
+    <ng-container *ngFor="let area of result?.session.state.map.areas">
       <div *ngIf="area.state.__ui.showPowerOn" class="area-power" [ngStyle]="{left: area.state.__ui.screenXY.x + 'px', top: area.state.__ui.screenXY.y + 'px'}">{{area.state.__ui.power}}</div>
     </ng-container>
   </div>

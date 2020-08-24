@@ -18,7 +18,7 @@ const EuropePoints = require('../map-points/europe');
  * }} ev
  * @param {AppStorage} storage
  */
-const fn = async function(io, socket, ev, storage) {
+const fn = function(io, socket, ev, storage) {
 
   try {
 
@@ -29,7 +29,7 @@ const fn = async function(io, socket, ev, storage) {
           session.addPlayer(ev.clientId, extras);
           session.prepareMap(EuropePoints, EuropeConfig);
 
-    await storage.set(session);
+    storage.set(session);
 
     socket.join(session.sessionId, (err) => {
       console.log(err);

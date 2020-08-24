@@ -2,27 +2,27 @@
   left: (deckIndex * 100) + 'px',
   'z-index': '-' + deckIndex
 }" (mouseover)="showCost()" (mouseleave)="hideCost()">
-  <img class="card-img" [src]="config.image">
+  <img class="card-img" [src]="info.image">
   <div class="card-info-right">
     <div class="card-cost">
       <div class="card-cost-bubble"></div>
-      <span class="card-cost-label">{{config.cost}}</span>
+      <span class="card-cost-label">{{info.cost}}</span>
     </div>
     <div class="card-stars">
       <span class="card-star filled">
         <i class="fas fa-star"></i>
       </span>
-      <span class="card-star" [ngClass]="{filled: config.cost > 3}">
+      <span class="card-star" [ngClass]="{filled: info.cost > 3}">
         <i class="fas fa-star"></i>
       </span>
-      <span class="card-star" [ngClass]="{filled: config.cost > 7}">
+      <span class="card-star" [ngClass]="{filled: info.cost > 7}">
         <i class="fas fa-star"></i>
       </span>
     </div>
   </div>
   <div class="card-content">
-    <h4 class="card-title">{{config.title}}</h4>
-    <p class="card-description">{{config.description}}</p>
-    <button class="btn btn-primary" *ngIf="!disabled" [disabled]="config.isDisabled" type="button" (click)="play()">Play</button>
+    <h4 class="card-title">{{info.title}}</h4>
+    <p class="card-description">{{info.description}}</p>
+    <button class="btn btn-primary" *ngIf="!disabled" [disabled]="info.isDisabled" type="button" (click)="play()">Play</button>
   </div>
 </li>

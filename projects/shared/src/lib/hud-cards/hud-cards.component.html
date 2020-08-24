@@ -1,7 +1,5 @@
 <div class="hud-cards-container">
   <ul>
-    <ng-container *ngFor="let card of cards; let i = index">
-      <card [config]="card" [deckIndex]="i" [disabled]="disabled"></card>
-    </ng-container>
+    <card *ngFor="let card of cards; let i = index" [info]="card" [deckIndex]="i" [disabled]="disabled"></card>
   </ul>
 </div>

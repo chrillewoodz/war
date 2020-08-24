@@ -14,7 +14,7 @@ const SocketEvents = require('../classes/socket-events');
  *   newState: *
  * }} ev
  */
-const fn = async function(io, socket, ev) {
+const fn = function(io, socket, ev) {
 
   try {
     io.to(ev.sessionId).emit(SocketEvents.GAME_EVENT, new SocketResponse(200, ev));

@@ -17,22 +17,21 @@ class Session {
       paused: false,
       players: {},
       logs: [],
-      areas: null,
+      map: new GameMap(),
       areasReady: false,
       currentTurn: null,
       currentSeason: 0, // winter is 0, spring 1, summer 2, autumn 3
       currentRound: 0 // should be increased when all players have played a turn
     };
 
-    this.convertPlayersToClasses();
-    this.convertAreasToClass();
+    // this.convertPlayersToClasses();
+    // this.convertAreasToClass();
   }
 
   checkWinCondition() {
 
     for (const playerId in this.state.players) {
-
-      const areAllAreasOwned = this.state.areas.every((area) => {
+      const areAllAreasOwned = this.state.map.areas.every((area) => {
         return area.occupiedBy && area.occupiedBy.clientId === playerId;
       });
 
@@ -48,7 +47,7 @@ class Session {
   changeTurn() {
 
     if (this.checkWinCondition()) {
-      return false;
+      return true;
     }
 
     const players = Object.keys(this.state.players);
@@ -89,28 +88,27 @@ class Session {
         }
       }
 
-
       // Also reset the action points
       players.forEach((playerId) => {
         this.state.players[playerId].state.actionPoints.left = 20;
       });
     }
 
-    return true;
+    return false;
   }
 
   setStartingAreas() {
 
     const players = Object.keys(this.state.players);
     const shuffledPlayers = players.sort(() => 0.5 - Math.random());
-    const areas = this.state.areas.areas;
+    const areas = this.state.map.areas;
 
     playersLoop: for (let i = 0; i < shuffledPlayers.length; i++) {
 
       for (let j = 0; j < areas.length; j++) {
 
-        if (this.state.areas.areas[j].isStartingArea && this.state.areas.areas[j].state.occupiedBy === null) {
-          this.state.areas.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
+        if (this.state.map.areas[j].isStartingArea && this.state.map.areas[j].state.occupiedBy === null) {
+          this.state.map.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
           continue playersLoop;
         }
       }
@@ -154,17 +152,22 @@ class Session {
   }
 
   prepareMap(points, config) {
-    this.state.areas.prepare(points, config);
+    this.state.map.prepare(points, config);
   }
 
   start() {
     this.state.started = true;
     this.setStartingAreas();
-    this.changeTurn();
+    this.setStartingTurn();
   }
 
   end() {
     this.state.ended = true;
+  }
+
+  setStartingTurn() {
+    const players = Object.keys(this.state.players);
+    this.state.currentTurn = this.state.players[players[0]];
   }
 
   removePlayer(clientId) {
@@ -221,15 +224,31 @@ class Session {
     }
   }
 
-  convertPlayersToClasses() {
+  convertPlayersToClasses(state) {
 
-    for (const clientId in this.state.players) {
-      this.state.players[clientId] = new Player(this.state.players[clientId]);
+    const _state = {...state};
+
+    for (const clientId in _state.players) {
+      _state.players[clientId] = new Player(_state.players[clientId]);
     }
+
+    return _state;
   }
 
-  convertAreasToClass() {
-    this.state.areas = new GameMap(this.state.areas);
+  convertAreasToClass(state) {
+
+    const _state = {...state};
+          _state.map = new GameMap(state.map.areas);
+
+    return _state;
+  }
+
+  setState(newState) {
+
+    let updatedState = this.convertPlayersToClasses(newState);
+        updatedState = this.convertAreasToClass(newState);
+    // console.log('RUSSIA', updatedState.map.areas[1])
+    this.state = updatedState;
   }
 
   toJSON() {

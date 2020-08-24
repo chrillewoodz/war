@@ -248,6 +248,26 @@ export class HUDActionsComponent {
     this.apApi.hideCost();
   }
 
+  max(type: ArmyType) {
+
+    let ownedArmiesOfType;
+
+    switch (this.armySelectionConfig.currentAction) {
+      case Action.Spy:
+        ownedArmiesOfType = this.cache.getSelectedArea().state.armies.spies.amount;
+        break;
+      default:
+        ownedArmiesOfType = this.armySelectionConfig.armies[type].amount;
+        break;
+    }
+
+    this.counts.get(type).setValue(ownedArmiesOfType);
+  }
+
+  min(type: ArmyType) {
+    this.counts.get(type).setValue(this.armySelectionConfig.currentAction === Action.Spy ? 1 : 0);
+  }
+
   decrease(type: ArmyType) {
 
     const control = this.counts.get(type);
@@ -378,8 +398,12 @@ export class HUDActionsComponent {
 
     if (this.isMyTurn) {
       this.closeArmySelectionMenu();
-      const areas = this.gameEngine.resetAreaAndConnections(this.result.session.state.areas);
-      this.socketApi.update(true, { areas });
+      const areas = this.gameEngine.resetAreaAndConnections(this.result.session.state.map.areas);
+      this.socketApi.update(true, {
+        map: {
+          areas
+        }
+      });
     }
   }
 
@@ -388,12 +412,14 @@ export class HUDActionsComponent {
     if (this.isMyTurn) {
 
       let self = this.gameEngine.giveCardToSelf();
-      const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
+      const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.map.areas);
 
       self = this.gameEngine.getRandomIdleArmies(self);
 
       this.socketApi.update(true, {
-        areas,
+        map: {
+          areas
+        },
         players: {
           ...this.cache.session.state.players,
           [this.cache.clientId]: self

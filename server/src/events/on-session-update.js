@@ -14,14 +14,14 @@ const SocketEvents = require('../classes/socket-events');
  * }} ev
  * @param {AppStorage} storage
  */
-const fn = async function(io, socket, ev, storage) {
+const fn = function(io, socket, ev, storage) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     if (!session) {
       throw new Error('No game session with that id');
@@ -29,10 +29,11 @@ const fn = async function(io, socket, ev, storage) {
     else {
 
       // Replace current session state with the new state
-      session.state = ev.newState;
+      console.log(ev.newState.map.areas[1]);
+      session.setState(ev.newState);
 
       // Re-set the session in the immutable sessions object
-      await storage.set(session);
+      storage.set(session);
 
       io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
     }

@@ -85,7 +85,7 @@ export class GameEvents {
 
     const _session = {...session};
 
-    _session.state.areas = _session.state.areas.map((area) => {
+    _session.state.map.areas = _session.state.map.areas.map((area) => {
 
       // NOTE: Do not check the __ui.isOwnedBySelf property
       // as its not yet updated when it comes to this point

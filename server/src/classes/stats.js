@@ -10,14 +10,14 @@ class Stats {
    *
    * @param {AppStorage} storage
    */
-  async get(io, storage) {
+  get(io, storage) {
 
     var srvSockets = io.sockets.sockets;
 
     return {
       connections: Object.keys(srvSockets).length,
-      gamesTotal: Object.keys(await storage.getAll()).length,
-      gamesAvailable: Object.keys(await storage.findAll()).length
+      gamesTotal: Object.keys(storage.getAll()).length,
+      gamesAvailable: Object.keys(storage.findAll()).length
     }
   }
 

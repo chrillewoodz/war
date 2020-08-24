@@ -128,11 +128,14 @@ export class SocketApi {
         sessionId: this.cache.sessionId,
         newState: {
           ...this.cache.session.state,
-          areas: this.cache.session.state.areas.map((area) => {
-            area.state.__ui = null;
-            return area;
-          }),
-          ...newState
+          ...newState,
+          map: {
+            areas: newState.map.areas.map((area) => {
+              console.log(area.state.isSelected);
+              area.state.__ui = null;
+              return area;
+            }),
+          }
         }
       });
     }
@@ -186,12 +189,14 @@ export class SocketApi {
         switchMap((timerFinishedEvent) => {
 
           let self = this.gameEngine.giveCardToSelf();
-          const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.areas);
+          const areas = this.gameEngine.resetAreaAndConnections(this.cache.session.state.map.areas);
 
           self = this.gameEngine.getRandomIdleArmies(self);
 
           return this.update(true, {
-            areas,
+            map: {
+              areas,
+            },
             players: {
               ...this.cache.session.state.players,
               [this.cache.clientId]: self

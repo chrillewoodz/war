@@ -16,14 +16,14 @@ const Timers = require('../classes/timers');
  * @param {AppStorage} storage
  * @param {Timers} timers
  */
-const fn = async function(io, socket, ev, storage, timers) {
+const fn = function(io, socket, ev, storage, timers) {
 
   try {
 
     /**
      * @type {Session}
      */
-    const session = await storage.getById(ev.sessionId);
+    const session = storage.getById(ev.sessionId);
 
     if (session) {
 
@@ -32,21 +32,21 @@ const fn = async function(io, socket, ev, storage, timers) {
         session.playerReady(ev.clientId);
 
         // Callback runs when all players are ready
-        session.checkForReadyPlayers(async () => {
+        session.checkForReadyPlayers(() => {
 
           // Start game
           session.start();
 
           timers.addTimer(ev.sessionId);
 
-          timers.startTimer(ev.sessionId, async (e) => {
+          timers.startTimer(ev.sessionId, (e) => {
             io.to(ev.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));
           }, (e) => {
             io.to(ev.sessionId).emit(SocketEvents.TIMER_FINISHED, new SocketResponse(200, e));
           });
         });
 
-        await storage.set(session);
+        storage.set(session);
 
         io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
       }

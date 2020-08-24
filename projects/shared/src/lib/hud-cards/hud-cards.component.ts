@@ -1,6 +1,7 @@
+import { CardConfig } from './../interfaces';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Card } from '../interfaces';
 import { HUDCardsService } from './hud-cards.service';
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'hud-cards',
@@ -10,10 +11,10 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 })
 
 export class HUDCardsComponent {
-  @Input() set cards(cards: Card[]) {
+  @Input() set cards(cards: CardConfig[]) {
 
     cards = cards.map((card) => {
-      card.isDisabled = this.cardsService.checkDisabledState(card.id)();
+      card.isDisabled = this.cardsService.checkDisabledState(card.id);
       return card;
     });
 

@@ -1,0 +1,22 @@
+- Se över attack algoritmen för antal förlorade arméer
+- Spara session i minnet i produktion på servern
+- Access token access för socket.io för att förhindra unauthorized use
+- Visa antal soldater per typ i ett område
+- Dölj soldater där antalet är noll i army selection
+- Lägg till fler spelkort
+  - Fur coats (winter protection)
+  - Water barrels (summer protection)
+  - Barricades (autumn protection)
+  - Bubonic plague
+  - Poison food storage
+  - Level 1, 2, 3 card of each soldiers, horses, gatlingGuns and spies
+  - Pandemic
+- Lägg till fler logger messages för:
+  - Season events
+  - Spelkort
+- Lägg in egen bild för varje action i hud-actions
+- Skapa snyggare pil i hud-actions
+- Fixa till hud-settings
+- Stylea till alla backgrounds så dem blir snyggare för alla hud element
+- Visa tid i logger message
+- Hitta snyggare bild för gatling guns

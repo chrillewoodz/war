@@ -3,38 +3,30 @@ const Session = require('./session');
 
 class AppStorage {
 
-  timers = [];
+  storage = {
+    sessions: {}
+  };
 
   constructor() {}
 
-  async getTimers() {
-    return await storage.getItem('timers') || {};
-  }
-
-  async init() {
-    return await storage.init();
-  }
-
-  async getAll() {
-    return await storage.getItem('sessions') || {};
+  getAll() {
+    return this.storage.sessions;
   }
 
   /**
    *
    * @param {String} sessionId
    */
-  async getById(sessionId) {
+  getById(sessionId) {
 
-    const sessions = await this.getAll();
+    const sessions = this.getAll();
 
-    return new Session(
-      Object.keys(sessions)
-        .map((sessionId) => sessions[sessionId])
-        .find((session) => session.sessionId === sessionId)
-    );
+    return Object.keys(sessions)
+      .map((sessionId) => sessions[sessionId])
+      .find((session) => session.sessionId === sessionId);
   }
 
-  async findAll() {
+  findAll() {
 
     /**
      * Filters out game sessions that are not available to join
@@ -49,7 +41,7 @@ class AppStorage {
       return !hasStarted && !isPrivate && !isFull;
     }
 
-    const sessions = await this.getAll();
+    const sessions = this.getAll();
 
     return Object.keys(sessions)
       .map((sessionId) => sessions[sessionId])
@@ -60,41 +52,45 @@ class AppStorage {
    *
    * @param {String} [sessionId]
    */
-  async find(sessionId) {
+  find(sessionId) {
 
-    const sessions = await this.findAll(sessionId);
+    const sessions = this.findAll(sessionId);
 
     if (sessionId) {
-      return new Session(sessions.find((session) => session.sessionId === sessionId));
+      return sessions.find((session) => session.sessionId === sessionId);
     }
-
-    return new Session(sessions[0]);
+    else {
+      return sessions[0];
+    }
   }
 
   /**
    *
    * @param {Session} session
    */
-  async set(session) {
-    const sessions = await this.getAll();
-    sessions[session.sessionId] = { ...session, lastUpdatedAt: new Date().toISOString() };
-    return await this.update(sessions);
+  set(session) {
+    const sessions = this.getAll();
+
+    session.lastUpdatedAt = new Date().toISOString();
+    sessions[session.sessionId] = session;
+
+    return this.update(sessions);
   }
 
-  async update(sessions) {
-    return await storage.setItem('sessions', sessions);
+  update(sessions) {
+    this.storage.sessions = sessions;
   }
 
   /**
    *
    * @param {String} sessionId
    */
-  async remove(sessionId) {
+  remove(sessionId) {
 
     try {
-      const sessions = await this.getAll();
+      const sessions = this.getAll();
       delete sessions[sessionId];
-      return await this.update(sessions);
+      return this.update(sessions);
     }
     catch (e) {
       console.log(e);
