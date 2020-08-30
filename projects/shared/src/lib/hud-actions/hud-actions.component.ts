@@ -348,7 +348,7 @@ export class HUDActionsComponent {
         switch (this.armySelectionConfig.currentAction) {
           case Action.Attack:
             return this.logger.log({
-              message: `${this.logger.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} !`
+              message: `${this.logger.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#a28e70', this.selectedConnection.name)} !`
             })
             .pipe(
               first(),
@@ -372,7 +372,7 @@ export class HUDActionsComponent {
             );
           case Action.Spy:
             return this.logger.log({
-              message: `Rumours around ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} are saying that spies might have infiltrated their territory ...`
+              message: `Rumours around ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#a28e70', this.selectedConnection.name)} are saying that spies might have infiltrated their territory ...`
             })
             .pipe(
               first(),

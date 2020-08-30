@@ -595,16 +595,16 @@ export class GameEngine {
     const roll = Math.floor(Math.random() * 10);
 
     if (roll > 9) {
-      percentOfArmies = 80;
+      percentOfArmies = 90;
     }
     else if (roll > 7) {
-      percentOfArmies = 60;
+      percentOfArmies = 70;
     }
     else if (roll > 4) {
-      percentOfArmies = 40;
+      percentOfArmies = 50;
     }
     else {
-      percentOfArmies = 10;
+      percentOfArmies = 20;
     }
 
     const loseSoldiers = Math.round(Math.random());
