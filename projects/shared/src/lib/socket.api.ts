@@ -131,7 +131,6 @@ export class SocketApi {
           ...newState,
           map: {
             areas: newState.map.areas.map((area) => {
-              console.log(area.state.isSelected);
               area.state.__ui = null;
               return area;
             }),

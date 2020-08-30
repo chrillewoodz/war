@@ -33,7 +33,7 @@ export class GameEngine {
   ) {
 
     // for (let i = 0; i < 26; i++) {
-    //   console.log('greater', `26 vs ${i}`, this.getArmiesLost(26, i));
+    //   console.log('greater', `26 vs ${i}`, this.getArmiesLost({soldiers: 10, horses: 4, gatlingGuns: 5, spies: 0}));
     // }
 
     // for (let i = 26; i > 0; i--) {
@@ -137,9 +137,11 @@ export class GameEngine {
 
     if (roll <= successRate) {
 
-      const lostArmies = this.getArmiesLost(armies, attackerPower, defenderPower);
+      const lostArmies = this.getArmiesLost(armies);
 
       // Negate armies from the owned selected area
+      // lostArmies is not used here since this is the area where the armies
+      // come from when starting the attack
       selectedArea.state.armies.soldiers.amount -= armies.soldiers;
       selectedArea.state.armies.horses.amount -= armies.horses;
       selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
@@ -188,6 +190,7 @@ export class GameEngine {
 
       // Reset spiedOnBy since area has a new owner and armies
       selectedConnection.state.spiedOnBy = {};
+      selectedConnection.state.immunities = {};
     }
     else {
 
@@ -195,6 +198,20 @@ export class GameEngine {
       selectedArea.state.armies.soldiers.amount -= armies.soldiers;
       selectedArea.state.armies.horses.amount -= armies.horses;
       selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
+
+      const selectedConnectionArmies = selectedConnection.state.armies;
+
+      const lostArmies = this.getArmiesLost({
+        soldiers: selectedConnectionArmies.horses.amount,
+        horses: selectedConnectionArmies.soldiers.amount,
+        gatlingGuns: selectedConnectionArmies.gatlingGuns.amount,
+        spies: selectedConnectionArmies.spies.amount
+      });
+
+      // Negate armies from the defending area as well
+      selectedConnection.state.armies.soldiers.amount -= lostArmies.soldiers;
+      selectedConnection.state.armies.horses.amount -= lostArmies.horses;
+      selectedConnection.state.armies.gatlingGuns.amount -= lostArmies.gatlingGuns;
 
       this.mapEngine.loadOutcome({
         area:  selectedConnection,
@@ -205,7 +222,10 @@ export class GameEngine {
         },
         messages: [
           { color: 'white', label: 'Attack failed' },
-          { color: 'white', label: 'All armies were defeated' }
+          { color: 'white', label: 'All armies were defeated' },
+          { color: 'red', label: `-${lostArmies.soldiers} enemy soldiers killed` },
+          { color: 'red', label: `-${lostArmies.horses} enemy horses killed` },
+          { color: 'red', label: `-${lostArmies.gatlingGuns} enemy gatling guns killed` }
         ]
       });
     }
@@ -568,38 +588,32 @@ export class GameEngine {
    * @param attackerPower The total power value of the attacker
    * @param defenderPower The total power value of the defender
    */
-  private getArmiesLost(armies: ArmiesToDeploy, attackerPower: number, defenderPower: number) {
+  private getArmiesLost(armies: ArmiesToDeploy) {
 
-    const base = 50;
-    const diff = attackerPower - defenderPower;
-    const diffAsPercentage = (() => {
-
-      if (diff >= 0) {
-        return 100 - ((defenderPower / attackerPower) * 100);
-      }
-
-      return -(100 - ((attackerPower / defenderPower) * 100));
-    })() / 2;
-
-    const chance = base + diffAsPercentage;
     let percentOfArmies;
 
-    if (chance > 80) {
-      percentOfArmies = 20;
+    const roll = Math.floor(Math.random() * 10);
+
+    if (roll > 9) {
+      percentOfArmies = 80;
     }
-    else if (chance > 40) {
-      percentOfArmies = 40;
-    }
-    else if (chance > 20) {
+    else if (roll > 7) {
       percentOfArmies = 60;
     }
-    else if (chance > 0) {
-      percentOfArmies = 90;
+    else if (roll > 4) {
+      percentOfArmies = 40;
+    }
+    else {
+      percentOfArmies = 10;
     }
 
-    const soldiersLost = Math.ceil(armies.soldiers / percentOfArmies);
-    const horsesLost = Math.ceil(armies.horses / percentOfArmies);
-    const gatlingGunsLost = Math.ceil(armies.gatlingGuns / percentOfArmies);
+    const loseSoldiers = Math.round(Math.random());
+    const loseHorses = Math.round(Math.random());
+    const loseGatlingGuns = Math.round(Math.random());
+
+    const soldiersLost = loseSoldiers ? Math.ceil(armies.soldiers / percentOfArmies) : 0;
+    const horsesLost = loseHorses ? Math.ceil(armies.horses / percentOfArmies) : 0;
+    const gatlingGunsLost = loseGatlingGuns ? Math.ceil(armies.gatlingGuns / percentOfArmies) : 0;
 
     return {
       soldiers: soldiersLost,

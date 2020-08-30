@@ -31,24 +31,53 @@ class Session {
   checkWinCondition() {
 
     for (const playerId in this.state.players) {
+
       const areAllAreasOwned = this.state.map.areas.every((area) => {
-        return area.occupiedBy && area.occupiedBy.clientId === playerId;
+        return area.state.occupiedBy && area.state.occupiedBy.clientId === playerId;
       });
 
       if (areAllAreasOwned) {
-        this.end();
-        return true;
+        return this.state.players[playerId];
+      }
+
+      if (!this.playerHasAreasLeft(playerId)) {
+        this.state.players[playerId].defeated();
       }
     }
 
-    return false;
+    const playersLeft = Object.keys(this.state.players)
+      .filter((playerId) => {
+        const isActive = this.state.players[playerId].isActivePlayer();
+        return isActive;
+      });
+
+    if (playersLeft.length > 1) {
+      return false;
+    }
+    else {
+      return this.state.players[playersLeft[0]];
+    }
+  }
+
+  playerHasAreasLeft(playerId) {
+
+    const areasOwned = this.state.map.areas.filter((area) => {
+
+      if (area.state.occupiedBy && area.state.occupiedBy.clientId === playerId) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (areasOwned.length === 0) {
+      return false;
+    }
+
+    return true;
   }
 
   changeTurn() {
-
-    if (this.checkWinCondition()) {
-      return true;
-    }
 
     const players = Object.keys(this.state.players);
 
@@ -93,8 +122,6 @@ class Session {
         this.state.players[playerId].state.actionPoints.left = 20;
       });
     }
-
-    return false;
   }
 
   setStartingAreas() {
@@ -247,7 +274,7 @@ class Session {
 
     let updatedState = this.convertPlayersToClasses(newState);
         updatedState = this.convertAreasToClass(newState);
-    // console.log('RUSSIA', updatedState.map.areas[1])
+
     this.state = updatedState;
   }
 

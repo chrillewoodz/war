@@ -29,7 +29,6 @@ const fn = function(io, socket, ev, storage) {
     else {
 
       // Replace current session state with the new state
-      console.log(ev.newState.map.areas[1]);
       session.setState(ev.newState);
 
       // Re-set the session in the immutable sessions object

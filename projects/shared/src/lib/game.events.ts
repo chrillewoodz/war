@@ -35,12 +35,15 @@ export class GameEvents {
 
     const updatedSession = this.iterateOwnAreas(session, seasonEvent, (area: Area) => {
 
-      // Lose 30% of your armies each turn while winter is active
-      area = this.performSeasonEvent(area);
+      if (!area.state.immunities[seasonEvent]) {
 
-      // Storing affected areas to avoid making the same if
-      // check after the session has been stored with the updates
-      affectedAreas.push(area);
+        // Lose 30% of your armies each turn while winter is active
+        area = this.performSeasonEvent(area);
+
+        // Storing affected areas to avoid making the same if
+        // check after the session has been stored with the updates
+        affectedAreas.push(area);
+      }
 
       return area;
     });
@@ -53,7 +56,7 @@ export class GameEvents {
   }
 
   private killArmies(area: Area, armyType: ArmyType) {
-    return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 20); // 20% are lost (rounded up)
+    return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 35); // 35% are lost (rounded up)
   }
 
   private setToMinimumZero(area: Area) {

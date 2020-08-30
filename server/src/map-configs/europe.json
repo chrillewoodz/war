@@ -23,7 +23,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "1": {
@@ -51,7 +52,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "2": {
@@ -78,7 +80,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "3": {
@@ -105,7 +108,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "4": {
@@ -132,7 +136,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "5": {
@@ -159,7 +164,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "6": {
@@ -186,7 +192,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "7": {
@@ -213,7 +220,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "famine": true
     }
   },
   "8": {
@@ -240,7 +248,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "9": {
@@ -267,7 +276,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "10": {
@@ -294,7 +304,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "11": {
@@ -321,7 +332,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "12": {
@@ -348,7 +360,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "13": {
@@ -375,7 +388,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "14": {
@@ -402,7 +416,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "15": {
@@ -429,11 +444,12 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "bubonicPlague": true
     }
   },
   "16": {
-    "name": "Northern Ireland",
+    "name": "N. Ireland",
     "connections": [14, 15, 21, 22],
     "armies": {
       "soldiers": {
@@ -456,7 +472,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "bubonicPlague": true
     }
   },
   "17": {
@@ -483,7 +500,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "18": {
@@ -510,7 +528,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "19": {
@@ -537,7 +556,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "20": {
@@ -565,7 +585,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "bubonicPlague": true
     }
   },
   "21": {
@@ -592,7 +613,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "bubonicPlague": true
     }
   },
   "22": {
@@ -619,7 +641,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "bubonicPlague": true
     }
   },
   "23": {
@@ -647,7 +670,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "24": {
@@ -674,7 +698,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "25": {
@@ -701,7 +726,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "26": {
@@ -728,7 +754,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "famine": true
     }
   },
   "27": {
@@ -755,7 +782,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "28": {
@@ -782,7 +810,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "famine": true
     }
   },
   "29": {
@@ -809,7 +838,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "famine": true
     }
   },
   "30": {
@@ -836,11 +866,12 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "31": {
-    "name": "Region Huvedstaden",
+    "name": "Huvedstaden",
     "connections": [26, 27, 36],
     "armies": {
       "soldiers": {
@@ -863,7 +894,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "32": {
@@ -890,7 +922,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "famine": true
     }
   },
   "33": {
@@ -917,7 +950,8 @@
       }
     },
     "events": {
-      "autumn": true
+      "autumn": true,
+      "famine": true
     }
   },
   "34": {
@@ -944,7 +978,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "35": {
@@ -971,7 +1006,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "36": {
@@ -999,7 +1035,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "37": {
@@ -1026,7 +1063,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   },
   "38": {
@@ -1053,7 +1091,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "famine": true
     }
   },
   "39": {
@@ -1080,7 +1119,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "famine": true
     }
   },
   "40": {
@@ -1107,7 +1147,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "41": {
@@ -1134,7 +1175,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "42": {
@@ -1161,7 +1203,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "43": {
@@ -1188,7 +1231,8 @@
       }
     },
     "events": {
-      "summer": true
+      "summer": true,
+      "bubonicPlague": true
     }
   },
   "44": {
@@ -1215,7 +1259,8 @@
       }
     },
     "events": {
-      "winter": true
+      "winter": true,
+      "famine": true
     }
   }
 }

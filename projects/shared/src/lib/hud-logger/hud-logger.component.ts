@@ -1,3 +1,4 @@
+import { LogMessage } from './../interfaces';
 import { PipeResult } from '../interfaces';
 import { HUDLoggerService } from './hud-logger.service';
 import { AfterViewInit, Component, ViewChild, ElementRef, QueryList, ViewChildren, Input, ChangeDetectionStrategy } from '@angular/core';
@@ -33,7 +34,7 @@ export class HUDLoggerComponent implements AfterViewInit {
 
   private _result: PipeResult;
 
-  public message = new FormControl('', [Validators.maxLength(60)]);
+  public message = new FormControl('', [Validators.maxLength(300)]);
 
   constructor(
     private logger: HUDLoggerService,
@@ -56,10 +57,15 @@ export class HUDLoggerComponent implements AfterViewInit {
       this.logger.log({
         color: this.result.self.extras.faction.colorRGB,
         message: this.message.value,
-        from: this.result.self.extras.faction.name
+        from: this.result.self.extras.faction.name,
+        timestamp: new Date().toISOString()
       });
 
       this.message.setValue('');
     }
+  }
+
+  logTrackBy(i: number, log: LogMessage) {
+    return log.id;
   }
 }

@@ -23,6 +23,41 @@
     border-radius: 50%;
     z-index: 2;
   }
+
+  &.ap-medium {
+    animation: pulsate 1500ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: #8fb239;
+    }
+
+    .action-points-inner {
+      background-color: darken(#8fb239, 5%);
+    }
+  }
+
+  &.ap-low {
+    animation: pulsate 1000ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: #bd5700;
+    }
+
+    .action-points-inner {
+      background-color: darken(#bd5700, 5%);
+    }
+  }
+
+  &.ap-empty {
+    animation: pulsate 250ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: red;
+    }
+  }
 }
 
 .action-points-inner {
@@ -58,5 +93,14 @@
 
   &.cost {
     color: red;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
   }
 }

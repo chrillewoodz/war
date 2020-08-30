@@ -1,8 +1,8 @@
 export enum ActionCost {
-  Attack = 3,
-  Deploy = 1,
+  Attack = 6,
+  Deploy = 2,
   Move = 2,
-  Spy = 2
+  Spy = 3
 }
 
 export enum Action {

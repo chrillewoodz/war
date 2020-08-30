@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { HUDLoggerService } from './hud-logger/hud-logger.service';
+
 export interface ArmiesToDeploy {
   soldiers: number;
   horses: number;
@@ -13,7 +16,6 @@ export interface Faction {
   name: string;
   colorRGB: string;
   colorRGBA: string;
-  factionName: string;
 }
 
 export interface Armies {
@@ -31,13 +33,22 @@ export interface CardConfig {
   description: string;
   cost: number;
   isDisabled?: boolean;
+  gameEvent?: GameEvent;
+}
+
+export interface CardActionResponse {
+  extras?: {
+    affectedAreas?: Area[];
+  };
+  newState: Partial<SessionState>;
 }
 
 // NOTE: This is the entire Card object including functions
 export interface Card {
   config: CardConfig;
   disabled: () => boolean;
-  action: () => Partial<SessionState>;
+  action: () => CardActionResponse;
+  callback?: (logger: HUDLoggerService) => Observable<any>;
 }
 
 export interface ActionPoints {
@@ -111,6 +122,14 @@ export interface AreaEvents {
   spring: boolean;
   summer: boolean;
   autumn: boolean;
+  bubonicPlague: boolean;
+  famine: boolean;
+}
+
+export interface AreaImmunities {
+  winter?: boolean;
+  summer?: boolean;
+  autumn?: boolean;
 }
 
 export interface Area {
@@ -128,6 +147,7 @@ export interface Area {
     isSelected?: boolean;
     isConnectedToSelected?: boolean;
     spiedOnBy: SpiedOnBy;
+    immunities: AreaImmunities;
     __ui: AreaUI; // Should be omitted when storing the session
   }
 }
@@ -139,15 +159,18 @@ export interface SessionSettings {
 }
 
 export interface LogMessage {
+  id?: string;
   color?: string;
   message: string;
   from?: string;
+  timestamp?: string;
 }
 
 export interface SessionState {
   started: boolean;
   paused: boolean;
   ended: boolean;
+  winner: Player;
   players: {
     [clientId: string]: Player
   };
@@ -233,7 +256,11 @@ export enum GameEvent {
   Season = 'season',
   WinterOutcome = 'winter_outcome',
   SummerOutcome = 'summer_outcome',
-  AutumnOutcome = 'autumn_outcome'
+  AutumnOutcome = 'autumn_outcome',
+  PandemicOutcome = 'pandemic_outcome',
+  BubonicPlagueOutcome = 'bubonic_plague_outcome',
+  FamineOutcome = 'famine_outcome',
+  PoisonFoodStoragesOutcome = 'posion_food_storages_outcome'
 }
 
 export enum SeasonEvent {
@@ -247,11 +274,11 @@ export interface SeasonEventData {
   session: Session;
 }
 
-export interface SeasonOutcomeData {
+export interface OutcomeData {
   affectedAreas: Area[];
 }
 
 export interface GameEventResponse {
   eventName: GameEvent;
-  data: SeasonEventData | SeasonOutcomeData;
+  data: SeasonEventData | OutcomeData;
 }

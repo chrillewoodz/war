@@ -30,13 +30,17 @@ const fn = function(io, socket, ev, storage, timers) {
     }
     else {
 
-      const hasWinner = session.changeTurn();
+      const winner = session.checkWinCondition();
 
-      if (hasWinner) {
+      if (winner) {
+        session.state.winner = winner;
+        session.end();
         storage.set(session);
         io.to(ev.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
       }
       else {
+
+        session.changeTurn();
 
         timers.startTimer(session.sessionId, (e) => {
           io.to(session.sessionId).emit(SocketEvents.TIMER_UPDATED, new SocketResponse(200, e));

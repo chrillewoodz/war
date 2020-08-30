@@ -1,10 +1,10 @@
 <div class="common-container hud-logger-container">
   <ul #listRef class="hud-logger-messages">
-    <li #messageRef class="hud-logger-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of result?.session?.state.logs">
-      <p class="hud-logger-message-from">{{msg.from}}</p>
+    <li #messageRef class="hud-logger-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of result?.session?.state.logs; trackBy:logTrackBy">
+      <p class="hud-logger-message-from">[{{msg.timestamp | date:'HH:mm'}}] {{msg.from}}</p>
       <p class="hud-logger-message-text" [innerHTML]="msg.message"></p>
     </li>
   </ul>
-  <input class="hud-logger-input" [ngStyle]="{color: result?.self?.extras.faction.colorRGB}" [formControl]="message" placeholder="Write something" (keydown.enter)="submit($event)">
+  <input class="hud-logger-input" [ngStyle]="{color: result?.self?.extras.faction.colorRGB}" [formControl]="message" placeholder="Insult your enemy" (keydown.enter)="submit($event)">
   <p class="hud-logger-input-error" *ngIf="message.invalid">The message is too long</p>
 </div>

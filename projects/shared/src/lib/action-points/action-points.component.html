@@ -1,7 +1,7 @@
-<div class="action-points-container">
+<div class="action-points-container" [ngClass]="{'ap-medium': APLeft < 13, 'ap-low': APLeft < 8, 'ap-empty': APLeft === 0}">
   <div class="action-points-text">
     <h6 class="action-points-title">AP</h6>
-    <h3 class="action-points-left" [ngClass]="{cost: cost}">{{actionPointsLeft - (cost || 0)}}</h3>
+    <h3 class="action-points-left" [ngClass]="{cost: cost}">{{(APLeft - cost) < 0 ? 0 : (APLeft - cost)}}</h3>
   </div>
   <div class="action-points-inner" [ngStyle]="{height: height + '%'}"></div>
 </div>

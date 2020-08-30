@@ -4,6 +4,7 @@ export * from './lib/hud-actions/hud-actions.component';
 export * from './lib/hud-actions/hud-actions.module';
 export * from './lib/hud-cards/hud-cards.component';
 export * from './lib/hud-cards/hud-cards.module';
+export * from './lib/hud-cards/hud-cards.service';
 export * from './lib/hud-logger/hud-logger.component';
 export * from './lib/hud-logger/hud-logger.module';
 export * from './lib/hud-players/hud-players.component';

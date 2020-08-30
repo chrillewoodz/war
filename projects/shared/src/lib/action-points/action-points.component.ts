@@ -1,3 +1,4 @@
+import { map, tap, startWith } from 'rxjs/operators';
 import { ActionPointsApi } from './action-points.service';
 import { Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -11,35 +12,43 @@ import { Subscription } from 'rxjs';
 
 export class ActionPointsComponent implements OnDestroy {
   @Input() total: number = 20;
-  @Input() set actionPointsLeft(actionPointsLeft: number) {
-    this._actionPointsLeft = actionPointsLeft;
-    this.height = this.getHeight();
+  @Input() set APLeft(APLeft: number) {
+    this._APLeft = APLeft;
+    this.api.hideCost();
+    // this.height = this.getHeight();
   };
 
-  get actionPointsLeft() {
-    return this._actionPointsLeft;
+  get APLeft() {
+    return this._APLeft;
   }
 
+  public APLeftVisual: number;
   public height: number;
   public cost: number;
 
-  private _actionPointsLeft: number;
+  private _APLeft: number;
   private sub: Subscription;
 
   constructor(private api: ActionPointsApi, private cd: ChangeDetectorRef) {
 
-    this.sub = this.api.emitter$.subscribe((cost) => {
-      this.cost = cost;
-      this.height = this.getHeight(cost);
-      this.cd.markForCheck();
-    });
+    this.sub = this.api.emitter$
+      .pipe(
+        startWith(0),
+        map((cost) => cost === undefined ? 0 : cost)
+      )
+      .subscribe((cost) => {
+        this.cost = cost;
+        this.height = this.getHeight();
+        this.cd.markForCheck();
+      }
+    );
   }
 
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
 
-  private getHeight(cost = 0) {
-    return ((this.actionPointsLeft - cost) / this.total) * 100;
+  private getHeight() {
+    return ((this.APLeft - this.cost) / this.total) * 100;
   }
 }

@@ -1,25 +1,12 @@
 @import './src/_variables';
-$color: darken(rgba(152, 133, 89), 25%);
+$color: darken(rgba(152, 133, 89), 5%);
 
 .hud-logger-container {
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   width: 100%;
   height: 400px;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 30%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    background: linear-gradient(0deg, rgba(152,133,89,0.3) 0%, rgba(152,133,89,0.9) 30%);
-  }
 }
 
 .hud-logger-messages {
@@ -43,7 +30,7 @@ $color: darken(rgba(152, 133, 89), 25%);
   font-size: 16px;
   margin-bottom: 6px;
   border-radius: 8px;
-  background: darken($bgPrimaryRGB, 5%);
+  background-color: #ddc9a4;
 }
 
 .hud-logger-message-from {
@@ -55,7 +42,7 @@ $color: darken(rgba(152, 133, 89), 25%);
 .hud-logger-input {
   width: 100%;
   line-height: 40px;
-  padding: 6px 0;
+  padding: 6px 0 6px 10px;
   border: 0;
   border-top: 2px solid $color;
   border-bottom: 2px solid $color;
@@ -63,6 +50,7 @@ $color: darken(rgba(152, 133, 89), 25%);
   background: none;
   font-size: 20px;
   outline: 0;
+  background-color: #ddcaa4;
 
   &::placeholder {
     color: $color;

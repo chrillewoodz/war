@@ -65,7 +65,19 @@ export function getTotalPowerOfArea(area: Area) {
   return totalPower;
 }
 
-export function getTotalArmiesInArea(area: Area) {
+export function getTotalArmiesInArea(area: Area, excludeSpies = false) {
+
+  const totalAmount = Object.keys(area?.state.armies)
+    .filter((k) => excludeSpies ? k !== 'spies' : true)
+    .map((k) => ({key: k, army: area.state.armies[k]}))
+    .reduce((total, current) => {
+      return total += current.army.amount;
+    }, 0);
+
+  return totalAmount;
+}
+
+export function getTotalArmiesExcludingSpiesInArea(area: Area) {
 
   const totalAmount = Object.keys(area?.state.armies)
     .map((k) => ({key: k, army: area.state.armies[k]}))

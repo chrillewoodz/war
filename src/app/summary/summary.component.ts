@@ -1,5 +1,6 @@
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
+import { GameCache } from 'shared';
 
 @Component({
   selector: 'app-summary',
@@ -8,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SummaryComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  public stats: any;
+
+  constructor(
+    private cache: GameCache,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+
+    this.stats = {
+      winner: this.cache.session.state.winner
+    }
   }
 
   backToLobby() {

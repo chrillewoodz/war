@@ -1,5 +1,12 @@
 <div class="hud-cards-container">
   <ul>
-    <card *ngFor="let card of cards; let i = index" [info]="card" [deckIndex]="i" [disabled]="disabled"></card>
+    <card
+      @card
+      *ngFor="let card of cards; let i = index; trackBy:cardTrackBy" [info]="card" [deckIndex]="i" [disabled]="disabled"
+      [ngStyle]="{
+        'margin-left': (i * 100) + 'px',
+        'z-index': '-' + i
+      }"
+    ></card>
   </ul>
 </div>

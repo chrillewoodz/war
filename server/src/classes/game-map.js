@@ -20,6 +20,7 @@ class GameMap {
           occupiedBy: null,
           armies: config[areaId].armies,
           spiedOnBy: {},
+          immunities: {},
           isActive: false,
           isSelected: false,
           isConnectedToSelected: false

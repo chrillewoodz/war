@@ -4,6 +4,7 @@
 
 * {
   box-sizing: border-box;
+  user-select: none;
 }
 
 html, body {
@@ -96,7 +97,9 @@ h6 {
 .common-container {
   padding: 15px;
   border-radius: 10px;
-  background: $bgPrimaryRGB;
+  // background: $bgPrimaryRGB;
+  background-image: url('assets/1x/parchment.png');
+  background-size: cover;
 }
 
 button {

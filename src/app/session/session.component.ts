@@ -1,8 +1,8 @@
 import { environment } from '../../environments/environment';
-import { AfterViewInit, Component, ChangeDetectorRef, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, merge, interval, EMPTY, NEVER } from 'rxjs';
-import { takeUntil, map, tap, first, filter, switchMap } from 'rxjs/operators';
+import { Subscription, merge, interval, EMPTY, of, Subject, from } from 'rxjs';
+import { takeUntil, map, tap, first, filter, switchMap, concatMap, delay, finalize } from 'rxjs/operators';
 
 import {
   MapEngine,
@@ -19,9 +19,10 @@ import {
   TimerResponse,
   GameEvents,
   exhaust,
-  SeasonEvent,
   SeasonEventData,
-  SeasonOutcomeData,
+  OutcomeData,
+  HUDCardsService,
+  CardIDs
 } from 'shared';
 
 @Component({
@@ -43,19 +44,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  public isFightActive = false;
-
-  public config = {
-    total: 25,
-    actionsLeft: 12,
-    actionCost: 3
-  }
-
   public mapType = 'europe';
-  public activeAreas: Element[];
-  public areas: Area[];
-  public timePerRound = 5000;
-  public totalTerritories = 32;
   public elapsedTime = 0;
   public isMyTurn = false;
   public result: PipeResult;
@@ -64,8 +53,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   private shouldQuitOnDestroy = true;
 
   constructor(
-    private cd: ChangeDetectorRef,
     private cache: GameCache,
+    private cardsService: HUDCardsService,
     private gameEngine: GameEngine,
     private gameEvents: GameEvents,
     private mapEngine: MapEngine,
@@ -134,7 +123,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
               );
             case GameEvent.WinterOutcome:
 
-              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
 
                 this.mapEngine.loadOutcome({
                   area: area,
@@ -144,14 +133,14 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Winter'
                   },
                   messages: [
-                    { color: 'white', label: 'Frostbite sets in' }
+                    { color: 'white', label: 'Armies start to freeze to death' }
                   ]
                 });
               });
               return EMPTY;
             case GameEvent.SummerOutcome:
 
-              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
 
                 this.mapEngine.loadOutcome({
                   area: area,
@@ -161,24 +150,93 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                     label: 'Summer'
                   },
                   messages: [
-                    { color: 'white', label: 'Dehydration sets in' }
+                    { color: 'white', label: 'Armies start dying from dehydration' }
                   ]
                 });
               });
               return EMPTY;
             case GameEvent.AutumnOutcome:
 
-              (e.data as SeasonOutcomeData).affectedAreas.forEach((area) => {
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
 
                 this.mapEngine.loadOutcome({
                   area: area,
                   image: 'assets/SVG/autumn.svg',
                   title: {
-                    color: '#82D0D3',
+                    color: '#82D0D3', // TODO: Change color
                     label: 'Autumn'
                   },
                   messages: [
-                    { color: 'white', label: 'Rain causes floods' }
+                    { color: 'white', label: 'Massive floods causes armies to drown' }
+                  ]
+                });
+              });
+              return EMPTY;
+            case GameEvent.PandemicOutcome:
+
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
+
+                this.mapEngine.loadOutcome({
+                  area,
+                  image: 'assets/SVG/grim-reaper.svg',
+                  title: {
+                    color: 'red',
+                    label: this.cardsService.getCard(CardIDs.pandemic).config.title
+                  },
+                  messages: [
+                    { color: 'white', label: 'Death, only death...' }
+                  ]
+                });
+              });
+
+              return EMPTY;
+            case GameEvent.BubonicPlagueOutcome:
+
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
+
+                this.mapEngine.loadOutcome({
+                  area,
+                  image: 'assets/SVG/plague-doctor.svg',
+                  title: {
+                    color: 'red',
+                    label: this.cardsService.getCard(CardIDs.bubonicPlague).config.title
+                  },
+                  messages: [
+                    { color: 'white', label: `No one saw it coming...` }
+                  ]
+                });
+              });
+              return EMPTY;
+            case GameEvent.FamineOutcome:
+
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
+
+                this.mapEngine.loadOutcome({
+                  area,
+                  image: 'assets/SVG/human-skull.svg',
+                  title: {
+                    color: 'red',
+                    label: this.cardsService.getCard(CardIDs.famine).config.title
+                  },
+                  messages: [
+                    { color: 'white', label: 'Hunger... and death.' }
+                  ]
+                });
+              });
+              return EMPTY;
+            case GameEvent.PoisonFoodStoragesOutcome:
+
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
+
+                this.mapEngine.loadOutcome({
+                  area,
+                  image: 'assets/SVG/human-skull.svg', // TODO: Change image
+                  title: {
+                    color: '#8fb239',
+                    label: this.cardsService.getCard(CardIDs.poisonFoodStorages).config.title
+                  },
+                  messages: [
+                    { color: 'white', label: `Armies die within minutes...` }
                   ]
                 });
               });
@@ -199,6 +257,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       filter((result) => {
 
         if (result.session.state.ended) {
+          this.cache.setSession(result.session); // Want the last session state for the summary page
           this.onEnded();
           return false;
         }
@@ -214,7 +273,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         });
 
         if (result.session.state.started) {
-          console.log(2)
           result = this.mapEngine.updateMap(result);
         }
 
@@ -253,11 +311,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  onMapReady(e) {
-    this.areas = e.areas;
-    this.cd.detectChanges();
-  }
-
   onEnded() {
     this.shouldQuitOnDestroy = false;
     this.router.navigateByUrl('/summary');
@@ -266,5 +319,24 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   onError() {
     this.shouldQuitOnDestroy = false;
     this.router.navigateByUrl('/error');
+  }
+
+  emitWithDelay(areas: Area[], delayBy: number, onEmit: (area: Area) => void) {
+
+    const sub = new Subject();
+
+    from(areas)
+      .pipe(
+        takeUntil(sub),
+        concatMap(val => of(val).pipe(
+          delay(delayBy),
+          first()
+        )),
+        finalize(() => sub.next())
+      )
+      .subscribe((area) => {
+        onEmit(area);
+      }
+    );
   }
 }

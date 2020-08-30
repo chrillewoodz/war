@@ -11,7 +11,7 @@ import { ArmyType, Armies, PipeResult, Area, SessionState, ArmiesToDeploy } from
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
-import { exhaust, getSelectedAreaFromResult, getSelectedConnectionFromResult, getTotalArmiesFromState, getTotalArmiesInArea, getTotalPowerOfArea } from '../helpers';
+import { exhaust, getSelectedAreaFromResult, getSelectedConnectionFromResult, getTotalArmiesFromState, getTotalArmiesInArea, getTotalPowerOfArea, isMyTurn } from '../helpers';
 
 interface Option {
   label: string;
@@ -35,14 +35,16 @@ interface ArmySelectionConfig {
 })
 
 export class HUDActionsComponent {
-  @Input() isMyTurn: boolean;
   @Input() set result(result: PipeResult) {
 
     this._result = result;
 
-    if (!result || !this.isMyTurn) {
+    if (!result || !isMyTurn) {
       return;
     }
+
+    // Can't pass this as an input because it becomes undefined before we get the result
+    this.isMyTurn = isMyTurn(result);
 
     this.closeArmySelectionMenu();
     // TODO: Get both using 1 function to avoid double loops
@@ -68,7 +70,7 @@ export class HUDActionsComponent {
           option.disabled = true;
         }
         else if (option.actionType === Action.Attack) {
-          if ((!this.selectedConnection || isConnectionOwnedBySelf)) {
+          if ((!this.selectedConnection || isConnectionOwnedBySelf || getTotalArmiesInArea(this.selectedArea, true) === 0)) {
             option.disabled = true;
           }
           else {
@@ -112,6 +114,7 @@ export class HUDActionsComponent {
 
   private _result: PipeResult;
 
+  public isMyTurn: boolean;
   public selectedArea: Area;
   public selectedAreaPower: number;
   public selectedConnection: Area;
@@ -197,9 +200,16 @@ export class HUDActionsComponent {
 
       this.armies = this.armies.map((army) => {
 
-        if (army.type === ArmyType.Soldiers || army.type === ArmyType.Horses ||army.type === ArmyType.GatlingGuns) {
+        if (army.type === ArmyType.Soldiers || army.type === ArmyType.Horses || army.type === ArmyType.GatlingGuns) {
           if (action !== Action.Spy) {
             army.shouldShow = true;
+
+            if (this.selectedArea.state.armies[army.type].amount <= 0) {
+              army.isDisabled = true;
+            }
+            else {
+              army.isDisabled = false;
+            }
           }
           else {
             army.shouldShow = false;
@@ -338,7 +348,7 @@ export class HUDActionsComponent {
         switch (this.armySelectionConfig.currentAction) {
           case Action.Attack:
             return this.logger.log({
-              message: `${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} !`
+              message: `${this.logger.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} is attacking ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} !`
             })
             .pipe(
               first(),
@@ -346,7 +356,7 @@ export class HUDActionsComponent {
             );
           case Action.Deploy:
             return this.logger.log({
-              message: `Reports say reinforcements for ${this.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} arrived near ${this.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`,
+              message: `Reports say reinforcements for ${this.logger.getColoredString(self.extras.faction.colorRGB, self.extras.faction.name)} arrived near ${this.logger.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`,
             })
             .pipe(
               first(),
@@ -354,7 +364,7 @@ export class HUDActionsComponent {
             );
           case Action.Move:
             return this.logger.log({
-              message: `Reports say there was movement of troops around ${this.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`
+              message: `Reports say there was movement of troops around ${this.logger.getColoredString(this.selectedArea.state.occupiedBy?.extras.faction.colorRGB, this.selectedArea.name)} ...`
             })
             .pipe(
               first(),
@@ -362,7 +372,7 @@ export class HUDActionsComponent {
             );
           case Action.Spy:
             return this.logger.log({
-              message: `Rumours around ${this.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} are saying that spies might have infiltrated their territory ...`
+              message: `Rumours around ${this.logger.getColoredString(this.selectedConnection.state.occupiedBy?.extras.faction.colorRGB || '#d8c4a6', this.selectedConnection.name)} are saying that spies might have infiltrated their territory ...`
             })
             .pipe(
               first(),
@@ -379,10 +389,6 @@ export class HUDActionsComponent {
       })
     )
     .subscribe();
-  }
-
-  private getColoredString(color: string, content: string) {
-    return `<span style="color: ${color};">${content}</span>`
   }
 
   actionComplete() {
@@ -448,5 +454,13 @@ export class HUDActionsComponent {
 
       default: exhaust(this.armySelectionConfig.currentAction);
     }
+  }
+
+  optionTrackBy(i: number, option: Option) {
+    return option.actionType;
+  }
+
+  armiesTrackBy(i: number, army: any) {
+    return army.type;
   }
 }

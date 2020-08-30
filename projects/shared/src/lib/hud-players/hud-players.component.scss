@@ -18,14 +18,17 @@
   align-items: center;
   line-height: 50px;
   padding: 0 15px;
-  background-color: #8c7855;
+  background-color: #ddc9a4;
 
   &.empty-player {
     opacity: 0.5;
   }
 
   &.self {
-    background-color: darken($bgPrimaryRGB, 10%);
+
+    .self-indicator {
+      display: inline;
+    }
   }
 
   &.disconnected {
@@ -39,8 +42,15 @@
   }
 
   &.current-turn {
-    background-color: rgb(3, 83, 90);
+
+    * {
+      color: white;
+    }
   }
+}
+
+.self-indicator {
+  display: none;
 }
 
 .player-img {

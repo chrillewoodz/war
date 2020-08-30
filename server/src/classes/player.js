@@ -40,6 +40,14 @@ class Player {
     this.state.lastActiveAt = new Date().toISOString();
   }
 
+  isActivePlayer() {
+    return !this.state.defeated && !this.state.resigned && !this.state.quit;
+  }
+
+  defeated() {
+    this.state.defeated = true;
+  }
+
   ready() {
     this.state.ready = true;
   }

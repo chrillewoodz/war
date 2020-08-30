@@ -1,3 +1,5 @@
+import { HUDLoggerService } from './../../hud-logger/hud-logger.service';
+import { first, map, switchMap } from 'rxjs/operators';
 import { ActionPointsApi } from './../../action-points/action-points.service';
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
@@ -19,6 +21,7 @@ export class CardComponent {
 
   constructor(
     private cardsService: HUDCardsService,
+    private logger: HUDLoggerService,
     private apa: ActionPointsApi,
     private socketApi: SocketApi
   ) {}
@@ -26,9 +29,33 @@ export class CardComponent {
   play() {
 
     if (!this.disabled && this.cardsService.canPlayCard(this.info.cost)) {
+
       this.hideCost(); // Sometimes it gets stuck showing the cost after the card is used
-      const newState = this.cardsService.use(this.info.id);
-      this.socketApi.update(true, newState);
+      const responseObs = this.cardsService.use(this.info.id, this.deckIndex, this.logger);
+
+      responseObs.pipe(
+        first(),
+        switchMap((res) => {
+
+          return this.socketApi.update(true, res.newState).pipe(
+            first(),
+            map(() => res)
+          );
+        })
+      )
+      .subscribe((res) => {
+
+        if (this.info.gameEvent) {
+
+          if (!res.extras?.affectedAreas) {
+            throw new Error('affectedAreas was not returned from card action');
+          }
+
+          this.socketApi.event(true, this.info.gameEvent, {
+            affectedAreas: res.extras.affectedAreas
+          });
+        }
+      })
     }
   }
 

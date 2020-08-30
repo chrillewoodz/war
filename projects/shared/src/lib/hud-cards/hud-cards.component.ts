@@ -1,13 +1,30 @@
 import { CardConfig } from './../interfaces';
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { Card } from '../interfaces';
 import { HUDCardsService } from './hud-cards.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'hud-cards',
   templateUrl: './hud-cards.component.html',
   styleUrls: ['./hud-cards.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('card', [
+      transition(':enter', [
+        style({ transform: 'translateY(100%)' }),
+        animate('500ms', style({ transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        style({ 'pointer-events': 'none' }),
+        animate('350ms', style({
+          transform: 'translate3d(-250%, -150%, 0) rotate(-15deg) scale(1.2)'
+        })),
+        animate('500ms', style({
+          opacity: 0
+        }))
+      ])
+    ])
+  ]
 })
 
 export class HUDCardsComponent {
@@ -29,4 +46,8 @@ export class HUDCardsComponent {
   private _cards: any[];
 
   constructor(private cardsService: HUDCardsService) {}
+
+  cardTrackBy(i: number, card: CardConfig) {
+    return card.id;
+  }
 }

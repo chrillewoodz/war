@@ -60,9 +60,6 @@ hud-cards {
 }
 
 hud-settings {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
   z-index: 1000;
   animation: from-right 1500ms ease;
   animation-fill-mode: forwards;

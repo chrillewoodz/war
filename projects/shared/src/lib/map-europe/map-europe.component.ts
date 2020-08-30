@@ -1,3 +1,4 @@
+import { Area } from './../interfaces';
 import { AfterViewInit, Component, Input, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { MapEngine } from '../map.engine';
 import { GameCache } from '../game.cache';
@@ -50,5 +51,9 @@ export class MapEuropeComponent implements AfterViewInit {
       // const areaCoords = this.mapEngine.screenToSVGCoordinates(this.map.nativeElement, event.clientX, event.clientY);
       // console.log('AREA_NAME', area?.name, 'AREA_COORDS', areaCoords);
     }
+  }
+
+  trackByArea(i: number, area: Area) {
+    return area.areaId;
   }
 }
