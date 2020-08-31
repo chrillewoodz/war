@@ -53,7 +53,7 @@
   //       const activePlayersLeft = session.activePlayersLeft();
 
   //       // Has started and was updated in last 2 minutes
-  //       if (isStarted && diff < 2 && activePlayersLeft >= 2) {
+  //       if (isStarted && diff < 2 && activePlayersLeft.length >= 2) {
   //         console.log(session.sessionId, ` was not removed. It was active in the last 2 mins. Diff: ${diff}`);
   //         return;
   //       }

@@ -1,3 +1,7 @@
 - Access token access för socket.io för att förhindra unauthorized use
 - Ladda upp på en server
 - 2 starting areas in 2 player game
+- Unsub from map engine init when going to lobby
+- Run cron jobs in production and test if they work properly
+- Kort för Viva la resistance
+- Lös problemet med att man kan dö innan man fått köra sin första runda, förslag: Gör så att man inte kan anfalla varandra första 2-3 rundorna

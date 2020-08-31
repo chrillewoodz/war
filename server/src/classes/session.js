@@ -79,30 +79,49 @@ class Session {
 
   changeTurn() {
 
-    const players = Object.keys(this.state.players);
+    const players = Object.keys(this.state.players)
+      .map((playerId) => this.state.players[playerId]);
 
     if (this.state.currentTurn === null) {
-      this.state.currentTurn = this.state.players[players[0]];
+      this.state.currentTurn = players[0];
     }
     else {
-      const currentIndex = players.indexOf(this.state.currentTurn.clientId);
-      let newIndex;
 
-      switch (currentIndex) {
-        case 0: newIndex = 1; break;
-        case 1: newIndex = players.length > 2 ? 2 : 0; break;
-        case 2: newIndex = players.length > 3 ? 3 : 0; break;
-        case 3: newIndex = 0; break;
+      const activePlayers = players.filter((player) => {
+
+        if (player.isActivePlayer()) {
+          return true;
+        }
+      });
+
+      let nextPlayer;
+
+      for (let i = 0; i < activePlayers.length; i++) {
+
+        if (this.state.currentTurn.clientId === activePlayers[i].clientId) {
+
+          const _nextPlayer = activePlayers[i + 1];
+
+          if (_nextPlayer) {
+            nextPlayer = _nextPlayer;
+            break;
+          }
+        }
       }
 
-      if (newIndex === undefined) {
+      if (!nextPlayer) {
+        this.state.currentTurn = activePlayers[0];
+      }
+      else {
+        this.state.currentTurn = nextPlayer;
+      }
+
+      if (this.state.currentTurn === undefined || this.state.currentTurn === null) {
         throw new Error('Could not determine next player turn');
       }
 
-      this.state.currentTurn = this.state.players[players[newIndex]];
-
       // When all players have played their turn, increase the round tracker
-      if (newIndex === 0) {
+      if (this.state.currentTurn.clientId === players[0].clientId) {
         this.state.currentRound += 1;
 
         // Every 3 rounds change the season
@@ -118,8 +137,8 @@ class Session {
       }
 
       // Also reset the action points
-      players.forEach((playerId) => {
-        this.state.players[playerId].state.actionPoints.left = 20;
+      players.forEach((player) => {
+        this.state.players[player.clientId].state.actionPoints.left = 20;
       });
     }
   }
@@ -162,6 +181,20 @@ class Session {
      */
     const player = this.state.players[clientId];
           player.ready();
+  }
+
+  playerResigned(clientId) {
+
+    if (this.state.started) {
+      /**
+       * @type {Player}
+       */
+      const player = this.state.players[clientId];
+            player.resign();
+    }
+    else {
+      this.removePlayer(clientId);
+    }
   }
 
   playerQuit(clientId) {
@@ -223,8 +256,7 @@ class Session {
         }
 
         return !isResigned && !hasQuit && !isDefeated && !isInactive;
-      })
-      .length;
+      });
 
     return activePlayersLeft;
   }

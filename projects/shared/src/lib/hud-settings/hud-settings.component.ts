@@ -1,7 +1,7 @@
-import { GameEngine } from '../game.engine';
+import { first } from 'rxjs/operators';
+import { SocketApi } from './../socket.api';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { GameCache } from '../game.cache';
-import { Socket } from 'ngx-socket-io';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,9 +18,8 @@ export class HUDSettingsComponent  {
 
   constructor(
     private cache: GameCache,
-    private gameEngine: GameEngine,
     private router: Router,
-    private socket: Socket
+    private socketApi: SocketApi
   ) {}
 
   toggle() {
@@ -32,7 +31,13 @@ export class HUDSettingsComponent  {
   }
 
   resign() {
-    this.socket.emit('resign', { sessionId: this.sessionId, clientId: this.cache.clientId });
+
+    const confirmed = confirm('Are you sure you want to resign?');
+
+    if (confirmed) {
+      this.socketApi.quit(true, true);
+      this.close();
+    }
   }
 
   quit() {
@@ -40,7 +45,12 @@ export class HUDSettingsComponent  {
     const confirmed = confirm('Are you sure you want to quit the game?');
 
     if (confirmed) {
-      this.router.navigateByUrl('');
+
+      this.socketApi.quit(true).pipe(
+        first()
+      ).subscribe(() => {
+        this.router.navigateByUrl('');
+      });
     }
   }
 }

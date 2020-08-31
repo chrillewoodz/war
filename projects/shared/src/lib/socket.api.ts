@@ -63,13 +63,14 @@ export class SocketApi {
     return this.socketResponse$(this.socketEvents.UPDATE_SUCCESS);
   }
 
-  quit(emitToServer: boolean) {
+  quit(emitToServer: boolean, resigned?: boolean) {
 
     if (emitToServer) {
 
       this.socket.emit(this.socketEvents.QUIT, {
         sessionId: this.cache.sessionId,
-        clientId: this.cache.clientId
+        clientId: this.cache.clientId,
+        resigned: resigned
       });
     }
 

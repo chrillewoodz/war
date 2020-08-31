@@ -34,8 +34,10 @@ function getUnusedFaction(session) {
   const _asArray = [...asArray]
     .filter((f) => factionsUsed.indexOf(f.name) === -1);
 
+  const randomIndex = Math.floor(Math.random() * (_asArray.length - 1));
+
   // Return a random faction based on the factions who are not used
-  return _asArray[Math.floor(Math.random() * (asArray.length - 1))];
+  return _asArray[randomIndex];
 }
 
 module.exports = {

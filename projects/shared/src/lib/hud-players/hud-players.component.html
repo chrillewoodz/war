@@ -13,7 +13,7 @@
         <img class="player-img" src="assets/SVG/{{player.extras.faction.name}}.svg" alt="Flag">
         <span><span class="self-indicator">(You)</span> {{player.extras.faction.name}}</span>
         <div class="player-status">
-          <img *ngIf="player.state.quit" class="status-quit" src="assets/SVG/human-skull.svg" alt="Human skull">
+          <img *ngIf="player.state.quit || player.state.defeated || player.state.resigned" class="status-quit" src="assets/SVG/human-skull.svg" alt="Human skull">
           <span *ngIf="player.state.ready && !result?.session.state?.started" class="status-ready">
             <i class="fas fa-check"></i>
           </span>

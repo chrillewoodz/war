@@ -25,20 +25,47 @@ const fn = function(io, socket, ev, storage) {
 
     if (session) {
 
-      session.playerQuit(ev.clientId);
-      socket.leave(session.sessionId);
+      if (ev.resigned) {
+        session.playerResigned(ev.clientId);
+      }
+      else {
+        session.playerQuit(ev.clientId);
+      }
 
       const activePlayersLeft = session.activePlayersLeft();
 
-      if (activePlayersLeft === 1) {
+      if (activePlayersLeft.length === 1) {
         session.end();
+        session.state.winner = activePlayersLeft[0];
         storage.set(session);
       }
-      else if (activePlayersLeft === 0) {
+      else if (activePlayersLeft.length === 0) {
         storage.remove(session.sessionId);
+      }
+      else {
+
+        if (session.state.currentTurn.clientId === ev.clientId) {
+
+          const winner = session.checkWinCondition();
+
+          if (winner) {
+            session.state.winner = winner;
+            session.end();
+          }
+          else {
+            session.changeTurn();
+          }
+
+          storage.set(session);
+        }
       }
 
       io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+
+      // If you quit, then you should leave
+      if (!ev.resigned) {
+        socket.leave(session.sessionId);
+      }
     }
     else {
       throw new Error('No game session with that id');
