@@ -1,9 +1,19 @@
 (async () => {
-  const app = require('express')();
+  const express = require('express');
+  const app = express();
   const http = require('http').Server(app);
   const io = require('socket.io')(http);
   const schedule = require('node-schedule');
   const differenceInMinutes = require('date-fns/differenceInMinutes');
+
+  if (process.env.NODE_ENV === 'production') {
+
+    app.use(express.static(__dirname + '/dist/war'));
+
+    app.get('/*', function(req, res) {
+      res.sendFile(path.join(__dirname+'/dist/war/index.html'));
+    });
+  }
 
   // Events
   const onGet = require('./events/on-get');

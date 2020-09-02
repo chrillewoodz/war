@@ -7,7 +7,7 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "node server.js",
+    "start": "cd server && npm run start:prod",
     "build": "ng build shared && ng build --prod",
     "test": "ng test",
     "lint": "ng lint",

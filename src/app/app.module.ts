@@ -1,3 +1,4 @@
+import { environment } from './../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,7 +11,7 @@ import { SocketIoModule, SocketIoConfig, Socket } from 'ngx-socket-io';
 import { GameCache } from 'shared';
 
 const config: SocketIoConfig = {
-  url: 'http://localhost:4201',
+  url: environment.socketURL,
   options: {}
 };
 
