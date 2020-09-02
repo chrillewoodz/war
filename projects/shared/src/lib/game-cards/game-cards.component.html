@@ -1,8 +1,0 @@
-<div class="cards-container">
-  <ul class="cards">
-    <li class="card" *ngFor="let card of cards; let i = index" [ngStyle]="{left: (i * 100) + 'px', 'z-index': '-' + i}">
-      <img class="card-img" src="assets/SVG/{{card.img}}.svg">
-      <h4 class="card-title">{{card.title}}</h4>
-    </li>
-  </ul>
-</div>

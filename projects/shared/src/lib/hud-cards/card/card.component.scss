@@ -1,0 +1,105 @@
+:host {
+  position: absolute;
+  display: block;
+  transition: transform 550ms ease;
+
+  &:hover {
+    transform: translate3d(0, -50%, 0) rotate(10deg) !important;
+    z-index: 999 !important;
+
+    &:before {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .card-content {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+
+  &:before {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+.card-img {
+  width: 200px;
+  border-radius: 20px;
+}
+
+.card-content {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 550ms ease;
+  text-align: center;
+}
+
+.card-title {
+  padding: 0 25px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: gold;
+}
+
+.card-description {
+  margin-bottom: 20px;
+  color: white;
+}
+
+.card-cost {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-cost-bubble {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background-color: green;
+}
+
+.card-cost-label {
+  color: white;
+  font-size: 20px;
+}
+
+.card-info-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  text-align: right;
+}
+
+.card-star {
+  display: block;
+  margin-bottom: 10px;
+  color: beige;
+
+  &.filled {
+    color: gold;
+  }
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}

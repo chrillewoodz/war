@@ -1,0 +1,389 @@
+@import './src/_variables';
+
+.hud-actions-container {
+  position: relative;
+  width: 350px;
+  height: 360px;
+  padding: 0;
+  border-top-right-radius: 50%;
+  border-bottom-left-radius: 50%;
+  z-index: 500;
+  background-image: url('assets/1x/bloody-background.jpg');
+  background-size: cover;
+  background-position: right;
+}
+
+.hud-actions-btn {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border-width: 8px;
+  border-style: solid;
+  border-radius: 50%;
+  z-index: 10;
+  transition: all 350ms ease;
+  cursor: pointer;
+
+  &:not(:disabled):hover {
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+}
+
+.hud-actions-action-btn {
+  border-width: 4px;
+  background-position: 50% 50%;
+  background-size: cover;
+  color: white;
+}
+
+.hud-actions-Attack-btn {
+  top: 100px;
+  left: 315px;
+  background-color: darkred;
+  border-color: #9e0101;
+
+  &:not(:disabled):hover {
+    background-color: lighten(darkred, 5%);
+  }
+}
+
+.hud-actions-Deploy-btn {
+  top: -35px;
+  left: 190px;
+  background-color: rgb(3, 83, 90);
+  border-color: lighten(rgb(3, 83, 90), 10%);
+
+  &:not(:disabled):hover {
+    background-color: lighten(rgb(3, 83, 90), 5%);
+  }
+}
+
+.hud-actions-Move-btn {
+  top: -35px;
+  left: 110px;
+  background-color: #3eae5c;
+  border-color: lighten(#3eae5c, 10%);
+
+  &:not(:disabled):hover {
+    background-color: lighten(#3eae5c, 5%);
+  }
+}
+
+.hud-actions-Spy-btn {
+  top: 180px;
+  left: 315px;
+  background-color: rgb(245, 120, 74);
+  border-color: lighten(rgb(245, 120, 74), 10%);
+
+  &:not(:disabled):hover {
+    background-color: lighten(rgb(245, 120, 74), 5%);
+  }
+}
+
+.hud-actions-cancel-btn {
+  bottom: -10px;
+  left: -10px;
+  width: 100px;
+  height: 100px;
+  background-color: $bgPrimaryRGB;
+  border-color: darken($bgPrimaryRGB, 10%);
+  color: white;
+}
+
+.hud-actions-end-turn-btn {
+  top: -50px;
+  left: -10px;
+  width: 100px;
+  height: 100px;
+  border-color: #9e0101;
+}
+
+.hud-actions-areas {
+  position: relative;
+  height: 100%;
+  border-top-right-radius: 50%;
+  border-bottom-left-radius: 50%;
+  overflow: hidden;
+
+  &.hud-actions-single-area {
+
+    .hud-actions-area-wrapper {
+      height: 100%;
+    }
+
+    .hud-actions-area-selected-area {
+      padding-top: 0;
+      border-bottom: 0;
+
+      .hud-actions-area-army-img {
+        width: 40px;
+      }
+    }
+  }
+
+  .hud-actions-no-selection {
+    justify-content: center;
+  }
+
+  .hud-actions-area-selected-area {
+    padding-top: 40px;
+    padding-left: 60px;
+    border-bottom: 2px solid black;
+  }
+
+  .hud-actions-area-connection {
+    justify-content: flex-end;
+    padding-right: 60px;
+  }
+}
+
+.hud-actions-area-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+
+  h2 {
+    padding: 5px 20px;
+  }
+}
+
+.hud-actions-area {
+  position: relative;
+  z-index: 1;
+  color: white;
+  font-size: 2rem;
+}
+
+.hud-actions-area-power {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: #9e0101;
+  font-size: 20px;
+}
+
+.hud-actions-area-name-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  > h2 {
+    margin-bottom: 0;
+  }
+}
+
+action-points {
+  position: absolute;
+  top: 0;
+  left: 257px;
+  z-index: 10;
+}
+
+.army-selection-menu {
+  position: absolute;
+  bottom: 0;
+  left: 430px;
+  width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(150%);
+  border-radius: 10% 10% 20% 20%;
+  background-color: $bgPrimaryRGB;
+  text-align: center;
+  transition: all 500ms ease;
+
+  h4 {
+    padding-top: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid black;
+  }
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .hud-actions-img-container {
+    margin: 0 10px;
+
+    .hud-actions-img {
+      width: 36px;
+      border-radius: 8px;
+    }
+
+    .hud-actions-input {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      padding: 0;
+      border: none;
+      background: none;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+
+  .army-selection-type {
+
+    &.disabled {
+      opacity: 0.5;
+
+      * {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .hud-actions-max,
+  .hud-actions-min {
+    padding: 3px 10px;
+  }
+
+  .hud-actions-max {
+    margin-bottom: 5px;
+    background-color: #03535a;
+  }
+
+  .hud-actions-min {
+    margin-top: 5px;
+    background-color: #346a9a;
+  }
+
+  .hud-actions-increase,
+  .hud-actions-decrease {
+    padding: 0;
+    border: 0;
+  }
+
+  .hud-actions-increase {
+    margin-bottom: 5px;
+  }
+
+  .hud-actions-decrease {
+    margin-top: 5px;
+  }
+
+  .hud-actions-confirm {
+    margin-top: 10px;
+  }
+
+  .hud-actions-bottom-row {
+    padding-top: 10px;
+  }
+}
+
+.hud-actions-btn-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(30%, -30%);
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 24px;
+  z-index: 1;
+}
+
+.hud-current-season {
+  bottom: -10px;
+  left: 305px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  cursor: default;
+  transition: all 1000ms ease;
+
+  &:hover {
+    transform: initial !important;
+  }
+
+  &.hud-season-0 {
+    background-color: #1385c3;
+    border-color: darken(#1385c3, 5%);
+  }
+
+  &.hud-season-1 {
+    background-color: #3E8A00;
+    border-color: darken(#3E8A00, 5%);
+
+    .hud-season-img {
+      width: 40px;
+    }
+  }
+
+  &.hud-season-2 {
+    background-color: #FFBE6A;
+    border-color: darken(#FFBE6A, 10%);
+  }
+
+  &.hud-season-3 {
+    background-color: #B48400;
+    border-color: darken(#B48400, 5%);
+  }
+}
+
+.hud-season-img {
+  width: 50px;
+  animation: season-img 1000ms ease;
+  animation-fill-mode: forwards;
+}
+
+.hud-actions-area-armies {
+  display: flex;
+}
+
+.hud-actions-area-army {
+  position: relative;
+  padding: 0 5px;
+}
+
+.hud-actions-area-army-img {
+  width: 24px;
+  border-radius: 10px;
+}
+
+.hud-actions-area-army-amount {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+}
+
+@keyframes season-img {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}

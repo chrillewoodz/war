@@ -1,0 +1,4 @@
+- Access token access för socket.io för att förhindra unauthorized use
+- Ladda upp på en server
+- Unsub from map engine init when going to lobby
+- Hantera när man gör en action innan timern håller på att gå ut

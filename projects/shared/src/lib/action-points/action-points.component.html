@@ -1,5 +1,7 @@
-<div class="action-points-container">
-  <ul class="action-points">
-    <li class="action-point" *ngFor="let point of points" [ngClass]="{available: point?.available, cost: point?.cost}"></li>
-  </ul>
+<div class="action-points-container" [ngClass]="{'ap-medium': APLeft < 13, 'ap-low': APLeft < 8, 'ap-empty': APLeft === 0}">
+  <div class="action-points-text">
+    <h6 class="action-points-title">AP</h6>
+    <h3 class="action-points-left" [ngClass]="{cost: cost}">{{(APLeft - cost) < 0 ? 0 : (APLeft - cost)}}</h3>
+  </div>
+  <div class="action-points-inner" [ngStyle]="{height: height + '%'}"></div>
 </div>

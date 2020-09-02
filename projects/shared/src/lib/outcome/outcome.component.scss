@@ -1,0 +1,41 @@
+@import './src/_variables';
+
+.outcome-container {
+  position: fixed;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  animation: animate 2800ms ease;
+  animation-fill-mode: forwards;
+  pointer-events: none;
+}
+
+.outcome-img {
+  width: 30px;
+  margin-bottom: 10px;
+}
+
+.outcome-title {
+  margin-bottom: 5px;
+}
+
+.outcome-message {
+  margin-bottom: 5px;
+}
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate3d(-50%, calc(-50% - 20px), 0);
+  }
+  60%, 90% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate3d(-50%, calc(-50% - 80px), 0);
+  }
+}

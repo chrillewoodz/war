@@ -1,0 +1,26 @@
+<div class="session-wrapper">
+
+  <ng-template outcomeHost></ng-template>
+
+  <ng-container *ngIf="result?.session?.state.started">
+
+    <hud-timer [percent]="elapsedTime"></hud-timer>
+    <hud-cards [cards]="result?.self.state.cards" [disabled]="!isMyTurn"></hud-cards>
+    <hud-settings></hud-settings>
+    <hud-actions [result]="result"></hud-actions>
+
+    <div class="hud hud-left">
+      <hud-stats [result]="result"></hud-stats>
+    </div>
+  </ng-container>
+
+  <div class="hud hud-right">
+    <hud-players [result]="result"></hud-players>
+    <hud-logger [result]="result"></hud-logger>
+  </div>
+
+  <div class="map-container" [ngSwitch]="mapType">
+    <map-europe #mapInstance *ngSwitchCase="'europe'" [result]="result" [isMyTurn]="isMyTurn"></map-europe>
+  </div>
+
+</div>

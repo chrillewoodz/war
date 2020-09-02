@@ -1,0 +1,7 @@
+<div class="outcome-container" [ngStyle]="{left: x + 'px', top: y + 'px'}">
+  <img class="outcome-img" [src]="config?.image">
+  <h3 class="outcome-title" [ngStyle]="{color: config?.title.color}">{{config?.title.label}}</h3>
+  <ng-container *ngFor="let msg of config?.messages">
+    <h5 class="outcome-message" [ngStyle]="{color: msg.color}">{{msg.label}}</h5>
+  </ng-container>
+</div>

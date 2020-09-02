@@ -1,0 +1,31 @@
+.nb-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 4px;
+  border-radius: 50%;
+  z-index: 0;
+  box-sizing: content-box;
+  color: white;
+
+  &.nb-type-power {
+    background-color: #9e0101;
+  }
+
+  &.nb-type-amount {
+    background-color: rgb(3, 83, 90);
+  }
+
+  &.nb-pos-bottom-left {
+    bottom: -10px;
+    left: -10px;
+  }
+
+  &.nb-pos-bottom-right {
+    bottom: -10px;
+    right: -10px;
+  }
+}

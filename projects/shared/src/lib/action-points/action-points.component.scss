@@ -1,22 +1,106 @@
-.action-points {
+@import './src/_variables';
 
-  .action-point {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+.action-points-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: darkred;
+
+  &:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 8px solid green;
     border-radius: 50%;
-    box-shadow: 0 2px darkgray;
-    background-color: lightgray;
+    z-index: 2;
+  }
 
-    &.available {
-      background-color: green;
-      box-shadow: 1px 2px darkgreen;
+  &.ap-medium {
+    animation: pulsate 1500ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: #8fb239;
     }
 
-    &.cost {
-      background-color: red;
-      box-shadow: 1px 2px darkred;
+    .action-points-inner {
+      background-color: darken(#8fb239, 5%);
     }
+  }
+
+  &.ap-low {
+    animation: pulsate 1000ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: #bd5700;
+    }
+
+    .action-points-inner {
+      background-color: darken(#bd5700, 5%);
+    }
+  }
+
+  &.ap-empty {
+    animation: pulsate 250ms ease;
+    animation-iteration-count: infinite;
+
+    &:after {
+      border-color: red;
+    }
+  }
+}
+
+.action-points-inner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  background-color: darken(green, 5%);
+  transition: height 500ms ease;
+}
+
+.action-points-text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.action-points-title {
+  margin-bottom: 5px;
+  border-bottom: 2px solid white;
+  color: white;
+}
+
+.action-points-left {
+  position: relative;
+  margin: 0;
+  z-index: 1;
+  color: white;
+  transition: color 500ms ease;
+
+  &.cost {
+    color: red;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
   }
 }

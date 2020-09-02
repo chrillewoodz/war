@@ -1,0 +1,41 @@
+.lobby-container {
+  height: 100%;
+  background-image: url('/assets/1x/screen-fight.png');
+  background-size: cover;
+  background-position: 50% 50%;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(155, 132, 89, 0.5);
+  }
+}
+
+.lobby-content {
+  height: 100%;
+  padding: 200px;
+}
+
+.lobby-subtitle {
+  margin-bottom: 10px;
+}
+
+.lobby-input {
+  margin-right: 10px;
+}
+
+.lobby-separator {
+  margin: 20px 0;
+}
+
+.error-msg {
+  margin-top: 10px;
+}
+
+.lobby-padding {
+  padding-bottom: 30px;
+}

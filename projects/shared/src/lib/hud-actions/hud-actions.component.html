@@ -1,0 +1,105 @@
+<div class="common-container hud-actions-container">
+  <div class="hud-actions-top-container">
+    <ng-container *ngFor="let option of options; trackBy:optionTrackBy">
+      <button class="btn hud-actions-btn hud-actions-action-btn hud-actions-{{option.actionType}}-btn" type="button" [disabled]="option.disabled" (mouseover)="showCost(option.cost)" (mouseleave)="hideCost()" (click)="option.action(option)">{{option.label}}</button>
+    </ng-container>
+    <action-points [total]="result?.self.state.actionPoints.total" [APLeft]="result?.self.state.actionPoints.left"></action-points>
+  </div>
+  <div class="hud-actions-bottom-container">
+    <button class="btn btn-neutral hud-actions-btn hud-actions-cancel-btn" type="button" (click)="cancel()" [disabled]="!isMyTurn || !selectedArea">Cancel</button>
+    <button class="btn btn-danger hud-actions-btn hud-actions-end-turn-btn" type="button" (click)="endTurn()" [disabled]="!isMyTurn">End turn</button>
+    <div class="hud-actions-btn hud-current-season hud-season-{{result?.session.state.currentSeason}}" [ngSwitch]="result?.session.state.currentSeason">
+      <img class="hud-season-img" src="assets/SVG/winter.svg" *ngSwitchCase="0">
+      <img class="hud-season-img" src="assets/SVG/spring.svg" *ngSwitchCase="1">
+      <img class="hud-season-img" src="assets/SVG/summer.svg" *ngSwitchCase="2">
+      <img class="hud-season-img" src="assets/SVG/autumn.svg" *ngSwitchCase="3">
+    </div>
+  </div>
+  <div class="hud-actions-areas" [ngClass]="{'hud-actions-single-area': !selectedConnection}">
+    <div class="hud-actions-area-wrapper hud-actions-no-selection" *ngIf="!selectedArea && !selectedConnection">
+      <div class="hud-actions-area">
+        <h5>No area(s) selected</h5>
+      </div>
+    </div>
+    <div
+      class="hud-actions-area-wrapper hud-actions-area-selected-area"
+      *ngIf="selectedArea">
+      <div class="hud-actions-area">
+        <h6>Selected:</h6>
+        <div class="hud-actions-area-name-wrapper">
+          <span class="hud-actions-area-power">{{selectedAreaPower}}</span>
+          <h2 [ngStyle]="{'background-color': selectedArea?.state.occupiedBy?.extras.faction.colorRGB}">{{selectedArea?.name}}</h2>
+        </div>
+        <ul class="hud-actions-area-armies">
+          <li class="hud-actions-area-army" *ngFor="let army of selectedArea?.state.armies | keyvalue">
+            <img class="hud-actions-area-army-img" src="assets/SVG/{{army.key}}.svg">
+            <div class="hud-actions-area-army-amount">{{army.value.amount}}</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div
+      class="hud-actions-area-wrapper hud-actions-area-connection"
+      [ngClass]="{owned: selectedConnection?.state.__ui.isOwnedBySelf}"
+      *ngIf="selectedConnection"
+    >
+      <div class="hud-actions-area">
+        <h6 [ngStyle]="{'color': selectedConnection?.state.occupiedBy?.extras.faction.complement}">Selected connection:</h6>
+        <div class="hud-actions-area-name-wrapper">
+          <span class="hud-actions-area-power">{{selectedConnection?.state.__ui.isSpiedOnBySelf || selectedConnection?.state.__ui.isOwnedBySelf ? selectedConnectionPower : '?'}}</span>
+          <h2 [ngStyle]="{'background-color': selectedConnection?.state.occupiedBy?.extras.faction.colorRGB}">{{selectedConnection?.name}}</h2>
+        </div>
+        <ul class="hud-actions-area-armies">
+          <li class="hud-actions-area-army" *ngFor="let army of selectedConnection?.state.armies | keyvalue">
+            <img class="hud-actions-area-army-img" src="assets/SVG/{{army.key}}.svg">
+            <div class="hud-actions-area-army-amount">{{selectedConnection?.state.__ui.isSpiedOnBySelf ? army.value.amount : '?'}}</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="common-container army-selection-menu" [ngClass]="{open: armySelectionConfig.isOpen}" [formGroup]="counts">
+  <button class="btn-neutral hud-actions-btn-close" (click)="closeArmySelectionMenu()">
+    <i class="fas fa-times"></i>
+  </button>
+  <div class="row">
+    <div class="col-12">
+      <h4>{{armySelectionConfig.currentAction}}</h4>
+    </div>
+  </div>
+  <div class="row no-gutters">
+    <ng-container *ngFor="let army of armies; trackBy:armiesTrackBy">
+      <div class="col army-selection-type" [ngClass]="{disabled: army.isDisabled}" *ngIf="army.shouldShow">
+        <div class="row no-gutters align-items-center justify-content-center">
+          <div class="col-12">
+            <button class="btn btn-primary hud-actions-max" (click)="!army.isDisabled && max(army.type)">Max</button>
+          </div>
+          <div class="col-12">
+            <button class="hud-actions-increase" (click)="!army.isDisabled && increase(army.type)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="col-12 hud-actions-img-container">
+            <img class="hud-actions-img" [src]="army.image">
+            <input class="hud-actions-input" type="number" readonly [formControl]="army.formControl">
+          </div>
+          <div class="col-12">
+            <button class="hud-actions-decrease" (click)="!army.isDisabled && decrease(army.type)">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary hud-actions-min" (click)="min(army.type)">Min</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="row no-gutters hud-actions-bottom-row">
+    <div class="col">
+      <button class="btn-primary hud-actions-confirm" type="button" [disabled]="isConfirmBtnDisabled()" (click)="confirm()">Confirm</button>
+    </div>
+  </div>
+</div>

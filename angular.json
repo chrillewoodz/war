@@ -28,8 +28,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/layout.scss"
+              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -93,8 +93,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/layout.scss"
+              "node_modules/@fortawesome/fontawesome-free/css/all.css",
+              "src/styles.scss"
             ],
             "scripts": []
           }

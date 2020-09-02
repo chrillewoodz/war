@@ -1,18 +1,1 @@
-<timer [total]="timePerRound" [timer$]="timer$" (ranOut)="endTurn()"></timer>
-
-<div class="map-container" [ngSwitch]="map" areaHandler>
-  <area-information [areas]="areas"></area-information>
-  <game-logger></game-logger>
-  <area-popup [areas]="areas"></area-popup>
-  <map-europe *ngSwitchCase="'europe'" (mapReady)="onMapReady($event)"></map-europe>
-</div>
-
-<div class="screens">
-  <screen-fight *ngIf="isFightActive" [info]="currentFight" (completed)="fightCompleted($event)"></screen-fight>
-</div>
-
-<footer class="bottom-bar">
-  <game-stats [stats]="stats"></game-stats>
-  <action-points [config]="config"></action-points>
-  <game-cards [cards]="cards"></game-cards>
-</footer>
+<router-outlet></router-outlet>

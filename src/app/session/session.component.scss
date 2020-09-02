@@ -1,0 +1,101 @@
+.session-wrapper {
+  height: 100%;
+  background-color: #346a9a;
+  background-image: url('/assets/SVG/water.svg');
+  background-size: cover;
+}
+
+.hud {
+  position: fixed;
+  padding-top: 30px;
+
+  > * {
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+.hud-left {
+  top: 0;
+  left: 0;
+  width: 110px;
+  padding-left: 20px;
+  animation: from-left 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+.hud-right {
+  top: 0;
+  right: 0;
+  width: 300px;
+  padding-right: 20px;
+  animation: from-right 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+hud-actions {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  animation: from-bottom 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+hud-timer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: from-top 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+hud-cards {
+  position: fixed;
+  left: 1100px;
+  bottom: 160px;
+  z-index: 1000;
+  animation: from-bottom 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+hud-settings {
+  animation: from-right 1500ms ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes from-left {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-right {
+  0% {
+    transform: translate3d(100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-bottom {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes from-top {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}

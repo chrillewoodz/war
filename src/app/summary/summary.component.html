@@ -1,0 +1,9 @@
+<div class="summary-wrapper">
+  <div class="text-center">
+    <h1>Game has ended</h1>
+    <h3 *ngIf="stats?.winner" [ngStyle]="{color: stats?.winner.extras.faction.colorRGB}">{{stats?.winner.extras.faction.name}} is the winner!</h3>
+    <h3 *ngIf="!stats?.winner">There was no winner</h3>
+    <p>We will display some information here in the future, for now though you can start a new game.</p>
+    <button class="btn-primary" (click)="backToLobby()">Back to lobby</button>
+  </div>
+</div>

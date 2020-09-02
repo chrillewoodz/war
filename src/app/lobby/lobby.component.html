@@ -1,0 +1,59 @@
+<div class="lobby-container">
+  <div class="container lobby-content">
+    <div class="row">
+      <div class="col-12 lobby-padding">
+        <h1>Find game by session id</h1>
+        <h6 class="lobby-subtitle">This can be found in the game session settings (by people in the game)</h6>
+        <input class="lobby-input" [formControl]="idCtrl" placeholder="Session id">
+        <button class="btn-primary" [disabled]="idCtrl.invalid" (click)="join(idCtrl.value)">Join</button>
+        <p class="error error-msg">{{joinByIdError$ | async}}</p>
+      </div>
+      <div class="col-12 lobby-padding">
+        <h1>Host</h1>
+        <h6 class="lobby-subtitle">You can host either a private or public game</h6>
+        <button #hostBtn class="btn-primary" (click)="openHostSettings()">Host a game</button>
+        <p class="error error-msg">{{hostError$ | async}}</p>
+      </div>
+      <div class="col-12 lobby-padding">
+        <h1>Join</h1>
+        <h6 class="lobby-subtitle">This will match you with a random game session</h6>
+        <button class="btn-primary" (click)="join()">Join</button>
+        <p class="error error-msg">{{joinError$ | async}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h4>Active users</h4>
+        <p>{{(stats$ | async)?.connections}}</p>
+      </div>
+      <div class="col">
+        <h4>Active games</h4>
+        <p>{{(stats$ | async)?.gamesTotal}}</p>
+      </div>
+      <div class="col">
+        <h4>Available games</h4>
+        <p>{{(stats$ | async)?.gamesAvailable}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<modal id="host-settings" [exceptions]="[hostBtn]">
+  <form [formGroup]="settings" (ngSubmit)="host()" novalidate>
+    <div class="lobby-padding checkbox-group">
+      <input class="checkbox" id="private" type="checkbox" formControlName="private">
+      <label for="private">Private game</label>
+    </div>
+    <div class="lobby-padding">
+      <label class="label" for="min-players">Minimum number of players</label>
+      <input id="min-players" type="number" placeholder="2-4" formControlName="minPlayers">
+      <p class="error error-msg" *ngIf="settings.get('minPlayers').invalid">Must be between 2 and 4</p>
+    </div>
+    <div class="lobby-padding">
+      <label class="label" for="max-players">Maximum number of players</label>
+      <input id="max-players" type="number" placeholder="2-4" formControlName="maxPlayers">
+      <p class="error error-msg" *ngIf="settings.get('maxPlayers').invalid">Must be between 2 and 4</p>
+    </div>
+    <button class="btn-primary" [disabled]="settings.invalid" type="submit">Confirm and host</button>
+  </form>
+</modal>

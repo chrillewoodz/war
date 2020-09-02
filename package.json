@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+    "start": "npm run configs && ng serve",
+    "build": "npm run configs && ng build",
+    "test": "npm run configs && ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "configs": "npm run config:europe",
+    "config:europe": "cp ./server/src/map-configs/europe.json ./projects/shared/src/lib/map-configs/europe.json"
   },
   "private": true,
   "dependencies": {
@@ -19,9 +21,12 @@
     "@angular/platform-browser": "~9.1.7",
     "@angular/platform-browser-dynamic": "~9.1.7",
     "@angular/router": "~9.1.7",
+    "@fortawesome/fontawesome-free": "^5.13.0",
     "animejs": "^3.2.0",
+    "ngx-socket-io": "^3.0.1",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
+    "uuid": "^8.3.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
