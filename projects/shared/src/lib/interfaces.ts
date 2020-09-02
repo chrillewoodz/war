@@ -260,7 +260,8 @@ export enum GameEvent {
   PandemicOutcome = 'pandemic_outcome',
   BubonicPlagueOutcome = 'bubonic_plague_outcome',
   FamineOutcome = 'famine_outcome',
-  PoisonFoodStoragesOutcome = 'posion_food_storages_outcome'
+  PoisonFoodStoragesOutcome = 'posion_food_storages_outcome',
+  ResistanceOutcome = 'resistance_outcome'
 }
 
 export enum SeasonEvent {

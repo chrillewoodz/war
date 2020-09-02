@@ -94,6 +94,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     // Don't restart on refresh/load in production
     const turnSub = this.socketApi.timer<TimerResponse>()
       .subscribe((result) => {
+        console.log(this.elapsedTime, result.percent);
         this.elapsedTime = result.percent;
       }, (err) => {
         console.log(err);
@@ -146,7 +147,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                   area: area,
                   image: 'assets/SVG/summer.svg',
                   title: {
-                    color: '#82D0D3',
+                    color: '#FFBE6A',
                     label: 'Summer'
                   },
                   messages: [
@@ -163,7 +164,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                   area: area,
                   image: 'assets/SVG/autumn.svg',
                   title: {
-                    color: '#82D0D3', // TODO: Change color
+                    color: '#B48400',
                     label: 'Autumn'
                   },
                   messages: [
@@ -240,6 +241,24 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
                   ]
                 });
               });
+              return EMPTY;
+            case GameEvent.ResistanceOutcome:
+
+              this.emitWithDelay((e.data as OutcomeData).affectedAreas, 250, (area) => {
+
+                this.mapEngine.loadOutcome({
+                  area,
+                  image: 'assets/SVG/resistance.svg',
+                  title: {
+                    color: '#08c339',
+                    label: this.cardsService.getCard(CardIDs.resistance1).config.title // doesn't matter which version of the card here, title is the same
+                  },
+                  messages: [
+                    { color: 'white', label: 'Government overthrown...' }
+                  ]
+                });
+              });
+
               return EMPTY;
             default:
               exhaust(e.eventName);

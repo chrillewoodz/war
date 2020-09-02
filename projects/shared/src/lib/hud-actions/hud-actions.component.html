@@ -46,7 +46,7 @@
       <div class="hud-actions-area">
         <h6 [ngStyle]="{'color': selectedConnection?.state.occupiedBy?.extras.faction.complement}">Selected connection:</h6>
         <div class="hud-actions-area-name-wrapper">
-          <span class="hud-actions-area-power">{{selectedConnection?.state.__ui.isSpiedOnBySelf ? selectedConnectionPower : '?'}}</span>
+          <span class="hud-actions-area-power">{{selectedConnection?.state.__ui.isSpiedOnBySelf || selectedConnection?.state.__ui.isOwnedBySelf ? selectedConnectionPower : '?'}}</span>
           <h2 [ngStyle]="{'background-color': selectedConnection?.state.occupiedBy?.extras.faction.colorRGB}">{{selectedConnection?.name}}</h2>
         </div>
         <ul class="hud-actions-area-armies">

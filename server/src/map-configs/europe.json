@@ -30,7 +30,6 @@
   "1": {
     "name": "Russia",
     "connections": [0, 2, 3, 5, 6, 8, 10, 37],
-    "isStartingArea": true,
     "armies": {
       "soldiers": {
         "amount": 12
@@ -254,7 +253,7 @@
   },
   "9": {
     "name": "Armenia",
-    "connections": [9, 10, 40],
+    "connections": [8, 10, 40],
     "armies": {
       "soldiers": {
         "amount": 2
@@ -563,7 +562,6 @@
   "20": {
     "name": "England",
     "connections": [13, 21, 22, 27, 28, 29, 35],
-    "isStartingArea": true,
     "armies": {
       "soldiers": {
         "amount": 10
@@ -648,7 +646,6 @@
   "23": {
     "name": "Italy",
     "connections": [13, 17, 18, 19, 24, 25, 41, 42, 43],
-    "isStartingArea": true,
     "armies": {
       "soldiers": {
         "amount": 8
@@ -1013,7 +1010,6 @@
   "36": {
     "name": "Sweden",
     "connections": [30, 31, 34, 35, 37, 44],
-    "isStartingArea": true,
     "armies": {
       "soldiers": {
         "amount": 8

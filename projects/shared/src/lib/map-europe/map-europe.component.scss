@@ -1,11 +1,12 @@
 .europe-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding-top: 30px;
 
   > div {
-    width: 55%;
+    width: 58%;
+    margin-right: 320px;
   }
 
   &.is-my-turn {

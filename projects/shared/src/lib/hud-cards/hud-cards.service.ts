@@ -21,6 +21,9 @@ export const CardIDs = {
   unleashHell1: 'unleashHell1',
   unleashHell2: 'unleashHell2',
   unleashHell3: 'unleashHell3',
+  resistance1: 'resistance1',
+  resistance2: 'resistance2',
+  resistance3: 'resistance3',
   recruitSpies1: 'recruitSpies1',
   recruitSpies2: 'recruitSpies2',
   recruitSpies3: 'recruitSpies3',
@@ -417,6 +420,119 @@ export class HUDCardsService {
           newState: {
             map: {
               areas: findAndReplace(areas, selectedArea)
+            }
+          }
+        };
+      }
+    },
+    {
+      config: {
+        id: CardIDs.resistance1,
+        image: 'assets/SVG/resistance.svg',
+        title: 'Resistance',
+        description: 'The people in 1 random enemy area will overthrow the government and pledge their allegiance to you instead',
+        cost: 3,
+        gameEvent: GameEvent.ResistanceOutcome
+      },
+      callback: (logger: HUDLoggerService) => {
+
+        return logger.log({
+          message: `${logger.getColoredString('darkred', 'Viva la resistance!')}`,
+        });
+      },
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.resistance1).config.cost),
+      action: () => {
+
+        const self = this.cache.self;
+        const areas = this.cache.session.state.map.areas;
+        const enemyAreas = areas.filter((area) => area.state.occupiedBy.clientId !== self.clientId);
+        const affectedArea = this.overthrowRandomArea(enemyAreas);
+
+        return {
+          extras: {
+            affectedAreas: [affectedArea]
+          },
+          newState: {
+            map: {
+              areas: findAndReplace(areas, affectedArea)
+            }
+          }
+        };
+      }
+    },
+    {
+      config: {
+        id: CardIDs.resistance2,
+        image: 'assets/SVG/resistance.svg',
+        title: 'Resistance',
+        description: 'The people in 2 random enemy areas will overthrow the government and pledge their allegiance to you instead',
+        cost: 5,
+        gameEvent: GameEvent.ResistanceOutcome
+      },
+      callback: (logger: HUDLoggerService) => {
+
+        return logger.log({
+          message: `${logger.getColoredString('darkred', 'Viva la resistance!')}`,
+        });
+      },
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.resistance2).config.cost),
+      action: () => {
+
+        const self = this.cache.self;
+        const areas = this.cache.session.state.map.areas;
+        const enemyAreas = areas.filter((area) => area.state.occupiedBy.clientId !== self.clientId);
+        const affectedAreas = [
+          this.overthrowRandomArea(enemyAreas),
+          this.overthrowRandomArea(enemyAreas)
+        ];
+
+        return {
+          extras: {
+            affectedAreas
+          },
+          newState: {
+            map: {
+              areas
+            }
+          }
+        };
+      }
+    },
+    {
+      config: {
+        id: CardIDs.resistance3,
+        image: 'assets/SVG/resistance.svg',
+        title: 'Resistance',
+        description: 'The people in 4 random enemy areas will overthrow the government and pledge their allegiance to you instead',
+        cost: 14,
+        gameEvent: GameEvent.ResistanceOutcome
+      },
+      callback: (logger: HUDLoggerService) => {
+
+        return logger.log({
+          message: `${logger.getColoredString('darkred', 'Viva la resistance!')}`,
+        });
+      },
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.resistance3).config.cost),
+      action: () => {
+
+        const self = this.cache.self;
+        const areas = this.cache.session.state.map.areas;
+        const enemyAreas = areas.filter((area) => area.state.occupiedBy.clientId !== self.clientId);
+        const affectedAreas = [
+          this.overthrowRandomArea(enemyAreas),
+          this.overthrowRandomArea(enemyAreas),
+          this.overthrowRandomArea(enemyAreas),
+          this.overthrowRandomArea(enemyAreas)
+        ];
+
+        return {
+          extras: {
+            affectedAreas
+          },
+          newState: {
+            map: {
+              areas
             }
           }
         };
@@ -1043,6 +1159,20 @@ export class HUDCardsService {
     _player.state.actionPoints.left -= this.getCard(cardId).config.cost;
 
     return _player;
+  }
+
+  private overthrowRandomArea(enemyAreas: Area[]) {
+
+    const self = this.cache.self;
+    const index = Math.floor(Math.random() * enemyAreas.length);
+    const randomArea = enemyAreas[index];
+
+    randomArea.state.occupiedBy = self;
+
+    // Remove to not randomize the same area twice
+    enemyAreas.splice(index, 1);
+
+    return randomArea;
   }
 
   getRandomCard() {

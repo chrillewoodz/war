@@ -145,19 +145,39 @@ class Session {
 
   setStartingAreas() {
 
-    const players = Object.keys(this.state.players);
-    const shuffledPlayers = players.sort(() => 0.5 - Math.random());
     const areas = this.state.map.areas;
+    const players = Object.keys(this.state.players).map((clientId) => this.state.players[clientId]);
+    const areasLength = areas.length;
+    const playersLength = players.length;
+    const baseAreasPerPlayerCeil = Math.ceil(areasLength / playersLength); // Used to get modulus
+    const baseAreasPerPlayerFloor = Math.floor(areasLength / playersLength); // Used when randomizing areas
+    const areasLeft = baseAreasPerPlayerCeil % playersLength;
 
-    playersLoop: for (let i = 0; i < shuffledPlayers.length; i++) {
+    function randomizeAreas(player, amount) {
 
-      for (let j = 0; j < areas.length; j++) {
+      for (let i = 0; i < amount; i++) {
 
-        if (this.state.map.areas[j].isStartingArea && this.state.map.areas[j].state.occupiedBy === null) {
-          this.state.map.areas[j].state.occupiedBy = this.state.players[shuffledPlayers[i]];
-          continue playersLoop;
-        }
+        const unoccupiedAreas = areas.filter((area) => !area.state.occupiedBy);
+        const randomIndex = Math.floor(Math.random() * unoccupiedAreas.length);
+        const randomArea = unoccupiedAreas[randomIndex];
+
+        randomArea.state.occupiedBy = player;
       }
+    }
+
+    for (let i = 0; i < playersLength; i++) {
+
+      // Have to use the floor value or there will be 1 more area
+      // that doesn't exist that we try to assign an occupant to
+      let areasToRandomize = baseAreasPerPlayerFloor;
+
+      // Last player should get a slight advantage if
+      // there are any areas left since he goes last
+      if (i === playersLength - 1) {
+        areasToRandomize = baseAreasPerPlayerFloor + areasLeft;
+      }
+
+      randomizeAreas(players[i], areasToRandomize);
     }
   }
 
