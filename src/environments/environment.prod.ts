@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  socketURL: 'https://chrillewoodz-war-api.herokuapp.com/'
+  socketURL: 'https://chrillewoodzwar-api.herokuapp.com/'
 };

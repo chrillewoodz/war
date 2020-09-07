@@ -1,6 +1,6 @@
 {
   "/socket-io/*": {
-    "target": "https://chrillewoodz-war-api.herokuapp.com/",
+    "target": "https://chrillewoodzwar-api.herokuapp.com/",
     "secure": false,
     "logLevel": "debug"
   }
