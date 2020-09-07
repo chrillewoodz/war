@@ -1,7 +1,0 @@
-{
-  "/socket-io/*": {
-    "target": "https://chrillewoodzwar.herokuapp.com/",
-    "secure": false,
-    "logLevel": "debug"
-  }
-}
