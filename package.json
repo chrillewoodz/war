@@ -13,7 +13,7 @@
     "start": "node www/server/src/app.js",
     "restart:prod": "pm2 restart www/server/process.json --env production",
     "stop:prod": "pm2 stop war-server",
-    "heroku-postbuild": "cd www/client && npm install && npm run build"
+    "heroku-postbuild": "cd www/client && npm run build"
   },
   "author": "",
   "license": "ISC",
