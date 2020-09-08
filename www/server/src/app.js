@@ -41,9 +41,18 @@
   //   res.sendFile(path.resolve(__dirname, '../../client/dist/war', 'index.html'));
   // });
 
-  // Create link to Angular build directory
-  const distDir = path.resolve(__dirname, '../../client/dist');
+  // Serve static files
+  const distDir = path.resolve(__dirname, '../../client/dist/war');
   app.use(express.static(distDir));
+
+  // Send all requests to index.html
+  app.get('/*', function(req, res) {
+    res.sendFile(`${distDir}/index.html`);
+  });
+
+  // Create link to Angular build directory
+  // const distDir = path.resolve(__dirname, '../../client/dist');
+  // app.use(express.static(distDir));
 
 
   // Cron jobs, only used for cleanup of dead sessions
