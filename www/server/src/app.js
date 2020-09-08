@@ -114,7 +114,7 @@
   // app.use(express.static(__dirname + '../../dist/war'));
 
   app.get('/*', function(req, res) {
-    res.sendFile(path.resolve(__dirname, '../../dist/war', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '../../client/dist/war', 'index.html'));
   });
 
 
