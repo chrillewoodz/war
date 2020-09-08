@@ -13,8 +13,7 @@
     "build": "ng build shared && ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "heroku-postbuild": "npm run build"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
