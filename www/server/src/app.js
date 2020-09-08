@@ -37,6 +37,15 @@
   const stats = new Stats();
   const storage = new AppStorage();
 
+  // app.get('/*', function(req, res) {
+  //   res.sendFile(path.resolve(__dirname, '../../client/dist/war', 'index.html'));
+  // });
+
+  // Create link to Angular build directory
+  const distDir = path.resolve(__dirname, '../../client/dist/war', 'index.html');
+  app.use(express.static(distDir));
+
+
   // Cron jobs, only used for cleanup of dead sessions
   // This one runs every 2.5 minutes
   schedule.scheduleJob('*/30 * * * * *', () => {
@@ -108,15 +117,6 @@
       io.emit(SocketEvents.STATS_SUCCESS);
     });
   });
-
-  // Serve only the static files form the dist directory
-  // res.sendFile(path.join(__dirname+'../../dist/war/index.html'));
-  // app.use(express.static(__dirname + '../../dist/war'));
-
-  app.get('/*', function(req, res) {
-    res.sendFile(path.resolve(__dirname, '../../client/dist/war', 'index.html'));
-  });
-
 
   server.listen(process.env.PORT || 4201);
 })();
