@@ -112,9 +112,9 @@
   // res.sendFile(path.join(__dirname+'../../dist/war/index.html'));
   // app.use(express.static(__dirname + '../../dist/war'));
 
-  // app.get('/*', function(req, res) {
-  //   res.sendFile(path.join(__dirname+'/dist/war/index.html'));
-  // });
+  app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname+'/dist/war/index.html'));
+  });
 
 
   server.listen(4201);
