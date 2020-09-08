@@ -42,7 +42,7 @@
   // });
 
   // Create link to Angular build directory
-  const distDir = path.resolve(__dirname, '../../client/dist/war', 'index.html');
+  const distDir = path.resolve(__dirname, '../../client/dist');
   app.use(express.static(distDir));
 
 
