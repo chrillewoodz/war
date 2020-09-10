@@ -10,7 +10,7 @@
         color: player.extras.faction.colorRGB,
         'background-color': result?.session.state.currentTurn?.clientId === player?.clientId && player.extras.faction.colorRGB
       }">
-        <img class="player-img" src="assets/SVG/{{player.extras.faction.name}}.svg" alt="Flag">
+        <img class="player-img" src="assets/SVG/{{player.extras.faction.flag}}" alt="Flag">
         <span><span class="self-indicator">(You)</span> {{player.extras.faction.name}}</span>
         <div class="player-status">
           <img *ngIf="player.state.quit || player.state.defeated || player.state.resigned" class="status-quit" src="assets/SVG/human-skull.svg" alt="Human skull">

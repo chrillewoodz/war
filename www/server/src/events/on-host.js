@@ -22,8 +22,8 @@ const fn = function(io, socket, ev, storage) {
 
   try {
 
-    const { name, colorRGB, colorRGBA } = asArray[Math.floor(Math.random() * (asArray.length - 1))];
-    const faction = new Faction(name, colorRGB, colorRGBA);
+    const { name, flag, colorRGB, colorRGBA } = asArray[Math.floor(Math.random() * (asArray.length - 1))];
+    const faction = new Faction(name, flag, colorRGB, colorRGBA);
     const extras = ev.extras ? { ...ev.extras, faction } : { faction };
     const session = new Session({ settings: ev.settings });
           session.addPlayer(ev.clientId, extras);

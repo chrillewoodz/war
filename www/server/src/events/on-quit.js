@@ -34,7 +34,7 @@ const fn = function(io, socket, ev, storage) {
 
       const activePlayersLeft = session.activePlayersLeft();
 
-      if (activePlayersLeft.length === 1) {
+      if (session.state.started && activePlayersLeft.length === 1) {
         session.end();
         session.state.winner = activePlayersLeft[0];
         storage.set(session);
@@ -42,22 +42,19 @@ const fn = function(io, socket, ev, storage) {
       else if (activePlayersLeft.length === 0) {
         storage.remove(session.sessionId);
       }
-      else {
+      else if (session.statestarted && session.state.currentTurn.clientId === ev.clientId) {
 
-        if (session.state.currentTurn.clientId === ev.clientId) {
+        const winner = session.checkWinCondition();
 
-          const winner = session.checkWinCondition();
-
-          if (winner) {
-            session.state.winner = winner;
-            session.end();
-          }
-          else {
-            session.changeTurn();
-          }
-
-          storage.set(session);
+        if (winner) {
+          session.state.winner = winner;
+          session.end();
         }
+        else {
+          session.changeTurn();
+        }
+
+        storage.set(session);
       }
 
       io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));

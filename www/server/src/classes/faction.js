@@ -1,7 +1,8 @@
 class Faction {
 
-  constructor(name, colorRGB, colorRGBA) {
+  constructor(name, flag, colorRGB, colorRGBA) {
     this.name = name;
+    this.flag = flag;
     this.colorRGB = colorRGB;
     this.colorRGBA = colorRGBA;
   }
@@ -10,6 +11,7 @@ class Faction {
 
     return {
       name: this.name,
+      flag: this.flag,
       colorRGB: this.colorRGB,
       colorRGBA: this.colorRGBA
     };

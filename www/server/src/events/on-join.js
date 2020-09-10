@@ -29,8 +29,8 @@ const fn = function(io, socket, ev, storage) {
 
     if (session) {
 
-      const { name, colorRGB, colorRGBA } = getUnusedFaction(session);
-      const faction = new Faction(name, colorRGB, colorRGBA);
+      const { name, flag, colorRGB, colorRGBA } = getUnusedFaction(session);
+      const faction = new Faction(name, flag, colorRGB, colorRGBA);
       const extras = ev.extras ? { ...ev.extras, faction } : { faction };
       session.addPlayer(ev.clientId, extras);
 

@@ -35,8 +35,16 @@ export class HUDSettingsComponent  {
     const confirmed = confirm('Are you sure you want to resign?');
 
     if (confirmed) {
-      this.socketApi.quit(true, true);
-      this.close();
+      this.socketApi.quit(true, true).pipe(
+        first()
+      ).subscribe(() => {
+
+        if (!this.cache.session.state.started) {
+          this.router.navigateByUrl('');
+        }
+
+        this.close();
+      });
     }
   }
 

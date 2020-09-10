@@ -6,7 +6,6 @@
 
     <hud-timer [percent]="elapsedTime"></hud-timer>
     <hud-cards [cards]="result?.self.state.cards" [disabled]="!isMyTurn"></hud-cards>
-    <hud-settings></hud-settings>
     <hud-actions [result]="result"></hud-actions>
 
     <div class="hud hud-left">
@@ -18,6 +17,8 @@
     <hud-players [result]="result"></hud-players>
     <hud-logger [result]="result"></hud-logger>
   </div>
+
+  <hud-settings></hud-settings>
 
   <div class="map-container" [ngSwitch]="mapType">
     <map-europe #mapInstance *ngSwitchCase="'europe'" [result]="result" [isMyTurn]="isMyTurn"></map-europe>
