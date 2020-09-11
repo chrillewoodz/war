@@ -1,0 +1,23 @@
+
+
+.tut-container {
+  padding-top: 200px;
+  padding-bottom: 200px;
+  background-color: rgb(155, 132, 89);
+}
+
+.tut-section {
+  margin-bottom: 50px;
+
+  h2 {
+    color: darkred;
+  }
+
+  p {
+    line-height: 1.44;
+  }
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}

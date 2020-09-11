@@ -4,13 +4,13 @@
     "connections": [1, 6],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 1
@@ -60,7 +60,7 @@
     "connections": [1, 3, 37, 44],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
         "amount": 2
@@ -88,7 +88,7 @@
     "connections": [1, 2, 4, 44],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
         "amount": 2
@@ -116,7 +116,7 @@
     "connections": [3, 5, 34, 44],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
         "amount": 2
@@ -144,13 +144,13 @@
     "connections": [1, 3, 4, 34, 6],
     "armies": {
       "soldiers": {
-        "amount": 3
+        "amount": 6
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 1
+        "amount": 3
       },
       "spies": {
         "amount": 0
@@ -172,13 +172,13 @@
     "connections": [0, 1, 5, 7, 32, 33, 34, 39],
     "armies": {
       "soldiers": {
-        "amount": 4
+        "amount": 8
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 1
+        "amount": 2
       },
       "spies": {
         "amount": 2
@@ -200,10 +200,10 @@
     "connections": [6, 39],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 6
       },
       "horses": {
-        "amount": 0
+        "amount": 3
       },
       "gatlingGuns": {
         "amount": 0
@@ -228,13 +228,13 @@
     "connections": [1, 9, 10],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 4
       },
       "horses": {
-        "amount": 0
+        "amount": 2
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 0
@@ -256,10 +256,10 @@
     "connections": [8, 10, 40],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
-        "amount": 0
+        "amount": 2
       },
       "gatlingGuns": {
         "amount": 0
@@ -284,13 +284,13 @@
     "connections": [1, 8, 9, 40],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 10
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 0
@@ -312,13 +312,13 @@
     "connections": [12, 13, 17, 18],
     "armies": {
       "soldiers": {
-        "amount": 5
+        "amount": 12
       },
       "horses": {
-        "amount": 2
+        "amount": 4
       },
       "gatlingGuns": {
-        "amount": 1
+        "amount": 2
       },
       "spies": {
         "amount": 3
@@ -340,16 +340,16 @@
     "connections": [11],
     "armies": {
       "soldiers": {
-        "amount": 4
+        "amount": 8
       },
       "horses": {
-        "amount": 3
+        "amount": 1
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
-        "amount": 1
+        "amount": 2
       }
     },
     "anchorPoints": {
@@ -368,7 +368,7 @@
     "connections": [11, 17, 18, 20, 23, 24, 26, 28],
     "armies": {
       "soldiers": {
-        "amount": 5
+        "amount": 10
       },
       "horses": {
         "amount": 2
@@ -396,10 +396,10 @@
     "connections": [15, 16, 22, 35],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 6
       },
       "horses": {
-        "amount": 0
+        "amount": 1
       },
       "gatlingGuns": {
         "amount": 0
@@ -424,7 +424,7 @@
     "connections": [14, 16, 21],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 10
       },
       "horses": {
         "amount": 0
@@ -452,7 +452,7 @@
     "connections": [14, 15, 21, 22],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 10
       },
       "horses": {
         "amount": 0
@@ -480,10 +480,10 @@
     "connections": [11, 13, 18, 19, 23],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 2
       },
       "horses": {
-        "amount": 0
+        "amount": 3
       },
       "gatlingGuns": {
         "amount": 0
@@ -508,13 +508,13 @@
     "connections": [11, 13, 17, 19, 23],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 4
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 0
@@ -536,13 +536,13 @@
     "connections": [17, 18, 23],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 8
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 2
       },
       "spies": {
         "amount": 0
@@ -564,13 +564,13 @@
     "connections": [13, 21, 22, 27, 28, 29, 35],
     "armies": {
       "soldiers": {
-        "amount": 10
+        "amount": 14
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 3
+        "amount": 5
       },
       "spies": {
         "amount": 4
@@ -592,10 +592,10 @@
     "connections": [15, 16, 20],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 6
       },
       "horses": {
-        "amount": 0
+        "amount": 4
       },
       "gatlingGuns": {
         "amount": 0
@@ -620,10 +620,10 @@
     "connections": [14, 16, 20, 27, 35],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
-        "amount": 2
+        "amount": 8
       },
       "gatlingGuns": {
         "amount": 0
@@ -648,13 +648,13 @@
     "connections": [13, 17, 18, 19, 24, 25, 41, 42, 43],
     "armies": {
       "soldiers": {
-        "amount": 8
+        "amount": 14
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 2
+        "amount": 4
       },
       "spies": {
         "amount": 2
@@ -676,16 +676,16 @@
     "connections": [13, 23, 25, 26],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 8
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
-        "amount": 0
+        "amount": 1
       }
     },
     "anchorPoints": {
@@ -704,7 +704,7 @@
     "connections": [23, 24, 26, 32, 33, 43],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 14
       },
       "horses": {
         "amount": 0
@@ -732,7 +732,7 @@
     "connections": [13, 24, 25, 27, 28, 29, 31, 32, 34],
     "armies": {
       "soldiers": {
-        "amount": 6
+        "amount": 14
       },
       "horses": {
         "amount": 0
@@ -760,7 +760,7 @@
     "connections": [20, 22, 26, 30, 31],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 10
       },
       "horses": {
         "amount": 0
@@ -788,7 +788,7 @@
     "connections": [13, 20, 26, 29],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 10
       },
       "horses": {
         "amount": 2
@@ -816,10 +816,10 @@
     "connections": [20, 26, 28],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 9
       },
       "horses": {
-        "amount": 1
+        "amount": 3
       },
       "gatlingGuns": {
         "amount": 0
@@ -844,7 +844,7 @@
     "connections": [27, 35, 36],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 6
       },
       "horses": {
         "amount": 0
@@ -872,13 +872,13 @@
     "connections": [26, 27, 36],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 6
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 0
@@ -900,7 +900,7 @@
     "connections": [6, 25, 26, 33, 34],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 10
       },
       "horses": {
         "amount": 1
@@ -928,10 +928,10 @@
     "connections": [6, 25, 32, 39, 43],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 8
       },
       "horses": {
-        "amount": 0
+        "amount": 1
       },
       "gatlingGuns": {
         "amount": 0
@@ -956,10 +956,10 @@
     "connections": [4, 5, 6, 26, 32, 36],
     "armies": {
       "soldiers": {
-        "amount": 0
+        "amount": 2
       },
       "horses": {
-        "amount": 3
+        "amount": 8
       },
       "gatlingGuns": {
         "amount": 0
@@ -984,7 +984,7 @@
     "connections": [14, 20, 22, 30, 36],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 15
       },
       "horses": {
         "amount": 0
@@ -1012,13 +1012,13 @@
     "connections": [30, 31, 34, 35, 37, 44],
     "armies": {
       "soldiers": {
-        "amount": 8
+        "amount": 12
       },
       "horses": {
-        "amount": 4
+        "amount": 2
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 2
       },
       "spies": {
         "amount": 3
@@ -1040,13 +1040,13 @@
     "connections": [1, 2, 36, 44],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 16
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 3
@@ -1068,7 +1068,7 @@
     "connections": [39, 40, 41, 43],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 14
       },
       "horses": {
         "amount": 1
@@ -1096,7 +1096,7 @@
     "connections": [6, 7, 33, 38, 43],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 13
       },
       "horses": {
         "amount": 0
@@ -1124,10 +1124,10 @@
     "connections": [9, 10, 38, 41],
     "armies": {
       "soldiers": {
-        "amount": 3
+        "amount": 12
       },
       "horses": {
-        "amount": 0
+        "amount": 4
       },
       "gatlingGuns": {
         "amount": 0
@@ -1152,13 +1152,13 @@
     "connections": [23, 38, 40, 42, 43],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 10
       },
       "horses": {
-        "amount": 0
+        "amount": 1
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 1
       },
       "spies": {
         "amount": 0
@@ -1180,7 +1180,7 @@
     "connections": [23, 41, 43],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 8
       },
       "horses": {
         "amount": 0
@@ -1208,16 +1208,16 @@
     "connections": [23, 25, 33, 38, 39, 41, 42],
     "armies": {
       "soldiers": {
-        "amount": 2
+        "amount": 9
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 2
       },
       "spies": {
-        "amount": 0
+        "amount": 3
       }
     },
     "anchorPoints": {
@@ -1236,16 +1236,16 @@
     "connections": [2, 3, 4, 34, 36, 37],
     "armies": {
       "soldiers": {
-        "amount": 1
+        "amount": 2
       },
       "horses": {
         "amount": 0
       },
       "gatlingGuns": {
-        "amount": 0
+        "amount": 2
       },
       "spies": {
-        "amount": 0
+        "amount": 1
       }
     },
     "anchorPoints": {

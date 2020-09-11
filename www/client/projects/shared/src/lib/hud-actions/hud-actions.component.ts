@@ -201,15 +201,14 @@ export class HUDActionsComponent {
       this.armies = this.armies.map((army) => {
 
         if (army.type === ArmyType.Soldiers || army.type === ArmyType.Horses || army.type === ArmyType.GatlingGuns) {
-          if (action !== Action.Spy) {
-            army.shouldShow = true;
 
-            if (this.selectedArea.state.armies[army.type].amount <= 0) {
-              army.isDisabled = true;
-            }
-            else {
-              army.isDisabled = false;
-            }
+          if (action === Action.Move || action === Action.Attack) {
+            army.shouldShow = true;
+            army.isDisabled = this.disableIf(this.selectedArea.state.armies[army.type].amount <= 0);
+          }
+          else if (action === Action.Deploy) {
+            army.shouldShow = true;
+            army.isDisabled = this.disableIf(this.cache.self.state.idle[army.type].amount <= 0);
           }
           else {
             army.shouldShow = false;
@@ -218,13 +217,7 @@ export class HUDActionsComponent {
         else if (army.type === ArmyType.Spies) {
           if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
             army.shouldShow = true;
-
-            if (this.selectedArea.state.armies.spies.amount <= 0) {
-              army.isDisabled = true;
-            }
-            else {
-              army.isDisabled = false;
-            }
+            army.isDisabled = this.disableIf(this.cache.self.state.idle.spies.amount <= 0);
           }
           else {
             army.shouldShow = false;
@@ -478,5 +471,15 @@ export class HUDActionsComponent {
 
   armiesTrackBy(i: number, army: any) {
     return army.type;
+  }
+
+  private disableIf(condition: boolean) {
+
+    if (condition) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

@@ -777,7 +777,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 80); // 80% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 70); // 70% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -808,7 +808,7 @@ export class HUDCardsService {
         image: 'assets/SVG/ship.svg',
         title: 'Bubonic plague',
         description: 'Send ships full of infectious rats to the south and west of Europe',
-        cost: 16,
+        cost: 11,
         gameEvent: GameEvent.BubonicPlagueOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -824,7 +824,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 60); // 60% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 35); // 35% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -860,7 +860,7 @@ export class HUDCardsService {
         image: 'assets/SVG/famine.svg',
         title: 'Famine',
         description: 'Block trade routes to northern and eastern Europe, causing severe and long-lasting famine.',
-        cost: 16,
+        cost: 9,
         gameEvent: GameEvent.FamineOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -876,7 +876,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 60); // 60% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 40); // 40% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -966,7 +966,7 @@ export class HUDCardsService {
         description: 'Equip your armies with fur coats in areas affected by winter, protecting them against freezing cold',
         cost: 6
       },
-      disabled: () => !this.canPlayCard(this.getCard(CardIDs.famine).config.cost),
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.winterImmunity).config.cost),
       action: () => {
 
         const affectedAreas = [];
@@ -1015,7 +1015,7 @@ export class HUDCardsService {
         description: 'Put out barrels to store freshwater from rainfall, protecting armies in areas affected by summer against dehydration and overheating',
         cost: 6
       },
-      disabled: () => !this.canPlayCard(this.getCard(CardIDs.famine).config.cost),
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.summerImmunity).config.cost),
       action: () => {
 
         const affectedAreas = [];
@@ -1064,7 +1064,7 @@ export class HUDCardsService {
         description: 'Use sandbags to barricade rivers and lakes, preventing them from flooding in areas affected by autumn',
         cost: 6
       },
-      disabled: () => !this.canPlayCard(this.getCard(CardIDs.famine).config.cost),
+      disabled: () => !this.canPlayCard(this.getCard(CardIDs.autumnImmunity).config.cost),
       action: () => {
 
         const affectedAreas = [];

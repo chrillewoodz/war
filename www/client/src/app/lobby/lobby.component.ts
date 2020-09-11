@@ -45,6 +45,10 @@ export class LobbyComponent {
     this.cache.removeSession();
   }
 
+  tutorial() {
+    this.router.navigate(['tutorial']);
+  }
+
   join(sessionId?: string) {
 
     if (sessionId) {

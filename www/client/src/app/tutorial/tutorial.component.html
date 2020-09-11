@@ -1,0 +1,95 @@
+<div class="tut-container">
+  <div class="container">
+    <div class="tut-section">
+      <button class="btn btn-primary" type="button" (click)="goBack()">Back to lobby</button>
+    </div>
+    <div class="tut-section">
+      <h1>Tutorial</h1>
+    </div>
+    <div class="tut-section">
+      <h2>Timer</h2>
+      <p>At the top of the page you will see a timer, when the timer reaches 100% it will change turn to the next player.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Action points (AP)</h2>
+      <p>Each round you start with 20 AP, each action you make (move, deploy, attack, spy, play a card) drains your AP by a certain amount.</p>
+      <p>When you have reached 0 points you can no longer perform any actions this turn and you will have to press the "End turn" button.</p>
+      <p>When hovering over an action you will see that the AP text turns to red, this is the AP that would remain after you play the action.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Power value</h2>
+      <p>The red circle with white text is called "power value". It indicates the total power value of an area, or your idle armies of a certain type.</p>
+      <p>When spying, attacking or defending this value is compared to the one of the enemy of a certain area.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Amount value</h2>
+      <p>The green/blue circle with white text is called "amount value". It indicates the total amount of idle armies of a certain army type.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Seasons</h2>
+      <p>As the game progresses, the seasons will change. The only season that has no effect is spring, indicated by the green leaf.</p>
+      <p>The rest of the seasons either causes floodings, dehydration or frostbite.</p>
+      <p>The seasons only affect a certain part of the map, winter for example hits the north, summer the south etc.</p>
+      <p>Some cards can protect you against these effects.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Selecting areas</h2>
+      <p>Click on an area to select it, then click on a valid connection for this area to select it. You now have a "link" between these two areas, which you can see at the bottom-left of your screen.</p>
+      <p>Not all areas have their neighbour as a valid connection, for example water and mountains can act as a block between two neighbouring areas.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Deselecting areas / Cancelling</h2>
+      <p>To deselect areas that you have selected, press the "Cancel" button at the bottom left of your screen.</p>
+    </div>
+    <div class="tut-section">
+      <h2>End turn</h2>
+      <p>To end your current turn, click the big red button that says "End turn" at the bottom left of your screen.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Actions</h2>
+      <p>Not all actions require you to first select an area. For example playing certain cards can be played without first selecting an area.</p>
+      <p>Also, not all actions require you to select two areas. "Deploy" is one such action that only affects the area you selected first.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Spies</h2>
+      <p>With spies you can learn about an enemy area's power value.</p>
+      <p>You can then use this information to make a decision whether to attack someone.</p>
+      <p>When a spy has been used, it will remain in that area until the area changes owner.</p>
+      <p>Be careful however, a spy can be killed during its mission depending on the power value of the area they're infiltrating.</p>
+      <p>Sending more spies to an area with a high power value will help in making sure the mission was successful.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Army types</h2>
+      <p>There are 3 different armies; soldiers, horses and gatling guns.</p>
+      <p>They each have their own power value, soldiers have 1, horses 2 and gatling guns have 4.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Selecting armies</h2>
+      <p>When you have chosen an action to perform the army selection menu will pop up.</p>
+      <p>Use the + and - buttons to set how many armies of that type you want to use for the action.</p>
+      <p>You can use the "MIN" and "MAX" buttons to quick set a type to 0 or equal to the amount of that army type.</p>
+    </div>
+    <div class="tut-section">
+      <h2>Cards</h2>
+      <p>Cards have a crucial role in the game, they can turn the tide at any given moment.</p>
+      <p>Each case have an AP cost to them and have a star ranking from 1-3, with 3 being a top-notch card.</p>
+      <p>Each card have their own requirement in order to be used, read the description to learn how to use the card.</p>
+      <p>For example, some cards require you to first select an area, and some cards do not.</p>
+      <p>Some cards are really powerful, so play them carefully...</p>
+    </div>
+    <div class="tut-section">
+      <h2>Game chat</h2>
+      <p>Use the chat to gain useful information about what your enemies might be up to.</p>
+      <p>Or use it to insult your enemy.</p>
+      <p>Disclaimer: Some messages might disappear due to lack of concurrency support in the API ¯\_(ツ)_/¯</p>
+    </div>
+    <div class="tut-section">
+      <h2>Quit/resign</h2>
+      <p>To quit or resign from a game, open the game settings by clicking the "three lines" button at the bottom right of your screen.</p>
+      <p>Quitting will leave the game, while resigning will resign from the current game but you can still watch it to the end.</p>
+    </div>
+    <div class="tut-section">
+      <button class="btn btn-primary" type="button" (click)="goBack()">Back to lobby</button>
+    </div>
+  </div>
+</div>

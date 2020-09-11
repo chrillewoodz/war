@@ -2,11 +2,9 @@
   <div class="container lobby-content">
     <div class="row">
       <div class="col-12 lobby-padding">
-        <h1>Find game by session id</h1>
-        <h6 class="lobby-subtitle">This can be found in the game session settings (by people in the game)</h6>
-        <input class="lobby-input" [formControl]="idCtrl" placeholder="Session id">
-        <button class="btn-primary" [disabled]="idCtrl.invalid" (click)="join(idCtrl.value)">Join</button>
-        <p class="error error-msg">{{joinByIdError$ | async}}</p>
+        <h1>Learn</h1>
+        <h6 class="lobby-subtitle">Read a quick tutorial to learn the game mechanics</h6>
+        <button class="btn-primary" (click)="tutorial()">Read tutorial</button>
       </div>
       <div class="col-12 lobby-padding">
         <h1>Host</h1>
@@ -19,6 +17,13 @@
         <h6 class="lobby-subtitle">This will match you with a random game session</h6>
         <button class="btn-primary" (click)="join()">Join</button>
         <p class="error error-msg">{{joinError$ | async}}</p>
+      </div>
+      <div class="col-12 lobby-padding">
+        <h1>Find game by session id</h1>
+        <h6 class="lobby-subtitle">This can be found in the game session settings (by people in the game)</h6>
+        <input class="lobby-input" [formControl]="idCtrl" placeholder="Session id">
+        <button class="btn-primary" [disabled]="idCtrl.invalid" (click)="join(idCtrl.value)">Join</button>
+        <p class="error error-msg">{{joinByIdError$ | async}}</p>
       </div>
     </div>
     <div class="row">

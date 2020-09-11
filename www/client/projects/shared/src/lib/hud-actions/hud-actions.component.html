@@ -27,7 +27,7 @@
       <div class="hud-actions-area">
         <h6>Selected:</h6>
         <div class="hud-actions-area-name-wrapper">
-          <span class="hud-actions-area-power">{{selectedAreaPower}}</span>
+          <span class="hud-actions-area-power">{{selectedArea?.state.__ui.isSpiedOnBySelf || selectedArea?.state.__ui.isOwnedBySelf ? selectedAreaPower : '?'}}</span>
           <h2 [ngStyle]="{'background-color': selectedArea?.state.occupiedBy?.extras.faction.colorRGB}">{{selectedArea?.name}}</h2>
         </div>
         <ul class="hud-actions-area-armies">
