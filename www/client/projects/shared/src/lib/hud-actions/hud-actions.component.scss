@@ -199,11 +199,11 @@ action-points {
   width: 280px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(150%);
+  transform: translate3d(0, 150%, 0);
   border-radius: 10% 10% 20% 20%;
   background-color: $bgPrimaryRGB;
   text-align: center;
-  transition: all 500ms ease;
+  transition: opacity 350ms ease, transform 350ms ease;
 
   h4 {
     padding-top: 5px;
@@ -215,7 +215,7 @@ action-points {
   &.open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .hud-actions-img-container {
