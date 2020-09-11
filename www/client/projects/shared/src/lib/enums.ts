@@ -1,5 +1,5 @@
 export enum ActionCost {
-  Attack = 6,
+  Attack = 4,
   Deploy = 2,
   Move = 2,
   Spy = 3

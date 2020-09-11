@@ -824,7 +824,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 35); // 35% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 45); // 45% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -860,13 +860,13 @@ export class HUDCardsService {
         image: 'assets/SVG/famine.svg',
         title: 'Famine',
         description: 'Block trade routes to northern and eastern Europe, causing severe and long-lasting famine.',
-        cost: 9,
+        cost: 14,
         gameEvent: GameEvent.FamineOutcome
       },
       callback: (logger: HUDLoggerService) => {
 
         return logger.log({
-          message: `${logger.getColoredString('darkred', 'Hungry? Your neighbor looks tasty...')}`,
+          message: `${logger.getColoredString('darkred', 'What about their legs? They don\'t need those...')}`,
         });
       },
       disabled: () => !this.canPlayCard(this.getCard(CardIDs.famine).config.cost),
