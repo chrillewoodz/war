@@ -250,6 +250,9 @@ export class GameEngine {
       players: {
         ...session.state.players,
         [self.clientId]: self
+      },
+      __outcome: {
+        success: roll <= successRate
       }
     });
   }

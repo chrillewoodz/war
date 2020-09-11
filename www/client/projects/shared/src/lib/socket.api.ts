@@ -135,7 +135,8 @@ export class SocketApi {
               area.state.__ui = null;
               return area;
             }),
-          }
+          },
+          __outcome: null
         }
       });
     }

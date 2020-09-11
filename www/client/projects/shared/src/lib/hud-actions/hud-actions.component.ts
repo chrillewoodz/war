@@ -7,7 +7,7 @@ import { tap, first, switchMap, map } from 'rxjs/operators';
 import { ActionCost } from '../enums';
 import { SocketApi } from '../socket.api';
 import { GameCache } from '../game.cache';
-import { ArmyType, Armies, PipeResult, Area, SessionState, ArmiesToDeploy } from '../interfaces';
+import { ArmyType, Armies, PipeResult, Area, SessionState, ArmiesToDeploy, GameEvent } from '../interfaces';
 import { ActionPointsApi } from '../action-points/action-points.service';
 import { Action } from '../enums';
 import { GameEngine } from '../game.engine';
@@ -218,6 +218,13 @@ export class HUDActionsComponent {
         else if (army.type === ArmyType.Spies) {
           if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
             army.shouldShow = true;
+
+            if (this.selectedArea.state.armies.spies.amount <= 0) {
+              army.isDisabled = true;
+            }
+            else {
+              army.isDisabled = false;
+            }
           }
           else {
             army.shouldShow = false;
@@ -352,6 +359,15 @@ export class HUDActionsComponent {
             })
             .pipe(
               first(),
+              tap(() => {
+                this.socketApi.event(true, GameEvent.Attack, {
+                  extras: {
+                    self: this.cache.self,
+                    __outcome: newState.__outcome
+                  },
+                  affectedAreas: [this.selectedConnection]
+                });
+              }),
               map(() => newState)
             );
           case Action.Deploy:

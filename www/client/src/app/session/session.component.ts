@@ -22,7 +22,8 @@ import {
   SeasonEventData,
   OutcomeData,
   HUDCardsService,
-  CardIDs
+  CardIDs,
+  Player
 } from 'shared';
 
 @Component({
@@ -106,6 +107,30 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         switchMap((e) => {
 
           switch (e.eventName) {
+            case GameEvent.Attack:
+
+              const data = e.data as OutcomeData<{self: Player, __outcome: {success: boolean}}>;
+
+              if (data.extras.self.clientId !== this.cache.self.clientId) {
+
+                const success = data.extras.__outcome.success;
+
+                this.emitWithDelay(data.affectedAreas, 250, (area) => {
+
+                  this.mapEngine.loadOutcome({
+                    area: area,
+                    image: `assets/SVG/${data.extras.self.extras.faction.flag}`,
+                    title: {
+                      color: success ? '#08c339' : 'red',
+                      label: success ? 'Attack successful' : 'Attack failed'
+                    },
+                    messages: [
+                      { color: 'white', label: `${data.extras.self.extras.faction.name} ${success ? 'successfully launched an attack on' : 'failed the attack on'} ${area.name}` }
+                    ]
+                  });
+                });
+              }
+              return EMPTY;
             case GameEvent.Season:
               return this.gameEvents.season((e.data as SeasonEventData).session).pipe(
                 first(),

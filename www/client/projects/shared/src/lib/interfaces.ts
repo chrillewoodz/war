@@ -14,6 +14,7 @@ export interface Extras {
 
 export interface Faction {
   name: string;
+  flag: string;
   colorRGB: string;
   colorRGBA: string;
 }
@@ -183,6 +184,9 @@ export interface SessionState {
   currentRound: number;
   currentSeason: number;
   timer?: Timer;
+  __outcome: {
+    success: boolean;
+  };
 }
 
 export interface Session {
@@ -253,6 +257,7 @@ export interface OutcomeConfig {
 }
 
 export enum GameEvent {
+  Attack = 'attack',
   Season = 'season',
   WinterOutcome = 'winter_outcome',
   SummerOutcome = 'summer_outcome',
@@ -275,7 +280,8 @@ export interface SeasonEventData {
   session: Session;
 }
 
-export interface OutcomeData {
+export interface OutcomeData<T = any> {
+  extras?: T;
   affectedAreas: Area[];
 }
 
