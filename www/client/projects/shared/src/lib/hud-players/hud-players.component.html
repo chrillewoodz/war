@@ -1,4 +1,5 @@
 <div class="common-container">
+  <button *ngIf="!result?.session.state.started" class="btn btn-danger btn-leave" type="button" (click)="leave()">Leave</button>
   <button *ngIf="!result?.session.state.players[result?.self.clientId]?.state.ready" class="btn-ready" type="button" (click)="ready()">I'm ready! <span class="ready-icon"><i class="fas fa-check"></i></span></button>
   <ul>
     <ng-container *ngFor="let player of players">

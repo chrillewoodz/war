@@ -155,7 +155,7 @@ export class GameEngine {
         },
         messages: [
           { color: 'white', label: 'Attack succeeded, at a cost..' },
-          { color: '#08c339', label: `+1 soldiers recruited in new area` },
+          { color: '#08c339', label: `+2 soldiers recruited in new area` },
           { color: 'red', label: `-${lostArmies.soldiers} soldiers` },
           { color: 'red', label: `-${lostArmies.horses} horses` },
           { color: 'red', label: `-${lostArmies.gatlingGuns} gatlingGuns` },
@@ -167,9 +167,9 @@ export class GameEngine {
       selectedConnection.state.occupiedBy = selectedArea.state.occupiedBy;
 
       // Set the remaining attacking armies as the armies in the conquered area.
-      // If no armies were left after the attack, the attacker will "recruit" 1 soldier army
-      // in the new area, leaving the area with at least 1 army. (hence the +1)
-      const soldiersLeft = armies.soldiers - lostArmies.soldiers + 1;
+      // If no armies were left after the attack, the attacker will "recruit" 2 soldier army
+      // in the new area, leaving the area with at least 2 armies. (hence the +2)
+      const soldiersLeft = armies.soldiers - lostArmies.soldiers + 2;
       const horsesLeft = armies.horses - lostArmies.horses;
       const gatlingGunsLeft = armies.gatlingGuns - lostArmies.gatlingGuns;
 
@@ -536,8 +536,8 @@ export class GameEngine {
    */
   private getSpySuccessRate(spies: number, troopsInArea: Armies) {
 
-    const base = spies * 70;
-    const negatorPerArmy = (spies / 2) * 7.5;
+    const base = spies * 80;
+    const negatorPerArmy = (spies / 2) * 6.5;
 
     const totalArmies = Object.keys(troopsInArea)
       .filter((k) => k !== 'spies') // Do not take spies into consideration
@@ -633,10 +633,10 @@ export class GameEngine {
 
     const _self = {...self};
 
-    _self.state.idle.soldiers.amount += Math.floor(Math.random() * 2);
-    _self.state.idle.horses.amount += Math.floor(Math.random() * 2);
-    _self.state.idle.gatlingGuns.amount += Math.floor(Math.random() * 2);
-    _self.state.idle.spies.amount += Math.floor(Math.random() * 2);
+    _self.state.idle.soldiers.amount += Math.floor(Math.random() * 3);
+    _self.state.idle.horses.amount += Math.floor(Math.random() * 3);
+    _self.state.idle.gatlingGuns.amount += Math.floor(Math.random() * 3);
+    _self.state.idle.spies.amount += Math.floor(Math.random() * 3);
 
     return _self;
   }

@@ -17,7 +17,16 @@
     line-height: 1.44;
   }
 
+  img {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
   &:last-of-type {
     margin-bottom: 0;
   }
+}
+
+.img-small {
+  width: 200px;
 }

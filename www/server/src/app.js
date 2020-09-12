@@ -57,54 +57,57 @@
 
   // Cron jobs, only used for cleanup of dead sessions
   // This one runs every 2.5 minutes
-  schedule.scheduleJob('*/30 * * * * *', () => {
+  if (process.env.NODE_ENV === 'production') {
 
-    console.log('Removing dead game sessions...');
+    schedule.scheduleJob('*/30 * * * * *', () => {
 
-    const sessions = storage.getAll();
+      console.log('Removing dead game sessions...');
 
-    Object.keys(sessions)
-      .map((sessionId) => sessions[sessionId])
-      .map((session) => new Session(session))
-      .forEach(async (session) => {
+      const sessions = storage.getAll();
 
-        const lastUpdatedAt = new Date(session.lastUpdatedAt);
-        const now = Date.now();
-        const diff = differenceInMinutes(now, lastUpdatedAt);
-        const isStarted = session.state.started;
-        const isPaused = session.state.paused;
-        const isEnded = session.state.ended;
-        const activePlayersLeft = session.activePlayersLeft();
+      Object.keys(sessions)
+        .map((sessionId) => sessions[sessionId])
+        .map((session) => new Session(session))
+        .forEach(async (session) => {
 
-        // Has started and was updated in last 2 minutes and has active players
-        if (isStarted && diff < 2 && activePlayersLeft.length >= 2) {
-          console.log(session.sessionId, ` was not removed. It was active in the last 2 mins. Diff: ${diff}`);
-          return;
-        }
-        // Has ended and wasn't updated in the last 2 minutes
-        else if (isEnded && diff > 2) {
-          storage.remove(session.sessionId);
-          console.log(session.sessionId, ' was removed due to the game already ended and not updated in the last 2 minutes.');
-        }
-        // If the game was started but there's only one player left
-        // end the game and let the client handle whatever comes next.
-        else if (isStarted && !isEnded && activePlayersLeft < 2 && diff > 2) {
-          session.end();
-          storage.set(session);
-          console.log(session.sessionId, ' was ended due to fewer than 2 active players in a started game.');
-        }
-        // Game hasn't started and there's no active players left waiting in the session
-        else if (!isStarted && activePlayersLeft === 0 && diff > 2) {
-          storage.remove(session.sessionId);
-          console.log(session.sessionId, ' was removed due to inactivity and unstarted game.');
-        }
-        else {
-          console.log(session.sessionId, ` was not removed. Started: ${isStarted} Ended: ${isEnded} Paused: ${isPaused} AP: ${activePlayersLeft} Diff: ${diff}`);
-        }
+          const lastUpdatedAt = new Date(session.lastUpdatedAt);
+          const now = Date.now();
+          const diff = differenceInMinutes(now, lastUpdatedAt);
+          const isStarted = session.state.started;
+          const isPaused = session.state.paused;
+          const isEnded = session.state.ended;
+          const activePlayersLeft = session.activePlayersLeft();
 
-        io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
-      });
-  });
+          // Has started and was updated in last 2 minutes and has active players
+          if (isStarted && diff < 2 && activePlayersLeft.length >= 2) {
+            console.log(session.sessionId, ` was not removed. It was active in the last 2 mins. Diff: ${diff}`);
+            return;
+          }
+          // Has ended and wasn't updated in the last 2 minutes
+          else if (isEnded && diff > 2) {
+            storage.remove(session.sessionId);
+            console.log(session.sessionId, ' was removed due to the game already ended and not updated in the last 2 minutes.');
+          }
+          // If the game was started but there's only one player left
+          // end the game and let the client handle whatever comes next.
+          else if (isStarted && !isEnded && activePlayersLeft < 2 && diff > 2) {
+            session.end();
+            storage.set(session);
+            console.log(session.sessionId, ' was ended due to fewer than 2 active players in a started game.');
+          }
+          // Game hasn't started and there's no active players left waiting in the session
+          else if (!isStarted && activePlayersLeft === 0 && diff > 2) {
+            storage.remove(session.sessionId);
+            console.log(session.sessionId, ' was removed due to inactivity and unstarted game.');
+          }
+          else {
+            console.log(session.sessionId, ` was not removed. Started: ${isStarted} Ended: ${isEnded} Paused: ${isPaused} AP: ${activePlayersLeft} Diff: ${diff}`);
+          }
+
+          io.to(session.sessionId).emit(SocketEvents.UPDATE_SUCCESS, new SocketResponse(200, session));
+        });
+    });
+  }
 
   // TODO: Fix spamming connections bug
   // perhaps by sending cached id at connection

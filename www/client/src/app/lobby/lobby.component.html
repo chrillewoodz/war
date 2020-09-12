@@ -5,6 +5,7 @@
         <h1>Learn</h1>
         <h6 class="lobby-subtitle">Read a quick tutorial to learn the game mechanics</h6>
         <button class="btn-primary" (click)="tutorial()">Read tutorial</button>
+        <p class="lobby-recommended">Recommended</p>
       </div>
       <div class="col-12 lobby-padding">
         <h1>Host</h1>
@@ -29,15 +30,15 @@
     <div class="row">
       <div class="col">
         <h4>Active users</h4>
-        <p>{{(stats$ | async)?.connections}}</p>
+        <p class="lobby-subtitle">{{(stats$ | async)?.connections}}</p>
       </div>
       <div class="col">
         <h4>Active games</h4>
-        <p>{{(stats$ | async)?.gamesTotal}}</p>
+        <p class="lobby-subtitle">{{(stats$ | async)?.gamesTotal}}</p>
       </div>
       <div class="col">
         <h4>Available games</h4>
-        <p>{{(stats$ | async)?.gamesAvailable}}</p>
+        <p class="lobby-subtitle">{{(stats$ | async)?.gamesAvailable}}</p>
       </div>
     </div>
   </div>

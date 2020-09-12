@@ -3,6 +3,7 @@
   background-image: url('/assets/1x/screen-fight.png');
   background-size: cover;
   background-position: 50% 50%;
+  // color: white;
 
   &:before {
     content: '';
@@ -11,7 +12,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(155, 132, 89, 0.5);
+    background-color: rgba(155, 132, 89, 0.7);
   }
 }
 
@@ -22,6 +23,7 @@
 
 .lobby-subtitle {
   margin-bottom: 10px;
+  color: white;
 }
 
 .lobby-input {
@@ -38,4 +40,9 @@
 
 .lobby-padding {
   padding-bottom: 30px;
+}
+
+.lobby-recommended {
+  margin-top: 10px;
+  color: green;
 }

@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { first } from 'rxjs/operators';
 import { SocketApi } from '../socket.api';
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PipeResult, Player } from '../interfaces';
@@ -32,9 +34,20 @@ export class HUDPlayersComponent {
 
   private _result: PipeResult;
 
-  constructor(private socketApi: SocketApi) {}
+  constructor(
+    private router: Router,
+    private socketApi: SocketApi
+  ) {}
 
   ready() {
     this.socketApi.ready(true);
+  }
+
+  leave() {
+    this.socketApi.quit(true).pipe(
+      first()
+    ).subscribe(() => {
+      this.router.navigateByUrl('/');
+    });
   }
 }

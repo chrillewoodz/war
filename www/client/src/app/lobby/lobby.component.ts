@@ -61,8 +61,8 @@ export class LobbyComponent {
     this.socketApi.join(true, null, sessionId)
       .pipe(
         first()
-      ).subscribe(() => {
-        this.router.navigateByUrl('session');
+      ).subscribe((e) => {
+        this.router.navigate(['session', e.session.sessionId]);
       }, (e) => {
 
         if (sessionId) {
@@ -83,9 +83,9 @@ export class LobbyComponent {
         .pipe(
           first()
         )
-        .subscribe(() => {
+        .subscribe((e) => {
           this.modalApi.close('host-settings');
-          this.router.navigateByUrl('session');
+          this.router.navigate(['session', e.session.sessionId]);
         }, (e) => {
           this.hostError.next(e);
         }

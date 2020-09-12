@@ -205,7 +205,9 @@ export class SocketApi {
           })
           .pipe(
             first(),
-            switchMap(() => this.changeTurn(true)),
+            switchMap(() => this.changeTurn(true).pipe(
+              first()
+            )),
             map(() => timerFinishedEvent) // VERY IMPORTANT: Return the original event here or the timer will glitch out
           )
         })

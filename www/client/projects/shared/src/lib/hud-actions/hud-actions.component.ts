@@ -46,7 +46,10 @@ export class HUDActionsComponent {
     // Can't pass this as an input because it becomes undefined before we get the result
     this.isMyTurn = isMyTurn(result);
 
-    this.closeArmySelectionMenu();
+    if (!this.isMyTurn) {
+      this.closeArmySelectionMenu();
+    }
+
     // TODO: Get both using 1 function to avoid double loops
     this.selectedArea = getSelectedAreaFromResult(result);
     this.selectedAreaPower = getTotalPowerOfArea(this.selectedArea);
@@ -215,7 +218,11 @@ export class HUDActionsComponent {
           }
         }
         else if (army.type === ArmyType.Spies) {
-          if (action === Action.Spy || action === Action.Move || action === Action.Deploy) {
+          if (action === Action.Spy || action === Action.Move) {
+            army.shouldShow = true;
+            army.isDisabled = this.disableIf(this.selectedArea.state.armies.spies.amount <= 0);
+          }
+          else if (action === Action.Deploy) {
             army.shouldShow = true;
             army.isDisabled = this.disableIf(this.cache.self.state.idle.spies.amount <= 0);
           }

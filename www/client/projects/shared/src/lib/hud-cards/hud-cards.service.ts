@@ -762,7 +762,7 @@ export class HUDCardsService {
         image: 'assets/SVG/plague.svg',
         title: 'Pandemic',
         description: 'A new disease hits Europe, hard.', // TODO: Set name according to chosen map
-        cost: 20,
+        cost: 18,
         gameEvent: GameEvent.PandemicOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -808,7 +808,7 @@ export class HUDCardsService {
         image: 'assets/SVG/ship.svg',
         title: 'Bubonic plague',
         description: 'Send ships full of infectious rats to the south and west of Europe',
-        cost: 11,
+        cost: 12,
         gameEvent: GameEvent.BubonicPlagueOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -964,7 +964,7 @@ export class HUDCardsService {
         image: 'assets/SVG/fur-coat.svg',
         title: 'Fur coats',
         description: 'Equip your armies with fur coats in areas affected by winter, protecting them against freezing cold',
-        cost: 6
+        cost: 2
       },
       disabled: () => !this.canPlayCard(this.getCard(CardIDs.winterImmunity).config.cost),
       action: () => {
@@ -1012,8 +1012,8 @@ export class HUDCardsService {
         id: CardIDs.summerImmunity,
         image: 'assets/SVG/barrel.svg',
         title: 'Store freshwater',
-        description: 'Put out barrels to store freshwater from rainfall, protecting armies in areas affected by summer against dehydration and overheating',
-        cost: 6
+        description: 'Put out barrels to store freshwater from rainfall, protecting armies in areas affected by summer against dehydration',
+        cost: 2
       },
       disabled: () => !this.canPlayCard(this.getCard(CardIDs.summerImmunity).config.cost),
       action: () => {
@@ -1034,7 +1034,7 @@ export class HUDCardsService {
                 label: this.getCard(CardIDs.summerImmunity).config.title
               },
               messages: [
-                { color: 'white', label: 'Immune to scorching heat' }
+                { color: 'white', label: 'Immune to dehydration' }
               ]
             });
 
@@ -1062,7 +1062,7 @@ export class HUDCardsService {
         image: 'assets/SVG/sand-bags.svg',
         title: 'Barricades',
         description: 'Use sandbags to barricade rivers and lakes, preventing them from flooding in areas affected by autumn',
-        cost: 6
+        cost: 2
       },
       disabled: () => !this.canPlayCard(this.getCard(CardIDs.autumnImmunity).config.cost),
       action: () => {

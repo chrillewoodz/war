@@ -1,6 +1,6 @@
 <div class="common-container hud-logger-container">
   <ul #listRef class="hud-logger-messages">
-    <li #messageRef class="hud-logger-message" [ngStyle]="{color: msg.color}" *ngFor="let msg of result?.session?.state.logs; trackBy:logTrackBy">
+    <li #messageRef class="hud-logger-message" [ngClass]="{'from-player': msg.from !== '[game]'}" [ngStyle]="{color: msg.color, 'border-left-color': msg.color}" *ngFor="let msg of result?.session?.state.logs; trackBy:logTrackBy">
       <p class="hud-logger-message-from">[{{msg.timestamp | date:'HH:mm'}}] {{msg.from}}</p>
       <p class="hud-logger-message-text" [innerHTML]="msg.message"></p>
     </li>
