@@ -26,7 +26,7 @@
     </svg>
 
     <ng-container *ngFor="let area of result?.session.state.map.areas; trackBy:trackByArea">
-      <div *ngIf="area.state.__ui.showPowerOn" class="area-power" [ngStyle]="{left: area.state.__ui.screenXY.x + 'px', top: area.state.__ui.screenXY.y + 'px'}">{{area.state.__ui.power}}</div>
+      <div *ngIf="area.state.__ui.showPowerOn" class="area-power" [ngStyle]="{left: area.state.__ui.screenXY.x + 'px', top: area.state.__ui.screenXY.y + 'px'}">{{area.state.__ui.power < 0 ? 0 : area.state.__ui.power}}</div>
     </ng-container>
   </div>
 </div>

@@ -56,7 +56,7 @@ export class GameEvents {
   }
 
   private killArmies(area: Area, armyType: ArmyType) {
-    return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 35); // 35% are lost (rounded up)
+    return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 20); // 20% are lost (rounded up)
   }
 
   private setToMinimumZero(area: Area) {

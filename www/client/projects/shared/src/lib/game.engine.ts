@@ -145,6 +145,7 @@ export class GameEngine {
       selectedArea.state.armies.soldiers.amount -= armies.soldiers;
       selectedArea.state.armies.horses.amount -= armies.horses;
       selectedArea.state.armies.gatlingGuns.amount -= armies.gatlingGuns;
+      selectedArea.state.armies = this.setToMinimumZero(selectedArea);
 
       this.mapEngine.loadOutcome({
         area: selectedConnection,
@@ -597,13 +598,13 @@ export class GameEngine {
 
     const roll = Math.floor(Math.random() * 10);
 
-    if (roll > 9) {
+    if (roll > 8) {
       percentOfArmies = 90;
     }
-    else if (roll > 7) {
+    else if (roll > 6) {
       percentOfArmies = 70;
     }
-    else if (roll > 4) {
+    else if (roll > 3) {
       percentOfArmies = 50;
     }
     else {
@@ -639,5 +640,17 @@ export class GameEngine {
     _self.state.idle.spies.amount += Math.floor(Math.random() * 3);
 
     return _self;
+  }
+
+  private setToMinimumZero(area: Area) {
+
+    const armies = {...area.state.armies};
+
+    for (const armyType in armies) {
+      const army = armies[armyType] as Army;
+      army.amount = army.amount || 0;
+    }
+
+    return armies;
   }
 }

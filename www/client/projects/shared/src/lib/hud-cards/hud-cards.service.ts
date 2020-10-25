@@ -1,7 +1,7 @@
 import { HUDLoggerService } from '../hud-logger/hud-logger.service';
 import { Area, ArmyType, Army, GameEvent } from '../interfaces';
-import { first, switchMap } from 'rxjs/operators';
-import { timer, of } from 'rxjs';
+import { first, switchMap, takeUntil, concatMap, delay, finalize } from 'rxjs/operators';
+import { timer, of, Subject, from } from 'rxjs';
 import { MapEngine } from '../map.engine';
 import { Injectable } from '@angular/core';
 
@@ -504,7 +504,7 @@ export class HUDCardsService {
         image: 'assets/SVG/resistance.svg',
         title: 'Resistance',
         description: 'The people in 4 random enemy areas will overthrow the government and pledge their allegiance to you instead',
-        cost: 14,
+        cost: 12,
         gameEvent: GameEvent.ResistanceOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -561,82 +561,6 @@ export class HUDCardsService {
           title: {
             color: '#08c339',
             label: this.getCard(CardIDs.recruitSpies1).config.title
-          },
-          messages: [
-            { color: 'white', label: `+${amount} spies` }
-          ]
-        });
-
-        return {
-          newState: {
-            map: {
-              areas: findAndReplace(areas, selectedArea)
-            }
-          }
-        };
-      }
-    },
-    {
-      config: {
-        id: CardIDs.recruitSpies2,
-        image: 'assets/SVG/spies.svg',
-        title: 'Recruit spies',
-        description: 'Gain +4 spies in the selected area',
-        cost: 4
-      },
-      disabled: () => !this.isAreaSelected() || !this.canPlayCard(this.getCard(CardIDs.recruitSpies2).config.cost),
-      action: () => {
-
-        const amount = 4;
-        const areas = this.cache.session.state.map.areas;
-        const selectedArea =  this.cache.getSelectedArea();
-
-        selectedArea.state.armies.spies.amount += amount;
-
-        this.mapEngine.loadOutcome({
-          area: selectedArea,
-          image: 'assets/SVG/soldiers.svg',
-          title: {
-            color: '#08c339',
-            label: this.getCard(CardIDs.recruitSpies2).config.title
-          },
-          messages: [
-            { color: 'white', label: `+${amount} spies` }
-          ]
-        });
-
-        return {
-          newState: {
-            map: {
-              areas: findAndReplace(areas, selectedArea)
-            }
-          }
-        };
-      }
-    },
-    {
-      config: {
-        id: CardIDs.recruitSpies3,
-        image: 'assets/SVG/spies.svg',
-        title: 'Recruit spies',
-        description: 'Gain +6 spies in the selected area',
-        cost: 6
-      },
-      disabled: () => !this.isAreaSelected() || !this.canPlayCard(this.getCard(CardIDs.recruitSpies3).config.cost),
-      action: () => {
-
-        const amount = 6;
-        const areas = this.cache.session.state.map.areas;
-        const selectedArea =  this.cache.getSelectedArea();
-
-        selectedArea.state.armies.spies.amount += amount;
-
-        this.mapEngine.loadOutcome({
-          area: selectedArea,
-          image: 'assets/SVG/soldiers.svg',
-          title: {
-            color: '#08c339',
-            label: this.getCard(CardIDs.recruitSpies3).config.title
           },
           messages: [
             { color: 'white', label: `+${amount} spies` }
@@ -777,7 +701,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 70); // 70% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 30); // 30% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -786,6 +710,7 @@ export class HUDCardsService {
           area.state.armies.horses.amount -= killArmies(area, ArmyType.Horses);
           area.state.armies.gatlingGuns.amount -= killArmies(area, ArmyType.GatlingGuns);
           area.state.armies.spies.amount -= killArmies(area, ArmyType.Spies);
+          area.state.armies = this.setToMinimumZero(area);
 
           return area;
         });
@@ -808,7 +733,7 @@ export class HUDCardsService {
         image: 'assets/SVG/ship.svg',
         title: 'Bubonic plague',
         description: 'Send ships full of infectious rats to the south and west of Europe',
-        cost: 12,
+        cost: 10,
         gameEvent: GameEvent.BubonicPlagueOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -824,7 +749,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 45); // 45% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 20); // 20% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -835,6 +760,7 @@ export class HUDCardsService {
             area.state.armies.horses.amount -= killArmies(area, ArmyType.Horses);
             area.state.armies.gatlingGuns.amount -= killArmies(area, ArmyType.GatlingGuns);
             area.state.armies.spies.amount -= killArmies(area, ArmyType.Spies);
+            area.state.armies = this.setToMinimumZero(area);
 
             affectedAreas.push(area);
           }
@@ -860,7 +786,7 @@ export class HUDCardsService {
         image: 'assets/SVG/famine.svg',
         title: 'Famine',
         description: 'Block trade routes to northern and eastern Europe, causing severe and long-lasting famine.',
-        cost: 14,
+        cost: 13,
         gameEvent: GameEvent.FamineOutcome
       },
       callback: (logger: HUDLoggerService) => {
@@ -876,7 +802,7 @@ export class HUDCardsService {
         let areas = this.cache.session.state.map.areas;
 
         function killArmies(area: Area, armyType: ArmyType) {
-          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 40); // 40% of all armies will die
+          return Math.ceil(((area.state.armies[armyType] as Army).amount / 100) * 20); // 20% of all armies will die
         }
 
         areas = areas.map((area) => {
@@ -887,6 +813,7 @@ export class HUDCardsService {
             area.state.armies.horses.amount -= killArmies(area, ArmyType.Horses);
             area.state.armies.gatlingGuns.amount -= killArmies(area, ArmyType.GatlingGuns);
             area.state.armies.spies.amount -= killArmies(area, ArmyType.Spies);
+            area.state.armies = this.setToMinimumZero(area);
 
             affectedAreas.push(area);
           }
@@ -939,6 +866,7 @@ export class HUDCardsService {
             area.state.armies.horses.amount -= killArmies(area, ArmyType.Horses);
             area.state.armies.gatlingGuns.amount -= killArmies(area, ArmyType.GatlingGuns);
             area.state.armies.spies.amount -= killArmies(area, ArmyType.Spies);
+            area.state.armies = this.setToMinimumZero(area);
 
             affectedAreas.push(area);
           }
@@ -976,23 +904,25 @@ export class HUDCardsService {
 
           if (area.events.winter && area.state.__ui.isOwnedBySelf) {
             area.state.immunities.winter = true;
-
-            this.mapEngine.loadOutcome({
-              area,
-              image: 'assets/SVG/fur-coat.svg',
-              title: {
-                color: '#82D0D3',
-                label: this.getCard(CardIDs.winterImmunity).config.title
-              },
-              messages: [
-                { color: 'white', label: 'Immune to freezing cold' }
-              ]
-            });
-
             affectedAreas.push(area);
           }
 
           return area;
+        });
+
+        this.emitWithDelay(affectedAreas, 250, (area) => {
+
+          this.mapEngine.loadOutcome({
+            area,
+            image: 'assets/SVG/fur-coat.svg',
+            title: {
+              color: '#82D0D3',
+              label: this.getCard(CardIDs.winterImmunity).config.title
+            },
+            messages: [
+              { color: 'white', label: 'Immune to freezing cold' }
+            ]
+          });
         });
 
         return {
@@ -1025,23 +955,25 @@ export class HUDCardsService {
 
           if (area.events.summer && area.state.__ui.isOwnedBySelf) {
             area.state.immunities.summer = true;
-
-            this.mapEngine.loadOutcome({
-              area,
-              image: 'assets/SVG/barrel.svg',
-              title: {
-                color: '#FFBE6A',
-                label: this.getCard(CardIDs.summerImmunity).config.title
-              },
-              messages: [
-                { color: 'white', label: 'Immune to dehydration' }
-              ]
-            });
-
             affectedAreas.push(area);
           }
 
           return area;
+        });
+
+        this.emitWithDelay(affectedAreas, 250, (area) => {
+
+          this.mapEngine.loadOutcome({
+            area,
+            image: 'assets/SVG/barrel.svg',
+            title: {
+              color: '#FFBE6A',
+              label: this.getCard(CardIDs.summerImmunity).config.title
+            },
+            messages: [
+              { color: 'white', label: 'Immune to dehydration' }
+            ]
+          });
         });
 
         return {
@@ -1074,23 +1006,25 @@ export class HUDCardsService {
 
           if (area.events.autumn && area.state.__ui.isOwnedBySelf) {
             area.state.immunities.autumn = true;
-
-            this.mapEngine.loadOutcome({
-              area,
-              image: 'assets/SVG/sand-bags.svg',
-              title: {
-                color: '#B48400',
-                label: this.getCard(CardIDs.autumnImmunity).config.title
-              },
-              messages: [
-                { color: 'white', label: 'Immune to floods' }
-              ]
-            });
-
             affectedAreas.push(area);
           }
 
           return area;
+        });
+
+        this.emitWithDelay(affectedAreas, 250, (area) => {
+
+          this.mapEngine.loadOutcome({
+            area,
+            image: 'assets/SVG/sand-bags.svg',
+            title: {
+              color: '#B48400',
+              label: this.getCard(CardIDs.autumnImmunity).config.title
+            },
+            messages: [
+              { color: 'white', label: 'Immune to floods' }
+            ]
+          });
         });
 
         return {
@@ -1129,7 +1063,7 @@ export class HUDCardsService {
   }
 
   checkDisabledState(cardId: string) {
-    return this.getCard(cardId).disabled();
+    return this.getCard(cardId)?.disabled();
   }
 
   private getActionResponseObservable(card: Card, deckIndex: number) {
@@ -1193,5 +1127,36 @@ export class HUDCardsService {
   canPlayCard(cost: number) {
     const self = this.cache.self;
     return self.state.actionPoints.left - cost >= 0;
+  }
+
+  private setToMinimumZero(area: Area) {
+
+    const armies = {...area.state.armies};
+
+    for (const armyType in armies) {
+      const army = armies[armyType] as Army;
+      army.amount = army.amount || 0;
+    }
+
+    return armies;
+  }
+
+  private emitWithDelay(areas: Area[], delayBy: number, onEmit: (area: Area) => void) {
+
+    const sub = new Subject();
+
+    from(areas)
+      .pipe(
+        takeUntil(sub),
+        concatMap(val => of(val).pipe(
+          delay(delayBy),
+          first()
+        )),
+        finalize(() => sub.next())
+      )
+      .subscribe((area) => {
+        onEmit(area);
+      }
+    );
   }
 }

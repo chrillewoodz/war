@@ -33,7 +33,7 @@
         <ul class="hud-actions-area-armies">
           <li class="hud-actions-area-army" *ngFor="let army of selectedArea?.state.armies | keyvalue">
             <img class="hud-actions-area-army-img" src="assets/SVG/{{army.key}}.svg">
-            <div class="hud-actions-area-army-amount">{{army.value.amount}}</div>
+            <div class="hud-actions-area-army-amount">{{selectedArea?.state.__ui.isSpiedOnBySelf || selectedArea?.state.__ui.isOwnedBySelf ? army.value.amount : '?'}}</div>
           </li>
         </ul>
       </div>
@@ -52,7 +52,7 @@
         <ul class="hud-actions-area-armies">
           <li class="hud-actions-area-army" *ngFor="let army of selectedConnection?.state.armies | keyvalue">
             <img class="hud-actions-area-army-img" src="assets/SVG/{{army.key}}.svg">
-            <div class="hud-actions-area-army-amount">{{selectedConnection?.state.__ui.isSpiedOnBySelf ? army.value.amount : '?'}}</div>
+            <div class="hud-actions-area-army-amount">{{selectedConnection?.state.__ui.isSpiedOnBySelf || selectedConnection?.state.__ui.isOwnedBySelf ? army.value.amount : '?'}}</div>
           </li>
         </ul>
       </div>

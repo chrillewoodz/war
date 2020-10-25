@@ -95,7 +95,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     // Don't restart on refresh/load in production
     const turnSub = this.socketApi.timer<TimerResponse>()
       .subscribe((result) => {
-        console.log(this.elapsedTime, result.percent);
         this.elapsedTime = result.percent;
       }, (err) => {
         console.log(err);
